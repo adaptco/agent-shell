@@ -40,7 +40,7 @@ Set-Location "path\to\agent-shell-service"
 ### Bash (Linux/macOS/container)
 
 ```bash
-cd /workspace/agent-shell
+cd path/to/agent-shell
 ./scripts/setup_workspace.sh
 ```
 
