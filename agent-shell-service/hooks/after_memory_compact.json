@@ -1,0 +1,39 @@
+{
+  "name": "after_memory_compact",
+  "description": "Observe the compaction result after summary and archive are written.",
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "task_id",
+      "payload"
+    ],
+    "properties": {
+      "task_id": {
+        "type": "string"
+      },
+      "payload": {
+        "type": "object"
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": [
+      "allow",
+      "payload"
+    ],
+    "properties": {
+      "allow": {
+        "type": "boolean"
+      },
+      "payload": {
+        "type": "object"
+      },
+      "reason": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

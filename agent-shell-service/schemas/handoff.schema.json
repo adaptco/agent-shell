@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "handoff_id",
+    "parent_task_id",
+    "subagent_name",
+    "subtask",
+    "return_contract"
+  ],
+  "properties": {
+    "handoff_id": {
+      "type": "string"
+    },
+    "parent_task_id": {
+      "type": "string"
+    },
+    "subagent_name": {
+      "type": "string"
+    },
+    "subtask": {
+      "type": "string"
+    },
+    "context_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "return_contract": {
+      "type": "object",
+      "required": [
+        "expects"
+      ],
+      "properties": {
+        "expects": {
+          "type": "string"
+        },
+        "max_steps": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

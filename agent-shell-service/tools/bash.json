@@ -1,0 +1,36 @@
+{
+  "name": "bash",
+  "description": "Run an allowlisted shell command and return stdout, stderr, and exit code.",
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "command"
+    ],
+    "properties": {
+      "command": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": [
+      "stdout",
+      "stderr",
+      "exit_code"
+    ],
+    "properties": {
+      "stdout": {
+        "type": "string"
+      },
+      "stderr": {
+        "type": "string"
+      },
+      "exit_code": {
+        "type": "integer"
+      }
+    },
+    "additionalProperties": false
+  }
+}

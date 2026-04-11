@@ -1,0 +1,39 @@
+{
+  "name": "before_memory_compact",
+  "description": "Observe or block a pending memory compaction step.",
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "task_id",
+      "payload"
+    ],
+    "properties": {
+      "task_id": {
+        "type": "string"
+      },
+      "payload": {
+        "type": "object"
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": [
+      "allow",
+      "payload"
+    ],
+    "properties": {
+      "allow": {
+        "type": "boolean"
+      },
+      "payload": {
+        "type": "object"
+      },
+      "reason": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}
