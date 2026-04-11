@@ -24,7 +24,7 @@ This package keeps the file-backed runtime kernel and adds an inbound FastAPI ap
 ## Local PowerShell usage
 
 ```powershell
-Set-Location "C:\Users\eqhsp\Agent Projects\agent-shell-service"
+Set-Location "~\agent-shell-service"
 py -m venv .venv
 . .\.venv\Scripts\Activate.ps1
 py -m pip install -e .
