@@ -37,6 +37,7 @@ python -m pip install --upgrade pip
 python -m pip install -e .
 
 Write-Host "Workspace is ready."
+Write-Host "Run: . .venv\Scripts\Activate.ps1"
 Write-Host "Run: agent-shell doctor"
 Write-Host "Run: agent-shell serve-api --host 127.0.0.1 --port 8000"
 Write-Host "Node.js version: $nodeVersionRaw"
