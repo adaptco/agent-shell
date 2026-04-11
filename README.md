@@ -33,7 +33,7 @@ Use the repo-managed setup scripts to bootstrap a terminal workspace in a fail-c
 ### PowerShell (Windows)
 
 ```powershell
-Set-Location "C:\Users\eqhsp\Agent Projects\agent-shell-service"
+Set-Location "path\to\agent-shell-service"
 .\scripts\setup_workspace.ps1
 ```
 
