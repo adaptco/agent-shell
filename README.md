@@ -21,6 +21,31 @@ This package keeps the file-backed runtime kernel and adds an inbound FastAPI ap
   - state stores
   - observability / audit
 
+## Runtime toolchain contract
+
+- Python `>=3.11`
+- Node.js `v24` (pinned via `.nvmrc` and `.node-version`)
+
+## Workspace setup scripts
+
+Use the repo-managed setup scripts to bootstrap a terminal workspace in a fail-closed way.
+
+### PowerShell (Windows)
+
+```powershell
+Set-Location "C:\Users\eqhsp\Agent Projects\agent-shell-service"
+.\scripts\setup_workspace.ps1
+```
+
+### Bash (Linux/macOS/container)
+
+```bash
+cd /workspace/agent-shell
+./scripts/setup_workspace.sh
+```
+
+The scripts enforce Node.js v24, create `.venv` if missing, install this package in editable mode, and stop on missing prerequisites.
+
 ## Local PowerShell usage
 
 ```powershell
