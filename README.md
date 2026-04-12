@@ -26,24 +26,6 @@ This package keeps the file-backed runtime kernel and adds an inbound FastAPI ap
 - Python `>=3.11`
 - Node.js `v24` (pinned via `.nvmrc` and `.node-version`)
 
-## Runtime artifact store
-
-Runtime-generated artifacts are now persisted under a local filesystem object-store root:
-
-- `.runtime-store/objects/logs`
-- `.runtime-store/objects/memory`
-- `.runtime-store/objects/queue`
-- `.runtime-store/objects/receipts`
-- `.runtime-store/objects/state`
-
-These paths are intentionally gitignored so branch history stays source-only.
-
-To migrate existing legacy runtime folders (`logs`, `memory`, `queue`, `receipts`, `state`) into the object-store layout, run:
-
-```powershell
-python .\scripts\migrate_runtime_storage.py
-```
-
 ## Workspace setup scripts
 
 Use the repo-managed setup scripts to bootstrap a terminal workspace in a fail-closed way.

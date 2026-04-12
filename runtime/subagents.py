@@ -1,6 +1,6 @@
 from __future__ import annotations
+from pathlib import Path
 from uuid import uuid4
-from runtime.config import resolve_path
 from runtime.utils import write_json
 
 
@@ -9,7 +9,7 @@ class SubagentManager:
         self.cfg = cfg
         self.loop_factory = loop_factory
         self.handoff_schema = handoff_schema
-        self.handoff_dir = resolve_path(cfg, cfg["queue"].get("handoff_dir", "queue/handoffs"))
+        self.handoff_dir = Path(cfg["_workspace"]) / "queue" / "handoffs"
         self.handoff_dir.mkdir(parents=True, exist_ok=True)
 
     def delegate(self, parent_task: dict, decision: dict, backend_name: str, depth: int) -> dict:

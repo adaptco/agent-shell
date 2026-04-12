@@ -1,0 +1,18 @@
+{
+  "receipt_id": "055430eb29894eff8a80128ae5528a43-memory_compact-2026-04-11T184408.806715_0000",
+  "task_id": "055430eb29894eff8a80128ae5528a43",
+  "step": "memory_compact",
+  "status": "ok",
+  "created_at": "2026-04-11T18:44:08.806715+00:00",
+  "inputs_sha256": "75147a8569e4837a27fc8fd8678e692dfa35f5d2c9b3ab5b57c2deb371a5456c",
+  "outputs_sha256": "ad6209a21dd4371fc0bd051201058753c0ab64c759de0475129680107f39fd22",
+  "inputs": {
+    "entry_count": 9
+  },
+  "outputs": {
+    "compacted": true,
+    "archive_path": "/mnt/data/agent-shell-infra-runtime/agent-shell/memory/archive/2026-04-11T184408.804978_0000.jsonl",
+    "retained": 3
+  },
+  "error": null
+}
