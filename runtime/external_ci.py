@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import time
@@ -190,9 +191,15 @@ def _publish_status(
 
 
 def _run_external_command(command: str, workspace: Path) -> int:
+    try:
+        command_args = shlex.split(command, posix=(os.name != "nt"))
+    except ValueError as exc:
+        raise ExternalCIError(f"Invalid CI command syntax: {exc}") from exc
+    if not command_args:
+        raise ExternalCIError("CI command must not be empty.")
     completed = subprocess.run(
-        command,
-        shell=True,
+        command_args,
+        shell=False,
         cwd=str(workspace),
     )
     return int(completed.returncode)
@@ -259,7 +266,7 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     try:
-        raise SystemExit(main())
+        sys.exit(main())
     except ExternalCIError as exc:
         print(f"[external-ci] {exc}", file=sys.stderr)
-        raise SystemExit(2)
+        sys.exit(2)
