@@ -88,3 +88,45 @@ uvicorn runtime.api:create_app --factory --host 127.0.0.1 --port 8000
 - `GET http://127.0.0.1:8000/tasks`
 - `POST http://127.0.0.1:8000/run`
 - `GET http://127.0.0.1:8000/heartbeat`
+
+## External CI without GitHub Actions minutes
+
+This repository includes an external status publisher:
+
+- CLI: `agent-shell-external-ci`
+- Module: `runtime/external_ci.py`
+- Required status context for branch protection: `external-ci`
+
+### One-time GitHub App setup
+
+GitHub App creation itself requires a one-time UI step in GitHub settings.
+Use `infra/github-app-external-ci-manifest.json` as the source of truth for app permissions.
+
+Minimum app permission needed for status publishing:
+
+- `Commit statuses: Read and write`
+- `Metadata: Read-only`
+
+Then install the app on `adaptco/agent-shell` and generate a private key.
+
+### Environment variables for external CI host
+
+Set these on the machine that runs tests:
+
+- `GITHUB_APP_ID`
+- `GITHUB_APP_PRIVATE_KEY_PATH` (or `GITHUB_APP_PRIVATE_KEY`)
+- Optional: `GITHUB_APP_INSTALLATION_ID` (auto-discovered if omitted)
+- Optional: `GITHUB_API_URL` (defaults to `https://api.github.com`)
+
+### Run and publish status
+
+From the repo root:
+
+```powershell
+agent-shell-external-ci --repo adaptco/agent-shell --context external-ci --command "pytest -q"
+```
+
+The command publishes:
+
+1. `pending` when execution starts
+2. `success` or `failure` when the test command exits

@@ -1,0 +1,23 @@
+{
+  "receipt_id": "system-heartbeat-2026-04-12T113600.060487_0000",
+  "task_id": "system",
+  "step": "heartbeat",
+  "status": "ok",
+  "created_at": "2026-04-12T11:36:00.060487+00:00",
+  "inputs_sha256": "34ec512c3a7f9c28c05feb1a1361d595255bdbd9439dc9d6b594d7201cd0273d",
+  "outputs_sha256": "50f392bf233098a4684e5d89cc3ebe0a2aae1acd601a4b27fee07227a24d3368",
+  "inputs": {
+    "worker_id": "api-test"
+  },
+  "outputs": {
+    "status": "alive",
+    "last_heartbeat": "2026-04-12T11:36:00.059947+00:00",
+    "last_task_id": "c6684feff5a34c1fb65aefa0f0e13ef4",
+    "last_worker_id": "api-test",
+    "memory": {
+      "entries": 6,
+      "last_compaction": "2026-04-11T19:16:08.383882+00:00"
+    }
+  },
+  "error": null
+}
