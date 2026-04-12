@@ -21,7 +21,7 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
                 pass
             continue
         if target.exists() or target.is_symlink():
-            if target.is_dir():
+            if target.is_dir() and not target.is_symlink():
                 skipped.append(f"{item} (destination is a directory: {target})")
                 continue
             try:
