@@ -21,18 +21,16 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
                 pass
             continue
         target.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            item.replace(target)
-        except PermissionError:
+        if target.exists():
             try:
-                shutil.copy2(item, target)
-            except PermissionError:
+                target.unlink()
+            except OSError:
                 skipped.append(str(item))
                 continue
-            try:
-                item.unlink()
-            except PermissionError:
-                skipped.append(str(item))
+        try:
+            shutil.move(str(item), str(target))
+        except Exception:
+            skipped.append(str(item))
     try:
         src.rmdir()
     except OSError:
