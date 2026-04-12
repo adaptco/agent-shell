@@ -20,9 +20,15 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
             except OSError:
                 pass
             continue
-        if target.exists():
-            skipped.append(f"{item} (destination exists: {target})")
-            continue
+        if target.exists() or target.is_symlink():
+            if target.is_dir():
+                skipped.append(f"{item} (destination is a directory: {target})")
+                continue
+            try:
+                target.unlink()
+            except OSError as error:
+                skipped.append(f"{item} (cannot replace destination {target}: {type(error).__name__}: {error})")
+                continue
         try:
             shutil.move(str(item), str(target))
         except (OSError, shutil.Error) as error:
