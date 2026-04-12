@@ -1,9 +1,0 @@
-{"event_type": "tool_result", "tool_name": "file_read", "summary": "Read agent.md before answering.", "created_at": "2026-04-12T11:36:49.663796+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-12T11:36:49.680138+00:00"}
-{"event_type": "tool_result", "tool_name": "file_read", "summary": "Read agent.md before answering.", "created_at": "2026-04-12T11:36:50.654490+00:00"}
-{"event_type": "compaction_marker", "summary": "Archived 9 entries", "created_at": "2026-04-12T11:36:50.674015+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-12T11:36:50.725805+00:00"}
-{"event_type": "tool_result", "tool_name": "bash", "summary": "Use bash to list the workspace.", "created_at": "2026-04-12T11:36:51.287955+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-12T11:36:51.310990+00:00"}
-{"event_type": "tool_result", "tool_name": "web_search", "summary": "Use web search first.", "created_at": "2026-04-12T11:36:51.854045+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-12T11:36:51.887969+00:00"}
