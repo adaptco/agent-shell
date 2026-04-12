@@ -3,13 +3,13 @@ from typing import Any, Dict
 from runtime.utils import read_json, write_json
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_HANDOFF_DIR = ".runtime-store/objects/queue/handoffs"
 
 
 def load_config(root: Path | None = None) -> Dict[str, Any]:
     workspace = root or ROOT
     data = read_json(workspace / "infra" / "runtime.json")
     data["_workspace"] = str(workspace)
-    ensure_runtime_storage(data)
     return data
 
 
@@ -50,7 +50,7 @@ def ensure_runtime_storage(cfg: Dict[str, Any]) -> None:
         cfg["queue"]["working_dir"],
         cfg["queue"]["done_dir"],
         cfg["queue"]["failed_dir"],
-        cfg["queue"].get("handoff_dir", "queue/handoffs"),
+        cfg["queue"].get("handoff_dir", DEFAULT_HANDOFF_DIR),
         cfg["memory"]["archive_dir"],
         cfg["receipts"]["dir"],
     ]
