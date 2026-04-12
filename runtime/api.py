@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 from runtime.api_auth import OperatorIdentity, get_auth_dependency
 from runtime.config import load_config
+from runtime.middleware import install_http_middleware
 from runtime.service import AgentService
 
 
@@ -43,11 +44,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     app.state.cfg = cfg
     app.state.service = AgentService(cfg)
 
-    @app.middleware("http")
-    async def request_middleware(request: Request, call_next):
-        response = await call_next(request)
-        response.headers["X-Agent-Service"] = cfg.get("name", "agent-shell-service-runtime")
-        return response
+    install_http_middleware(app, cfg)
 
     def svc(request: Request) -> AgentService:
         return request.app.state.service
@@ -94,6 +91,13 @@ def create_app(cfg: dict | None = None) -> FastAPI:
 
     @app.exception_handler(Exception)
     async def unhandled_exception_handler(request: Request, exc: Exception):
-        return JSONResponse(status_code=500, content={"error": type(exc).__name__, "detail": str(exc)})
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": type(exc).__name__,
+                "detail": str(exc),
+                "correlation_id": getattr(request.state, "correlation_id", None),
+            },
+        )
 
     return app

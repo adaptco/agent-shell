@@ -25,6 +25,14 @@ The shell runtime remains the execution engine. The service is the network-facin
   - Emits a new heartbeat update.
   - Body: `{ "worker_id": "optional" }`
 
+## Boundary middleware contract
+
+Every inbound request receives response headers emitted by the FastAPI boundary middleware:
+
+- `X-Agent-Service`: service identifier
+- `X-Correlation-Id`: request correlation ID (forwarded from inbound header when provided)
+- `X-Process-Time-Ms`: request duration at the boundary
+
 ## Outbound provider endpoints
 
 The inbound service does not proxy provider credentials from the client.

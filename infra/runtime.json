@@ -1,6 +1,6 @@
 {
   "name": "agent-shell-service-runtime",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "workspace_root": ".",
   "runtime_storage": {
     "type": "filesystem_object_store",

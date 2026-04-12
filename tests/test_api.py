@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from fastapi.testclient import TestClient
 
 from runtime.api import create_app
@@ -18,6 +20,9 @@ def test_health_endpoint():
     assert response.status_code == 200
     body = response.json()
     assert body["ok"] is True
+    assert response.headers["x-agent-service"] == "agent-shell-service-runtime"
+    assert response.headers["x-correlation-id"]
+    assert response.headers["x-process-time-ms"]
 
 
 def test_tasks_endpoint_and_lookup():
@@ -46,3 +51,36 @@ def test_heartbeat_endpoints():
     post_resp = client.post("/heartbeat", json={"worker_id": "api-test"})
     assert post_resp.status_code == 200
     assert post_resp.json()["runtime_state"]["last_worker_id"] == "api-test"
+
+
+def test_service_boundary_static_bearer_auth():
+    cfg = load_config()
+    cfg["auth"]["service_boundary"]["enabled"] = True
+    cfg["auth"]["service_boundary"]["mode"] = "static_bearer"
+    client = TestClient(create_app(cfg))
+    token = "test-token"
+    try:
+        os.environ["AGENT_SERVICE_BEARER_TOKEN"] = token
+        unauthorized = client.get("/health")
+        assert unauthorized.status_code == 401
+        authorized = client.get("/health", headers={"Authorization": f"Bearer {token}"})
+        assert authorized.status_code == 200
+        assert authorized.json()["operator"]["auth_mode"] == "static_bearer"
+    finally:
+        os.environ.pop("AGENT_SERVICE_BEARER_TOKEN", None)
+
+
+def test_service_boundary_trusted_proxy_auth():
+    cfg = load_config()
+    cfg["auth"]["service_boundary"]["enabled"] = True
+    cfg["auth"]["service_boundary"]["mode"] = "trusted_proxy_oidc"
+    client = TestClient(create_app(cfg))
+    unauthorized = client.get("/health")
+    assert unauthorized.status_code == 401
+    authorized = client.get(
+        "/health",
+        headers={"x-auth-request-user": "operator-1", "x-auth-request-email": "operator@example.com"},
+    )
+    assert authorized.status_code == 200
+    assert authorized.json()["operator"]["subject"] == "operator-1"
+    assert authorized.json()["operator"]["auth_mode"] == "trusted_proxy_oidc"
