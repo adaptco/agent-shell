@@ -20,7 +20,6 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
             except OSError:
                 pass
             continue
-        target.parent.mkdir(parents=True, exist_ok=True)
         if target.exists():
             skipped.append(f"{item} (destination exists: {target})")
             continue
