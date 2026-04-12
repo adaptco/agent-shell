@@ -22,15 +22,12 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
             continue
         target.parent.mkdir(parents=True, exist_ok=True)
         if target.exists():
-            try:
-                target.unlink()
-            except OSError:
-                skipped.append(str(item))
-                continue
+            skipped.append(f"{item} (destination exists: {target})")
+            continue
         try:
             shutil.move(str(item), str(target))
-        except Exception:
-            skipped.append(str(item))
+        except (OSError, shutil.Error) as error:
+            skipped.append(f"{item} ({type(error).__name__}: {error})")
     try:
         src.rmdir()
     except OSError:
@@ -60,7 +57,7 @@ def main() -> int:
     for src, dst in moves:
         print(f"- {src} -> {dst}")
     if skipped:
-        print("Skipped locked files:")
+        print("Skipped files:")
         for path in skipped:
             print(f"- {path}")
     return 0
