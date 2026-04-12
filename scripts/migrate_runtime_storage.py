@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import shutil
 
@@ -9,10 +10,30 @@ STORE_ROOT = ROOT / ".runtime-store" / "objects"
 LEGACY_DIRS = ("logs", "memory", "queue", "receipts", "state")
 
 
+def _move_symlink(item: Path, target: Path, skipped: list[str]) -> None:
+    try:
+        link_target = os.readlink(item)
+        if os.path.isabs(link_target):
+            rewritten_target = link_target
+        else:
+            source_target = (item.parent / link_target).resolve(strict=False)
+            rewritten_target = os.path.relpath(source_target, start=target.parent)
+        os.symlink(rewritten_target, target, target_is_directory=item.is_dir())
+        item.unlink()
+    except OSError as error:
+        skipped.append(f"{item} ({type(error).__name__}: {error})")
+
+
 def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
     dst.mkdir(parents=True, exist_ok=True)
     for item in src.iterdir():
         target = dst / item.name
+        if item.is_symlink():
+            if target.exists() or target.is_symlink():
+                skipped.append(f"{item} (destination exists: {target})")
+                continue
+            _move_symlink(item, target, skipped)
+            continue
         if item.is_dir():
             _merge_tree(item, target, skipped)
             try:
@@ -20,7 +41,7 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
             except OSError:
                 pass
             continue
-        if target.exists():
+        if target.exists() or target.is_symlink():
             skipped.append(f"{item} (destination exists: {target})")
             continue
         try:
