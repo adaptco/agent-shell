@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import shutil
 
@@ -20,7 +21,7 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
             except OSError:
                 pass
             continue
-        if target.exists():
+        if os.path.lexists(target):
             skipped.append(f"{item} (destination exists: {target})")
             continue
         try:
