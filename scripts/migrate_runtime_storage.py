@@ -29,7 +29,7 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
     for item in src.iterdir():
         target = dst / item.name
         if item.is_symlink():
-            if os.path.lexists(target):
+            if target.exists() or target.is_symlink():
                 skipped.append(f"{item} (destination exists: {target})")
                 continue
             _move_symlink(item, target, skipped)
@@ -41,7 +41,7 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
             except OSError:
                 pass
             continue
-        if os.path.lexists(target):
+        if target.exists() or target.is_symlink():
             skipped.append(f"{item} (destination exists: {target})")
             continue
         try:
