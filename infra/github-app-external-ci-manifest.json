@@ -1,0 +1,17 @@
+{
+  "name": "agent-shell-external-ci",
+  "url": "https://github.com/adaptco/agent-shell",
+  "redirect_url": "https://github.com/adaptco/agent-shell",
+  "description": "External CI status publisher for branch protection context external-ci",
+  "public": false,
+  "default_permissions": {
+    "metadata": "read",
+    "statuses": "write",
+    "checks": "write",
+    "contents": "read"
+  },
+  "default_events": [
+    "push",
+    "pull_request"
+  ]
+}

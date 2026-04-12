@@ -49,3 +49,17 @@ The service verifies issuer, audience, and JWKS signatures before allowing acces
 ## FastAPI note
 
 FastAPI can declare OpenID Connect in OpenAPI docs, but its `OpenIdConnect` helper is only a stub and does not implement full verification by itself. That is why this build implements service-boundary verification in `runtime/api_auth.py` instead of pretending the framework does it for you.
+
+## External CI status publisher authentication
+
+Branch protection can require the `external-ci` status context without using GitHub Actions minutes.
+The external publisher (`agent-shell-external-ci`) supports:
+
+1. **GitHub App installation token (recommended)**
+   - `GITHUB_APP_ID`
+   - `GITHUB_APP_PRIVATE_KEY_PATH` or `GITHUB_APP_PRIVATE_KEY`
+   - Optional `GITHUB_APP_INSTALLATION_ID`
+2. **Fallback token**
+   - `GITHUB_TOKEN`
+
+For GitHub App mode, the app should have commit status write permission and be installed on this repository.
