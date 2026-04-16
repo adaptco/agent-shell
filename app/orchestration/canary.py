@@ -5,6 +5,14 @@ from typing import Any
 
 from runtime.utils import utc_now, write_json
 
+CANARY_RESULT_FILE = "canary_result.json"
+
+
+def _coerce_string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value]
+
 
 def run_canary(
     *,
@@ -14,16 +22,17 @@ def run_canary(
     artifact_root: Path,
 ) -> dict[str, Any]:
     """Run deterministic simulated canary checks and persist canary_result.json."""
-    promoted_tools = candidate_registry_bundle.get("promoted_tool_ids", [])
-    promoted_skills = candidate_skills_bundle.get("promoted_skill_ids", [])
+    promoted_tools = _coerce_string_list(candidate_registry_bundle.get("promoted_tool_ids", []))
+    promoted_skills = _coerce_string_list(candidate_skills_bundle.get("promoted_skill_ids", []))
     candidate_registry_version = candidate_registry_bundle.get("candidate_registry_version")
     candidate_skills_version = candidate_skills_bundle.get("candidate_skills_version")
 
     checks: list[str] = []
     failures: list[str] = []
-    if not candidate_registry_version:
+
+    if not isinstance(candidate_registry_version, str) or not candidate_registry_version:
         failures.append("missing_candidate_registry_version")
-    if not candidate_skills_version:
+    if not isinstance(candidate_skills_version, str) or not candidate_skills_version:
         failures.append("missing_candidate_skills_version")
     checks.append("candidate_versions_present")
 
@@ -46,5 +55,5 @@ def run_canary(
         "failures": failures,
         "created_at": utc_now(),
     }
-    write_json(Path(artifact_root) / "canary_result.json", canary_result)
+    write_json(Path(artifact_root) / CANARY_RESULT_FILE, canary_result)
     return canary_result
