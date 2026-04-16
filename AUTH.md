@@ -22,6 +22,13 @@ Configured in `infra/runtime.json`:
 - `trusted_proxy_oidc`
 - `oidc_jwt`
 
+Mode behavior is fail-closed:
+
+- unknown mode -> HTTP 500 (misconfiguration)
+- missing static bearer token -> HTTP 500 (server misconfigured)
+- missing/invalid caller credentials -> HTTP 401
+- missing required OIDC scopes -> HTTP 403
+
 ### Why split auth this way
 
 The runtime has two different trust problems:
@@ -45,6 +52,9 @@ This is the cleanest cut when you already have a platform gateway.
 ### `oidc_jwt`
 Use direct bearer tokens from an OIDC provider.
 The service verifies issuer, audience, and JWKS signatures before allowing access.
+
+This mode is intended when no trusted identity proxy sits in front of the service.
+It keeps verification in-process and emits operator context only after signature and scope checks pass.
 
 ## FastAPI note
 
