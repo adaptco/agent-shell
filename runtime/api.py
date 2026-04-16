@@ -38,11 +38,12 @@ def _error_content(request: Request, detail: object, error: str) -> dict[str, ob
 def create_app(cfg: dict | None = None) -> FastAPI:
     cfg = cfg or load_config()
     service_auth = get_auth_dependency(cfg)
+    service = AgentService(cfg)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         app.state.cfg = cfg
-        app.state.service = AgentService(cfg)
+        app.state.service = service
         yield
 
     app = FastAPI(
@@ -51,50 +52,87 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     app.state.cfg = cfg
-    app.state.service = AgentService(cfg)
+    app.state.service = service
 
     install_http_middleware(app, cfg)
 
     def svc(request: Request) -> AgentService:
         return request.app.state.service
 
+    async def auth_operator(
+        request: Request,
+        operator: OperatorIdentity = Depends(service_auth),
+    ) -> OperatorIdentity:
+        request.state.auth_context = operator.__dict__
+        return operator
+
     @app.get("/health")
-    async def health(request: Request, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def health(
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.health()
         result["operator"] = operator.__dict__
         return result
 
     @app.get("/tasks")
-    async def list_tasks(limit: int = 100, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def list_tasks(
+        limit: int = 100,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.list_tasks(limit=limit)
         result["operator"] = operator.__dict__
         return result
 
     @app.post("/tasks")
-    async def create_task(body: TaskCreateRequest, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
-        result = service.queue_add(body.task, parent_task_id=body.parent_task_id, assigned_subagent=body.assigned_subagent)
+    async def create_task(
+        body: TaskCreateRequest,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
+        result = service.queue_add(
+            body.task,
+            parent_task_id=body.parent_task_id,
+            assigned_subagent=body.assigned_subagent,
+        )
         result["operator"] = operator.__dict__
         return JSONResponse(status_code=202, content=result)
 
     @app.get("/tasks/{task_id}")
-    async def get_task(task_id: str, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def get_task(
+        task_id: str,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.get_task(task_id)
         if result is None:
             raise HTTPException(status_code=404, detail="Task not found")
         return {"task": result, "operator": operator.__dict__}
 
     @app.post("/run")
-    async def run_task(body: RunRequest, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def run_task(
+        body: RunRequest,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.run_task(body.task, body.backend)
         result["operator"] = operator.__dict__
         return result
 
     @app.get("/heartbeat")
-    async def heartbeat_state(operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def heartbeat_state(
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         return {"runtime_state": service.get_runtime_state(), "operator": operator.__dict__}
 
     @app.post("/heartbeat")
-    async def emit_heartbeat(body: HeartbeatRequest, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def emit_heartbeat(
+        body: HeartbeatRequest,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.heartbeat(worker_id=body.worker_id)
         return {"runtime_state": result, "operator": operator.__dict__}
 

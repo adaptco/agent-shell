@@ -51,3 +51,40 @@ It calls providers from the server process using environment variables.
 - provider backends -> `runtime/llm.py`
 - tools -> `runtime/tools.py`
 - auth boundary -> `runtime/api_auth.py`
+- HTTP middleware (request ID, timing, logging, auth context) -> `runtime/middleware.py`
+
+## Runtime topology diff (shell -> service-backed)
+
+- previous local model: operator invoked `runtime/cli.py` commands directly on the same host as the runtime kernel.
+- deployed-aligned model: operator or gateway calls FastAPI endpoints in `runtime/api.py`; API forwards to the same `AgentService` kernel in `runtime/service.py`.
+- preserved internals: queue (`runtime/queue_fs.py`), hooks, tools, memory, receipts, and loop execution contracts are unchanged; only the entry boundary moved from CLI-only to CLI + HTTP.
+
+## PowerShell operator workflow
+
+Start local service:
+
+```powershell
+python -m runtime.cli serve-api --host 127.0.0.1 --port 8000
+```
+
+Check health:
+
+```powershell
+Invoke-RestMethod -Method GET -Uri http://127.0.0.1:8000/health
+```
+
+Queue a task:
+
+```powershell
+Invoke-RestMethod -Method POST -Uri http://127.0.0.1:8000/tasks `
+  -ContentType "application/json" `
+  -Body (@{ task = "Read agent.md" } | ConvertTo-Json)
+```
+
+Run a task immediately:
+
+```powershell
+Invoke-RestMethod -Method POST -Uri http://127.0.0.1:8000/run `
+  -ContentType "application/json" `
+  -Body (@{ task = "Read agent.md"; backend = "mock" } | ConvertTo-Json)
+```
