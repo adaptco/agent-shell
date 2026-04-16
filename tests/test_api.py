@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os
+import pytest
 
 from fastapi.testclient import TestClient
 
@@ -23,6 +23,13 @@ def test_health_endpoint():
     assert response.headers["x-agent-service"] == "agent-shell-service-runtime"
     assert response.headers["x-correlation-id"]
     assert response.headers["x-process-time-ms"]
+
+
+def test_correlation_id_is_forwarded():
+    client = _client()
+    response = client.get("/health", headers={"x-correlation-id": "req-123"})
+    assert response.status_code == 200
+    assert response.headers["x-correlation-id"] == "req-123"
 
 
 def test_tasks_endpoint_and_lookup():
@@ -53,21 +60,19 @@ def test_heartbeat_endpoints():
     assert post_resp.json()["runtime_state"]["last_worker_id"] == "api-test"
 
 
-def test_service_boundary_static_bearer_auth():
+def test_service_boundary_static_bearer_auth(monkeypatch: pytest.MonkeyPatch):
     cfg = load_config()
     cfg["auth"]["service_boundary"]["enabled"] = True
     cfg["auth"]["service_boundary"]["mode"] = "static_bearer"
     client = TestClient(create_app(cfg))
     token = "test-token"
-    try:
-        os.environ["AGENT_SERVICE_BEARER_TOKEN"] = token
-        unauthorized = client.get("/health")
-        assert unauthorized.status_code == 401
-        authorized = client.get("/health", headers={"Authorization": f"Bearer {token}"})
-        assert authorized.status_code == 200
-        assert authorized.json()["operator"]["auth_mode"] == "static_bearer"
-    finally:
-        os.environ.pop("AGENT_SERVICE_BEARER_TOKEN", None)
+    monkeypatch.setenv("AGENT_SERVICE_BEARER_TOKEN", token)
+    unauthorized = client.get("/health", headers={"x-correlation-id": "unauth-1"})
+    assert unauthorized.status_code == 401
+    assert unauthorized.json()["correlation_id"] == "unauth-1"
+    authorized = client.get("/health", headers={"Authorization": f"Bearer {token}"})
+    assert authorized.status_code == 200
+    assert authorized.json()["operator"]["auth_mode"] == "static_bearer"
 
 
 def test_service_boundary_trusted_proxy_auth():
@@ -84,3 +89,11 @@ def test_service_boundary_trusted_proxy_auth():
     assert authorized.status_code == 200
     assert authorized.json()["operator"]["subject"] == "operator-1"
     assert authorized.json()["operator"]["auth_mode"] == "trusted_proxy_oidc"
+
+
+def test_http_exception_includes_correlation_id():
+    client = _client()
+    response = client.get("/tasks/not-found", headers={"x-correlation-id": "req-404"})
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Task not found"
+    assert response.json()["correlation_id"] == "req-404"
