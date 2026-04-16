@@ -37,6 +37,18 @@ def _write_decision(artifact_root: Path, run_id: str, decision: str, reason: str
     return payload
 
 
+def _state_inputs_valid(active_registry_state: dict[str, Any], active_skills_state: dict[str, Any]) -> bool:
+    required_registry = {"active_registry_version", "active_registry_path"}
+    required_skills = {"active_skills_version", "active_skill_paths"}
+    if not required_registry.issubset(active_registry_state):
+        return False
+    if not required_skills.issubset(active_skills_state):
+        return False
+    if not isinstance(active_skills_state.get("active_skill_paths"), list):
+        return False
+    return True
+
+
 def promote_candidates(
     *,
     run_id: str,
@@ -52,15 +64,18 @@ def promote_candidates(
     artifact_root = Path(artifact_root)
     artifact_root.mkdir(parents=True, exist_ok=True)
 
+    if not Path(active_registry_state_path).exists() or not Path(active_skills_state_path).exists():
+        decision = _write_decision(artifact_root, run_id, "quarantine", "missing_active_pointer_files")
+        _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
+        return {"decision": decision, "canary_result": None, "active_state_patched": False}
+
     validation_status = validation_result.get("status")
     if validation_status not in {"pass", "warn"}:
         decision = _write_decision(artifact_root, run_id, "quarantine", f"invalid_validation_status:{validation_status}")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
         return {"decision": decision, "canary_result": None, "active_state_patched": False}
 
-    required_registry = {"active_registry_version", "active_registry_path"}
-    required_skills = {"active_skills_version", "active_skill_paths"}
-    if not required_registry.issubset(active_registry_state) or not required_skills.issubset(active_skills_state):
+    if not _state_inputs_valid(active_registry_state, active_skills_state):
         decision = _write_decision(artifact_root, run_id, "quarantine", "missing_active_state_fields")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
         return {"decision": decision, "canary_result": None, "active_state_patched": False}
@@ -77,10 +92,22 @@ def promote_candidates(
         active_skills_state=active_skills_state,
         artifact_root=artifact_root,
     )
-    _emit(receipts, run_id, "candidate_state_staged", "ok", {
-        "candidate_registry_version": candidate_registry_bundle["candidate_registry_version"],
-        "candidate_skills_version": candidate_skills_bundle["candidate_skills_version"],
-    })
+
+    if not candidate_registry_bundle.get("candidate_registry_version") or not candidate_skills_bundle.get("candidate_skills_version"):
+        decision = _write_decision(artifact_root, run_id, "quarantine", "candidate_version_computation_failed")
+        _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
+        return {"decision": decision, "canary_result": None, "active_state_patched": False}
+
+    _emit(
+        receipts,
+        run_id,
+        "candidate_state_staged",
+        "ok",
+        {
+            "candidate_registry_version": candidate_registry_bundle["candidate_registry_version"],
+            "candidate_skills_version": candidate_skills_bundle["candidate_skills_version"],
+        },
+    )
 
     hold_decision = _write_decision(artifact_root, run_id, "hold", "awaiting_canary")
     _emit(receipts, run_id, "promotion_decision_written", "ok", hold_decision)
@@ -141,4 +168,8 @@ def promote_candidates(
         decision = _write_decision(artifact_root, run_id, "rollback", "canary_failed")
 
     _emit(receipts, run_id, "promotion_decision_written", "ok", decision)
-    return {"decision": decision, "canary_result": canary_result, "active_state_patched": canary_result["status"] == "pass"}
+    return {
+        "decision": decision,
+        "canary_result": canary_result,
+        "active_state_patched": canary_result["status"] == "pass",
+    }
