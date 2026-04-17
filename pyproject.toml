@@ -17,6 +17,7 @@ dependencies = [
 [project.scripts]
 agent-shell = "runtime.cli:main"
 agent-shell-api = "runtime.server:main"
+agent-shell-external-ci = "runtime.external_ci:main"
 
 [tool.setuptools]
 packages = ["runtime"]

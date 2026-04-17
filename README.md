@@ -89,8 +89,6 @@ uvicorn runtime.api:create_app --factory --host 127.0.0.1 --port 8000
 - `GET http://127.0.0.1:8000/tasks/{task_id}`
 - `POST http://127.0.0.1:8000/run`
 - `GET http://127.0.0.1:8000/heartbeat`
-<<<<<<< ours
-=======
 - `POST http://127.0.0.1:8000/heartbeat`
 
 All responses include boundary middleware headers: `X-Agent-Service`, `X-Correlation-Id`, and `X-Process-Time-Ms`.
@@ -136,4 +134,3 @@ The command publishes:
 
 1. `pending` when execution starts
 2. `success` or `failure` when the test command exits
->>>>>>> theirs

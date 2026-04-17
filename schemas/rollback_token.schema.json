@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/rollback_token.schema.json",
+  "title": "RollbackToken",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "registry", "skills", "created_at"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.3.0" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "path"],
+      "properties": {
+        "version": { "type": ["string", "null"] },
+        "path": { "type": ["string", "null"] }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "paths"],
+      "properties": {
+        "version": { "type": ["string", "null"] },
+        "paths": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}
