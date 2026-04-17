@@ -68,7 +68,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run Docker Scout
+      - name: Run Docker Scout (free tier with GITHUB_TOKEN)
         if: ${{ steps.dockerfile-check.outputs.present == 'true' }}
         uses: docker/scout-action@v1
         with:
@@ -76,6 +76,9 @@ jobs:
           image: ghcr.io/${{ github.repository }}:latest
           only-severities: critical,high
           exit-code: false
+          # Use GitHub token for Scout authentication
+          # Note: Free tier has limited features; upgrade for full Scout suite
+          # Set secrets DOCKERHUB_USERNAME and DOCKERHUB_TOKEN for full access
 
       - name: Skip Docker checks (Dockerfile missing)
         if: ${{ steps.dockerfile-check.outputs.present != 'true' }}
