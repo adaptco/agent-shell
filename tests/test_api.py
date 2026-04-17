@@ -18,6 +18,8 @@ def test_health_endpoint():
     client = _client()
     response = client.get("/health")
     assert response.status_code == 200
+    assert response.headers["x-request-id"]
+    assert response.headers["x-response-time-ms"]
     body = response.json()
     assert body["ok"] is True
     assert response.headers["x-agent-service"] == "agent-shell-service-runtime"
@@ -89,6 +91,15 @@ def test_service_boundary_trusted_proxy_auth():
     assert authorized.status_code == 200
     assert authorized.json()["operator"]["subject"] == "operator-1"
     assert authorized.json()["operator"]["auth_mode"] == "trusted_proxy_oidc"
+
+
+def test_auth_mode_oidc_jwt_fails_closed_when_unconfigured():
+    cfg = load_config()
+    cfg["auth"]["service_boundary"]["enabled"] = True
+    cfg["auth"]["service_boundary"]["mode"] = "oidc_jwt"
+    client = TestClient(create_app(cfg))
+    response = client.get("/health", headers={"Authorization": "Bearer fake-token"})
+    assert response.status_code == 500
 
 
 def test_http_exception_includes_correlation_id():
