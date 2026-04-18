@@ -40,6 +40,13 @@ COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
 # Copy application code
 COPY --chown=appuser:appuser runtime ./runtime
 COPY --chown=appuser:appuser infra ./infra
+COPY --chown=appuser:appuser schemas ./schemas
+COPY --chown=appuser:appuser tools ./tools
+COPY --chown=appuser:appuser hooks ./hooks
+COPY --chown=appuser:appuser subagents ./subagents
+COPY --chown=appuser:appuser skill ./skill
+COPY --chown=appuser:appuser configs ./configs
+COPY --chown=appuser:appuser agent.md .
 COPY --chown=appuser:appuser pyproject.toml .
 
 # Set environment variables (production-optimized)
