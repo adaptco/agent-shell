@@ -96,6 +96,16 @@ jobs:
       - name: Run container health check
         run: |
           docker run -d --name test-container -p 8000:8000 agent-shell:test
-          sleep 5
-          curl -f http://localhost:8000/health || exit 1
+          for i in {1..12}; do
+            if curl -sf http://localhost:8000/healthz; then
+              echo "✅ Container healthy"
+              docker stop test-container
+              exit 0
+            fi
+            echo "Waiting for container... ($i/12)"
+            sleep 5
+          done
+          echo "❌ Container health check failed"
+          docker logs test-container
           docker stop test-container
+          exit 1
