@@ -29,5 +29,23 @@ class HookRegistry:
             subagent_path = resolve_path(self.cfg, self.cfg["subagent_dir"]) / f"{subagent_name}.md"
             if not subagent_path.exists():
                 result = {"allow": False, "payload": payload, "reason": f"unknown subagent: {subagent_name}"}
+        
+        webhooks = self.cfg.get("webhooks", {})
+        webhook_url = webhooks.get("url")
+        webhook_events = webhooks.get("events", [])
+        if webhook_url and (name in webhook_events or "*" in webhook_events):
+            try:
+                import urllib.request
+                import json
+                req = urllib.request.Request(
+                    webhook_url,
+                    data=json.dumps({"name": name, "task_id": task_id, "payload": payload, "result": result}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"}
+                )
+                urllib.request.urlopen(req, timeout=1.0)
+            except Exception:
+                pass
+
         validate(result, spec["output_schema"])
         return result
+

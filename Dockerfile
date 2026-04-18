@@ -50,11 +50,11 @@ COPY --chown=appuser:appuser agent.md .
 COPY --chown=appuser:appuser pyproject.toml .
 
 # Set environment variables (production-optimized)
-ENV PATH=/home/appuser/.local/bin:$PATH
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONPATH=/app
-ENV PYTHONOPTIMIZE=2
+ENV PATH=/home/appuser/.local/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app:$PYTHONPATH \
+    PYTHONOPTIMIZE=2
 
 # Switch to non-root user
 USER appuser
