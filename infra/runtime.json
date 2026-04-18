@@ -77,6 +77,37 @@
   "hooks": {
     "registry_dir": "hooks"
   },
+  "plugins": {
+    "tools": [
+      {
+        "type": "builtin",
+        "module": "runtime.tools",
+        "enabled": true
+      },
+      {
+        "type": "mcp",
+        "module": "runtime.mcp_adapter",
+        "enabled": false
+      },
+      {
+        "type": "desktop",
+        "module": "runtime.computer_use_tool",
+        "enabled": false
+      }
+    ],
+    "hooks": [
+      {
+        "type": "builtin",
+        "module": "runtime.hook_plugins",
+        "enabled": true
+      },
+      {
+        "type": "safety",
+        "module": "runtime.safety_hooks",
+        "enabled": false
+      }
+    ]
+  },
   "middleware": {
     "enabled": [
       "correlation",
