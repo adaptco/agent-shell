@@ -52,19 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate SBOM
-        uses: docker/scout-action@v1
-        with:
-          command: sbom
-          image: ghcr.io/${{ github.repository }}:${{ needs.build.outputs.image-tag }}
-          only-packages: all
-          output: sbom.spdx.json
 
-      - name: Upload SBOM
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom
-          path: sbom.spdx.json
 
       - name: Deploy to staging
         run: echo "Deploying ghcr.io/${{ github.repository }}:${{ needs.build.outputs.image-tag }} to staging"
