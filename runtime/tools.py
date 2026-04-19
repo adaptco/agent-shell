@@ -46,7 +46,11 @@ class BuiltinToolPlugin(ToolPlugin):
     def _file_read(self, tool_input: dict) -> dict:
         path = self._safe_workspace_path(tool_input["path"])
         max_bytes = int(tool_input.get("max_bytes", 65536))
-        content = path.read_text(encoding="utf-8")[:max_bytes]
+        try:
+            content = path.read_text(encoding="utf-8")[:max_bytes]
+        except FileNotFoundError:
+            # Raise a clear error for callers to handle; keep type as ValueError to be consistent with other validation
+            raise ValueError(f"file not found: {path}")
         return {"path": str(path.relative_to(Path(self.config["_workspace"]))), "content": content, "bytes_read": len(content.encode('utf-8'))}
 
     def _bash(self, tool_input: dict) -> dict:

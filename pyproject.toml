@@ -24,3 +24,5 @@ packages = ["runtime"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+addopts = "--cov=app/orchestration --cov-report=term-missing"
+testpaths = ["tests"]
