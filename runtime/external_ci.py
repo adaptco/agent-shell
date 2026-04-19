@@ -53,7 +53,7 @@ def _run_git(args: list[str], cwd: Path) -> str:
 def _resolve_repo(explicit_repo: str | None, workspace: Path) -> str:
     if explicit_repo:
         return explicit_repo
-    if os.environ.get("GITHUB_REPOSITORY"):
+    if get_env("GITHUB_REPOSITORY", required=False):
         return os.environ["GITHUB_REPOSITORY"]
     origin = _run_git(["git", "config", "--get", "remote.origin.url"], workspace)
     repo = _parse_repo_from_origin_url(origin)
@@ -67,7 +67,7 @@ def _resolve_repo(explicit_repo: str | None, workspace: Path) -> str:
 def _resolve_sha(explicit_sha: str | None, workspace: Path) -> str:
     if explicit_sha:
         return explicit_sha
-    if os.environ.get("GITHUB_SHA"):
+    if get_env("GITHUB_SHA", required=False):
         return os.environ["GITHUB_SHA"]
     return _run_git(["git", "rev-parse", "HEAD"], workspace)
 
@@ -101,10 +101,10 @@ def _github_api_request(
 
 
 def _load_private_key() -> str:
-    inline_key = os.environ.get("GITHUB_APP_PRIVATE_KEY")
+    inline_key = get_env("GITHUB_APP_PRIVATE_KEY", required=False)
     if inline_key:
         return inline_key.replace("\\n", "\n")
-    key_path = os.environ.get("GITHUB_APP_PRIVATE_KEY_PATH")
+    key_path = get_env("GITHUB_APP_PRIVATE_KEY_PATH", required=False)
     if key_path:
         return Path(key_path).read_text(encoding="utf-8")
     raise ExternalCIError(
@@ -126,7 +126,7 @@ def _build_app_jwt(app_id: str, private_key_pem: str) -> str:
 
 
 def _resolve_installation_id(api_url: str, app_jwt: str, repo_slug: str) -> int:
-    env_installation_id = os.environ.get("GITHUB_APP_INSTALLATION_ID")
+    env_installation_id = get_env("GITHUB_APP_INSTALLATION_ID", required=False)
     if env_installation_id:
         return int(env_installation_id)
     installation = _github_api_request(
@@ -143,7 +143,7 @@ def _resolve_installation_id(api_url: str, app_jwt: str, repo_slug: str) -> int:
 
 
 def _get_github_token(api_url: str, repo_slug: str) -> tuple[str, str]:
-    app_id = os.environ.get("GITHUB_APP_ID")
+    app_id = get_env("GITHUB_APP_ID", required=False)
     if app_id:
         private_key = _load_private_key()
         app_jwt = _build_app_jwt(app_id, private_key)
@@ -157,7 +157,7 @@ def _get_github_token(api_url: str, repo_slug: str) -> tuple[str, str]:
         if not access_token:
             raise ExternalCIError("Failed to mint GitHub App installation token.")
         return access_token, "github_app"
-    fallback = os.environ.get("GITHUB_TOKEN")
+    fallback = get_env("GITHUB_TOKEN", required=False)
     if fallback:
         return fallback, "github_token"
     raise ExternalCIError(
