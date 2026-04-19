@@ -18,5 +18,3 @@ state/
 .env
 .DS_Store
 
-#GitHub PAT
-GITHUB_TOKEN=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
