@@ -1,19 +1,46 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: FastAPI",
+            "name": "Python: Agent Shell (Module)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "runtime",
+            "console": "integratedTerminal",
+            "args": ["doctor"],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: API Server (Uvicorn)",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "main:app",
+                "runtime.api:create_app",
+                "--factory",
+                "--host", "127.0.0.1",
+                "--port", "8000",
                 "--reload"
             ],
-            "jinja": true
+            "jinja": true,
+            "justMyCode": true
+        },
+        {
+            "name": "Python: API Server (CLI)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "runtime.server",
+            "console": "integratedTerminal",
+            "args": ["--port", "8000"],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

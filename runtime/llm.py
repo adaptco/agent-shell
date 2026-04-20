@@ -1,6 +1,5 @@
 from __future__ import annotations
 import json
-import os
 import urllib.request
 from runtime.utils import sha256_hex, get_env
 

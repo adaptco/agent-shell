@@ -1,5 +1,5 @@
 # Stage 1: Build dependencies
-FROM python:3.11-slim AS builder
+FROM python:3.13-slim AS builder
 
 WORKDIR /build
 
@@ -18,7 +18,7 @@ RUN pip install --user --no-cache-dir --no-warn-script-location \
     pip install --user --no-cache-dir --no-warn-script-location .
 
 # Stage 2: Runtime
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
@@ -61,7 +61,7 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/healthzz || exit 1
+    CMD curl -f http://localhost:8000/healthz || exit 1
 
 # Expose port
 EXPOSE 8000

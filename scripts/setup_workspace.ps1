@@ -34,7 +34,7 @@ $activate = Join-Path $venvPath "Scripts\Activate.ps1"
 . $activate
 
 python -m pip install --upgrade pip
-python -m pip install -e .
+python -m pip install -e .[test]
 
 Write-Host "Workspace is ready."
 Write-Host "Run: . .venv\Scripts\Activate.ps1"
