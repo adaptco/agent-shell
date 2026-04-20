@@ -24,5 +24,9 @@ def test_provider_backend_rejects_missing_server_side_keys(monkeypatch: pytest.M
     cfg = load_config()
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-    assert OpenAIResponsesBackend(cfg).api_key is None
-    assert MistralChatBackend(cfg).api_key is None
+    
+    with pytest.raises(RuntimeError, match="Missing required environment variable: OPENAI_API_KEY"):
+        OpenAIResponsesBackend(cfg)
+        
+    with pytest.raises(RuntimeError, match="Missing required environment variable: MISTRAL_API_KEY"):
+        MistralChatBackend(cfg)
