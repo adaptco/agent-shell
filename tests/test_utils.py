@@ -1,4 +1,3 @@
-import os
 import pytest
 from runtime.utils import get_env
 
