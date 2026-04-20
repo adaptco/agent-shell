@@ -1,5 +1,7 @@
+from __future__ import annotations
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -33,9 +35,6 @@ def append_jsonl(path: Path, value: Any) -> None:
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(value, ensure_ascii=False) + "\n")
 
-
-# Environment helper: centralize env var access and consistent error messaging
-import os
 
 def get_env(name: str, required: bool = True, message: str | None = None) -> str | None:
     """Return the environment variable value or raise RuntimeError when required and missing."""

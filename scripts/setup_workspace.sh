@@ -34,7 +34,7 @@ fi
 # shellcheck disable=SC1091
 source "$VENV_DIR/bin/activate"
 python -m pip install --upgrade pip
-python -m pip install -e .
+python -m pip install -e .[test]
 
 echo "Workspace is ready."
 echo "Run: source .venv/bin/activate && agent-shell doctor"
