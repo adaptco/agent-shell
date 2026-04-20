@@ -16,6 +16,8 @@ from urllib.request import Request, urlopen
 
 import jwt
 
+from runtime.utils import get_env
+
 
 class ExternalCIError(RuntimeError):
     pass
