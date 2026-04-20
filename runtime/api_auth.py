@@ -1,5 +1,5 @@
 from __future__ import annotations
-from runtime.utils import get_env
+import os
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -37,7 +37,7 @@ class ServiceBoundaryAuth:
         return OperatorIdentity(subject=user, email=email, groups=groups, scopes=[], auth_mode="trusted_proxy_oidc")
 
     def _from_static_bearer(self, credentials: HTTPAuthorizationCredentials | None) -> OperatorIdentity:
-        token = get_env(self.service_cfg.get("static_bearer_env_var", "AGENT_SERVICE_BEARER_TOKEN"), required=False)
+        token = os.environ.get(self.service_cfg.get("static_bearer_env_var", "AGENT_SERVICE_BEARER_TOKEN"))
         if not token:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Static bearer token is not configured")
         if credentials is None or credentials.credentials != token:

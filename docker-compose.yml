@@ -1,40 +1,18 @@
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: agent-shell-db
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-agent_shell}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
   agent-shell-api:
-    image: ghcr.io/${REGISTRY_OWNER}/${REGISTRY_REPO}:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: agent-shell-api
-    restart: unless-stopped
     ports:
-      - "${API_PORT:-8000}:8000"
+      - "8000:8000"
     environment:
       PYTHONUNBUFFERED: 1
       PYTHONDONTWRITEBYTECODE: 1
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-agent_shell}
-    depends_on:
-      db:
-        condition: service_healthy
     volumes:
-      # Development: bind mount for hot reload
-      - ./runtime:/app/runtime
-      - ./scripts:/app/scripts
+      # Production: read-only mounts for source consistency
+      - ./runtime:/app/runtime:ro
+      - ./scripts:/app/scripts:ro
       - ./.runtime-store:/app/.runtime-store
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
@@ -42,16 +20,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
-    networks:
-      - agent-network
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 2G
-        reservations:
-          cpus: '1'
-          memory: 1G
+    restart: unless-stopped
 
   # Development service with live reload
   agent-shell-api-dev:
@@ -64,16 +33,11 @@ services:
     environment:
       PYTHONUNBUFFERED: 1
       PYTHONDONTWRITEBYTECODE: 1
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-agent_shell}
-      LOG_LEVEL: ${LOG_LEVEL:-debug}
-    depends_on:
-      db:
-        condition: service_healthy
     volumes:
       - ./:/app
     command: agent-shell-api --host 0.0.0.0 --port 8000 --reload
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -81,14 +45,3 @@ services:
     profiles:
       - dev
     restart: unless-stopped
-
-volumes:
-  postgres_data:
-  agent-store:
-    driver: local
-  agent-configs:
-    driver: local
-
-networks:
-  agent-network:
-    driver: bridge

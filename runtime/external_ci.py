@@ -16,8 +16,6 @@ from urllib.request import Request, urlopen
 
 import jwt
 
-from runtime.utils import get_env
-
 
 class ExternalCIError(RuntimeError):
     pass
@@ -55,8 +53,8 @@ def _run_git(args: list[str], cwd: Path) -> str:
 def _resolve_repo(explicit_repo: str | None, workspace: Path) -> str:
     if explicit_repo:
         return explicit_repo
-    if get_env("GITHUB_REPOSITORY", required=False):
-        return os.environ["GITHUB_REPOSITORY"]
+    if repo := get_env("GITHUB_REPOSITORY", required=False):
+        return repo
     origin = _run_git(["git", "config", "--get", "remote.origin.url"], workspace)
     repo = _parse_repo_from_origin_url(origin)
     if repo:
@@ -69,8 +67,8 @@ def _resolve_repo(explicit_repo: str | None, workspace: Path) -> str:
 def _resolve_sha(explicit_sha: str | None, workspace: Path) -> str:
     if explicit_sha:
         return explicit_sha
-    if get_env("GITHUB_SHA", required=False):
-        return os.environ["GITHUB_SHA"]
+    if sha := get_env("GITHUB_SHA", required=False):
+        return sha
     return _run_git(["git", "rev-parse", "HEAD"], workspace)
 
 
