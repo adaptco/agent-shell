@@ -1,5 +1,4 @@
 from __future__ import annotations
-from pathlib import Path
 from uuid import uuid4
 from runtime.config import DEFAULT_HANDOFF_DIR, resolve_path
 from runtime.utils import write_json

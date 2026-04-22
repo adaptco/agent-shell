@@ -1,9 +1,0 @@
-{"event_type": "tool_result", "tool_name": "bash", "summary": "Use bash to list the workspace.", "created_at": "2026-04-20T18:27:39.097222+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-20T18:27:39.137856+00:00"}
-{"event_type": "tool_result", "tool_name": "web_search", "summary": "Use web search first.", "created_at": "2026-04-20T18:27:39.973456+00:00"}
-{"event_type": "compaction_marker", "summary": "Archived 9 entries", "created_at": "2026-04-20T18:27:39.998885+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-20T18:27:40.068406+00:00"}
-{"event_type": "tool_result", "tool_name": "file_read", "summary": "Sub-agent will read the root agent file.", "created_at": "2026-04-20T18:27:40.895284+00:00"}
-{"event_type": "final", "summary": "Sub-agent completed after one tool step.", "created_at": "2026-04-20T18:27:40.927609+00:00"}
-{"event_type": "delegate_result", "summary": "This task is bounded and can be delegated.", "created_at": "2026-04-20T18:27:40.957444+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-20T18:27:41.019485+00:00"}

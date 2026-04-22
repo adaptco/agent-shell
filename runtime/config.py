@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Any, Dict
-from runtime.utils import read_json
+from runtime.utils import read_json, write_json
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_HANDOFF_DIR = ".runtime-store/objects/queue/handoffs"

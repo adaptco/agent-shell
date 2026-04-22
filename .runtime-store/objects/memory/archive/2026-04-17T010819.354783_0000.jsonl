@@ -1,9 +1,0 @@
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-17T01:08:13.878543+00:00"}
-{"event_type": "tool_result", "tool_name": "file_read", "summary": "Read agent.md before answering.", "created_at": "2026-04-17T01:08:16.197681+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-17T01:08:16.227969+00:00"}
-{"event_type": "compaction_marker", "summary": "Archived 9 entries", "created_at": "2026-04-17T01:08:16.246623+00:00"}
-{"event_type": "tool_result", "tool_name": "bash", "summary": "Use bash to list the workspace.", "created_at": "2026-04-17T01:08:17.284869+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-17T01:08:17.302651+00:00"}
-{"event_type": "tool_result", "tool_name": "web_search", "summary": "Use web search first.", "created_at": "2026-04-17T01:08:18.279326+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-17T01:08:18.308585+00:00"}
-{"event_type": "tool_result", "tool_name": "file_read", "summary": "Sub-agent will read the root agent file.", "created_at": "2026-04-17T01:08:19.337813+00:00"}
