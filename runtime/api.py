@@ -66,6 +66,11 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         request.state.auth_context = operator.__dict__
         return operator
 
+    @app.get("/healthz")
+    async def healthz():
+        """Unauthenticated liveness probe for Docker HEALTHCHECK and CI."""
+        return {"status": "ok"}
+
     @app.get("/health")
     async def health(
         operator: OperatorIdentity = Depends(auth_operator),
@@ -109,6 +114,44 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         if result is None:
             raise HTTPException(status_code=404, detail="Task not found")
         return {"task": result, "operator": operator.__dict__}
+
+    @app.get("/tasks/{task_id}/stream")
+    async def stream_task(task_id: str, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+        task_info = service.get_task(task_id)
+        if task_info is None:
+            raise HTTPException(status_code=404, detail="Task not found")
+
+        async def event_generator():
+            import asyncio
+            import json
+            from runtime.utils import read_json
+            
+            seen_receipts = set()
+            while True:
+                current_task = service.get_task(task_id)
+                
+                if service.receipts and service.receipts.root.exists():
+                    for r_path in sorted(service.receipts.root.rglob(f"*{task_id}*.json")):
+                        path_str = str(r_path)
+                        if path_str not in seen_receipts:
+                            try:
+                                r_data = read_json(r_path)
+                                yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
+                                seen_receipts.add(path_str)
+                            except Exception:
+                                pass
+                
+                if current_task:
+                    status = current_task.get("status")
+                    if status in ("done", "failed"):
+                        yield f"event: final\ndata: {json.dumps(current_task)}\n\n"
+                        break
+                        
+                await asyncio.sleep(2)
+
+        from fastapi.responses import StreamingResponse
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
+
 
     @app.post("/run")
     async def run_task(
