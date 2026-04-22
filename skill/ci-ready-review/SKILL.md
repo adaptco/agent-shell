@@ -5,6 +5,9 @@ description: Standardized code review and CI validation process. Use this skill 
 
 # CI Ready Review
 
+## Recent Fixes
+- 2026-04-22: Resolved PR #24: imported get_env, removed duplicate definition, added missing import in runtime/external_ci.py, improved file-read error handling.
+
 This skill provides a structured workflow for performing code reviews and ensuring that Pull Requests (PRs) pass all project-specific CI checks before being considered ready for merge.
 
 ## Prerequisites
