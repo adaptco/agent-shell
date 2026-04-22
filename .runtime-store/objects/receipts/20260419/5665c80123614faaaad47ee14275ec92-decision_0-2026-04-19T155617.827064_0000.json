@@ -1,0 +1,68 @@
+{
+  "receipt_id": "5665c80123614faaaad47ee14275ec92-decision_0-2026-04-19T155617.827064_0000",
+  "task_id": "5665c80123614faaaad47ee14275ec92",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-19T15:56:17.827064+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "22695ce40d8786f3140fc81f167b566a9f50f7aeb05c224fa574090873169cec",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "tool_call",
+    "reasoning_summary": "Sub-agent will read the root agent file.",
+    "tool_name": "file_read",
+    "tool_input": {
+      "path": "agent.md",
+      "max_bytes": 1200
+    }
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-19T15:56:12.442268+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T15:56:12.461373+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-19T15:56:14.661988+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T15:56:14.694050+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "bash",
+      "summary": "Use bash to list the workspace.",
+      "created_at": "2026-04-19T15:56:15.718944+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T15:56:15.765648+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "web_search",
+      "summary": "Use web search first.",
+      "created_at": "2026-04-19T15:56:16.798487+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T15:56:16.833341+00:00"
+    }
+  ]
+}

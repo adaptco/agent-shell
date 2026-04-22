@@ -1,0 +1,64 @@
+{
+  "receipt_id": "f3d05e8d4ed04b73b9914c8f48ed0451-final-2026-04-20T182739.153744_0000",
+  "task_id": "f3d05e8d4ed04b73b9914c8f48ed0451",
+  "step": "final",
+  "status": "ok",
+  "created_at": "2026-04-20T18:27:39.153744+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "4123af55092b27a61fc385e3466af8684c7687ca9ebc492682968b10f9d817ea",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "status": "done",
+    "final_response": "Completed task 'List the workspace directory' with 1 history events.",
+    "summary": "Enough context has been gathered.",
+    "history_length": 1
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T15:56:18.010818+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-20T18:27:36.006798+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-20T18:27:36.045101+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-20T18:27:36.076436+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-20T18:27:38.172934+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-20T18:27:38.208959+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "bash",
+      "summary": "Use bash to list the workspace.",
+      "created_at": "2026-04-20T18:27:39.097222+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-20T18:27:39.137856+00:00"
+    }
+  ]
+}
