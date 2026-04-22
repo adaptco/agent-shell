@@ -1,0 +1,19 @@
+{
+  "receipt_id": "5a051a67fa474324b1928677df2bce29-final-2026-04-11T235227.981940_0000",
+  "task_id": "5a051a67fa474324b1928677df2bce29",
+  "step": "final",
+  "status": "ok",
+  "created_at": "2026-04-11T23:52:27.981940+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "9612e35ff04f6fb59328390510f3c7a8d1d0eb3d8a5f4e8fead7fec6337fd2ea",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "status": "done",
+    "final_response": "Completed task 'Search the web for runtime architecture' with 1 history events.",
+    "summary": "Enough context has been gathered.",
+    "history_length": 1
+  },
+  "error": null
+}
