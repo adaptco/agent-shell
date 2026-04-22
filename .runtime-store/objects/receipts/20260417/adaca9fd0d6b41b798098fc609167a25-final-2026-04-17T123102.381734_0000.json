@@ -1,0 +1,19 @@
+{
+  "receipt_id": "adaca9fd0d6b41b798098fc609167a25-final-2026-04-17T123102.381734_0000",
+  "task_id": "adaca9fd0d6b41b798098fc609167a25",
+  "step": "final",
+  "status": "ok",
+  "created_at": "2026-04-17T12:31:02.381734+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "4123af55092b27a61fc385e3466af8684c7687ca9ebc492682968b10f9d817ea",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "status": "done",
+    "final_response": "Completed task 'List the workspace directory' with 1 history events.",
+    "summary": "Enough context has been gathered.",
+    "history_length": 1
+  },
+  "error": null
+}

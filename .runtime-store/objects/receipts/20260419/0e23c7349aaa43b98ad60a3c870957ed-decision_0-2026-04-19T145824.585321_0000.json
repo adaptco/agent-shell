@@ -1,0 +1,55 @@
+{
+  "receipt_id": "0e23c7349aaa43b98ad60a3c870957ed-decision_0-2026-04-19T145824.585321_0000",
+  "task_id": "0e23c7349aaa43b98ad60a3c870957ed",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-19T14:58:24.585321+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "e9d82ffa57c4fecb2fbe288a1a1fdd491e61c00e8968591192d39e7230a734c9",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "tool_call",
+    "reasoning_summary": "Read agent.md before answering.",
+    "tool_name": "file_read",
+    "tool_input": {
+      "path": "agent.md",
+      "max_bytes": 2000
+    }
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T14:50:11.870316+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Sub-agent will read the root agent file.",
+      "created_at": "2026-04-19T14:50:12.705759+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Sub-agent completed after one tool step.",
+      "created_at": "2026-04-19T14:50:12.740826+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-19T14:50:12.765937+00:00"
+    },
+    {
+      "event_type": "delegate_result",
+      "summary": "This task is bounded and can be delegated.",
+      "created_at": "2026-04-19T14:50:12.827387+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T14:50:12.918242+00:00"
+    }
+  ]
+}

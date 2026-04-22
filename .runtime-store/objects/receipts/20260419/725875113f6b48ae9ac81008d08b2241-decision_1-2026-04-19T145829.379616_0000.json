@@ -1,0 +1,64 @@
+{
+  "receipt_id": "725875113f6b48ae9ac81008d08b2241-decision_1-2026-04-19T145829.379616_0000",
+  "task_id": "725875113f6b48ae9ac81008d08b2241",
+  "step": "decision_1",
+  "status": "ok",
+  "created_at": "2026-04-19T14:58:29.379616+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "1ce135476c826f2003e52c9e0f5afd332d12126737696373b3d688fa0b646e80",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "decision_type": "final",
+    "reasoning_summary": "Enough context has been gathered.",
+    "final_response": "Completed task 'Search the web for runtime architecture' with 1 history events."
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-19T14:58:24.597756+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T14:58:24.625527+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-19T14:58:27.231404+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-19T14:58:27.249372+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T14:58:27.313678+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "bash",
+      "summary": "Use bash to list the workspace.",
+      "created_at": "2026-04-19T14:58:28.339337+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T14:58:28.366827+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "web_search",
+      "summary": "Use web search first.",
+      "created_at": "2026-04-19T14:58:29.341596+00:00"
+    }
+  ]
+}
