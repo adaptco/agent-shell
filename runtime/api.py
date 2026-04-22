@@ -2,11 +2,13 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from runtime.api_auth import OperatorIdentity, get_auth_dependency
 from runtime.config import load_config
+from runtime.middleware import install_http_middleware
 from runtime.service import AgentService
 
 
@@ -23,6 +25,14 @@ class RunRequest(BaseModel):
 
 class HeartbeatRequest(BaseModel):
     worker_id: str | None = None
+
+
+def _error_content(request: Request, detail: object, error: str) -> dict[str, object]:
+    return {
+        "error": error,
+        "detail": detail,
+        "correlation_id": getattr(request.state, "correlation_id", None),
+    }
 
 
 def create_app(cfg: dict | None = None) -> FastAPI:
@@ -43,11 +53,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     app.state.cfg = cfg
     app.state.service = AgentService(cfg)
 
-    @app.middleware("http")
-    async def request_middleware(request: Request, call_next):
-        response = await call_next(request)
-        response.headers["X-Agent-Service"] = cfg.get("name", "agent-shell-service-runtime")
-        return response
+    install_http_middleware(app, cfg)
 
     def svc(request: Request) -> AgentService:
         return request.app.state.service
@@ -92,8 +98,26 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         result = service.heartbeat(worker_id=body.worker_id)
         return {"runtime_state": result, "operator": operator.__dict__}
 
+    @app.exception_handler(HTTPException)
+    async def handled_http_exception(request: Request, exc: HTTPException):
+        return JSONResponse(
+            status_code=exc.status_code,
+            headers=exc.headers,
+            content=_error_content(request, exc.detail, "HTTPException"),
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def handled_validation_exception(request: Request, exc: RequestValidationError):
+        return JSONResponse(
+            status_code=422,
+            content=_error_content(request, exc.errors(), "RequestValidationError"),
+        )
+
     @app.exception_handler(Exception)
     async def unhandled_exception_handler(request: Request, exc: Exception):
-        return JSONResponse(status_code=500, content={"error": type(exc).__name__, "detail": str(exc)})
+        return JSONResponse(
+            status_code=500,
+            content=_error_content(request, "Internal server error", type(exc).__name__),
+        )
 
     return app
