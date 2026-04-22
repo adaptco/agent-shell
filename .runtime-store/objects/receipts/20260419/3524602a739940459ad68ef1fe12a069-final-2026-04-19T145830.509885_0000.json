@@ -1,0 +1,63 @@
+{
+  "receipt_id": "3524602a739940459ad68ef1fe12a069-final-2026-04-19T145830.509885_0000",
+  "task_id": "3524602a739940459ad68ef1fe12a069",
+  "step": "final",
+  "status": "ok",
+  "created_at": "2026-04-19T14:58:30.509885+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "ba234f9f5ffd5842d629d73b3294ed6436a5e5873430a10390aed378fc56cd2b",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "status": "done",
+    "final_response": "Completed task 'Delegate this bounded file task to a subagent' with 1 history events.",
+    "summary": "Enough context has been gathered.",
+    "history_length": 1
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T14:58:28.366827+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "web_search",
+      "summary": "Use web search first.",
+      "created_at": "2026-04-19T14:58:29.341596+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T14:58:29.381591+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-19T14:58:29.407546+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Sub-agent will read the root agent file.",
+      "created_at": "2026-04-19T14:58:30.356470+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Sub-agent completed after one tool step.",
+      "created_at": "2026-04-19T14:58:30.387207+00:00"
+    },
+    {
+      "event_type": "delegate_result",
+      "summary": "This task is bounded and can be delegated.",
+      "created_at": "2026-04-19T14:58:30.426675+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T14:58:30.493102+00:00"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "receipt_id": "b4b34ce75c6746eea6f855c56ff43f46-memory_compact-2026-04-19T144331.022897_0000",
+  "task_id": "b4b34ce75c6746eea6f855c56ff43f46",
+  "step": "memory_compact",
+  "status": "ok",
+  "created_at": "2026-04-19T14:43:31.022897+00:00",
+  "inputs_sha256": "75147a8569e4837a27fc8fd8678e692dfa35f5d2c9b3ab5b57c2deb371a5456c",
+  "outputs_sha256": "004e02a6df061f9baf68d5e1f6f17d0eb154bcd309ac01c821c783caf56a458d",
+  "inputs": {
+    "entry_count": 9
+  },
+  "outputs": {
+    "compacted": true,
+    "archive_path": "C:\\Users\\eqhsp\\Agent Projects\\agent-shell\\.runtime-store\\objects\\memory\\archive\\2026-04-19T144330.994781_0000.jsonl",
+    "retained": 3
+  },
+  "error": null,
+  "memory_snapshot": null
+}
