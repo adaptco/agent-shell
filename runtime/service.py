@@ -1,5 +1,5 @@
 from runtime.agent_loop import AgentLoop
-from runtime.config import load_config, resolve_path
+from runtime.config import ensure_runtime_storage, load_config, resolve_path
 from runtime.hooks import HookRegistry
 from runtime.llm import get_backend
 from runtime.logger import get_logger
@@ -15,6 +15,7 @@ from runtime.utils import read_json, write_json, utc_now
 class AgentService:
     def __init__(self, cfg=None):
         self.cfg = cfg or load_config()
+        ensure_runtime_storage(self.cfg)
         self.logger = get_logger(self.cfg)
         self.middleware = MiddlewareStack(self.logger)
         self.decision_schema = read_json(resolve_path(self.cfg, "schemas/decision.schema.json"))
