@@ -1,0 +1,51 @@
+{
+  "receipt_id": "efeac4c9c87842ad823efc98e33ebc18-decision_0-2026-04-20T182740.893489_0000",
+  "task_id": "efeac4c9c87842ad823efc98e33ebc18",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-20T18:27:40.893489+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "22695ce40d8786f3140fc81f167b566a9f50f7aeb05c224fa574090873169cec",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "tool_call",
+    "reasoning_summary": "Sub-agent will read the root agent file.",
+    "tool_name": "file_read",
+    "tool_input": {
+      "path": "agent.md",
+      "max_bytes": 1200
+    }
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "tool_result",
+      "tool_name": "bash",
+      "summary": "Use bash to list the workspace.",
+      "created_at": "2026-04-20T18:27:39.097222+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-20T18:27:39.137856+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "web_search",
+      "summary": "Use web search first.",
+      "created_at": "2026-04-20T18:27:39.973456+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-20T18:27:39.998885+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-20T18:27:40.068406+00:00"
+    }
+  ]
+}

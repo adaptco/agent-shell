@@ -3,6 +3,7 @@ from typing import Any, Dict
 from runtime.utils import read_json
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_HANDOFF_DIR = ".runtime-store/objects/queue/handoffs"
 
 
 def load_config(root: Path | None = None) -> Dict[str, Any]:

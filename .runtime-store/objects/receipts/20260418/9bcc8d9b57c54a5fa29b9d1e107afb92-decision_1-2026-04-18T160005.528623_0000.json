@@ -1,0 +1,53 @@
+{
+  "receipt_id": "9bcc8d9b57c54a5fa29b9d1e107afb92-decision_1-2026-04-18T160005.528623_0000",
+  "task_id": "9bcc8d9b57c54a5fa29b9d1e107afb92",
+  "step": "decision_1",
+  "status": "ok",
+  "created_at": "2026-04-18T16:00:05.528623+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "61d0ff84beef5180cd7e6089d558cc22eba254c033f9302cae866d97a94d7f86",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "decision_type": "final",
+    "reasoning_summary": "Enough context has been gathered.",
+    "final_response": "Completed task 'List the workspace directory' with 1 history events."
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-18T16:00:01.428286+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-18T16:00:01.447126+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-18T16:00:04.198890+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-18T16:00:04.219826+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-18T16:00:04.283301+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "bash",
+      "summary": "Use bash to list the workspace.",
+      "created_at": "2026-04-18T16:00:05.502619+00:00"
+    }
+  ]
+}
