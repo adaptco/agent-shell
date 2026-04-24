@@ -66,11 +66,6 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         request.state.auth_context = operator.__dict__
         return operator
 
-    @app.get("/healthz")
-    async def healthz():
-        """Unauthenticated liveness probe for Docker HEALTHCHECK and CI."""
-        return {"status": "ok"}
-
     @app.get("/health")
     async def health(
         operator: OperatorIdentity = Depends(auth_operator),
@@ -131,15 +126,21 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                 current_task = service.get_task(task_id)
                 
                 if service.receipts and service.receipts.root.exists():
-                    for r_path in sorted(service.receipts.root.rglob(f"*{task_id}*.json")):
-                        path_str = str(r_path)
-                        if path_str not in seen_receipts:
-                            try:
-                                r_data = read_json(r_path)
-                                yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
-                                seen_receipts.add(path_str)
-                            except Exception:
-                                pass
+                    # Use to_thread to avoid blocking event loop with rglob
+                    def get_new_receipts():
+                        return [
+                            str(p) for p in service.receipts.root.rglob(f"*{task_id}*.json")
+                            if str(p) not in seen_receipts
+                        ]
+                    
+                    new_paths = await asyncio.to_thread(get_new_receipts)
+                    for path_str in sorted(new_paths):
+                        try:
+                            r_data = read_json(path_str)
+                            yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
+                            seen_receipts.add(path_str)
+                        except Exception:
+                            pass
                 
                 if current_task:
                     status = current_task.get("status")

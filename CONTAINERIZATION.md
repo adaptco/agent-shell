@@ -9,7 +9,7 @@
 ## Image Details
 
 - **Size**: 262MB (disk), 62.8MB (compressed)
-- **Base**: python:3.11-slim (security-focused)
+- **Base**: python:3.13-slim (security-focused)
 - **User**: Non-root (appuser, uid 1000)
 - **Build Strategy**: Multi-stage build (optimized for runtime)
 
@@ -19,7 +19,7 @@
 
 ✓ Multi-stage build separates build deps from runtime
 ✓ Non-root user for security
-✓ Minimal base image (python:3.11-slim)
+✓ Minimal base image (python:3.13-slim)
 ✓ Proper dependency caching (pyproject.toml copied first)
 ✓ Health checks included
 ✓ HEALTHCHECK with reasonable intervals
