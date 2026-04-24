@@ -1,6 +1,5 @@
 # Memory Summary
 
-<<<<<<< Updated upstream
 - Compacted at: 2026-04-20T18:27:41.042239+00:00
 - Entries archived: 9
 
@@ -27,4 +26,3 @@
 <<<<<<< Updated upstream
 - final: Enough context has been gathered.
 =======
->>>>>>> Stashed changes

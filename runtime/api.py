@@ -67,7 +67,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return operator
 
     @app.get("/health")
-    async def health(
+    def health(
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
@@ -76,7 +76,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.get("/tasks")
-    async def list_tasks(
+    def list_tasks(
         limit: int = 100,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -86,7 +86,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.post("/tasks")
-    async def create_task(
+    def create_task(
         body: TaskCreateRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -100,7 +100,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return JSONResponse(status_code=202, content=result)
 
     @app.get("/tasks/{task_id}")
-    async def get_task(
+    def get_task(
         task_id: str,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -155,7 +155,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
 
 
     @app.post("/run")
-    async def run_task(
+    def run_task(
         body: RunRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -165,14 +165,14 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.get("/heartbeat")
-    async def heartbeat_state(
+    def heartbeat_state(
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
         return {"runtime_state": service.get_runtime_state(), "operator": operator.__dict__}
 
     @app.post("/heartbeat")
-    async def emit_heartbeat(
+    def emit_heartbeat(
         body: HeartbeatRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
