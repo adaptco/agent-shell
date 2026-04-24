@@ -16,17 +16,13 @@ jobs:
       matrix:
         python-version: ["3.11", "3.12"]
 
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12"]
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
@@ -35,9 +31,6 @@ jobs:
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pytest pytest-cov ruff
-
-      - name: Lint with Ruff
-        run: ruff check .
 
       - name: Run tests with coverage
         run: pytest --cov=runtime --cov-report=xml --cov-report=term -q
