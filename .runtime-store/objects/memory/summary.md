@@ -8,7 +8,7 @@
 - final: Enough context has been gathered.
 - tool_result: Use web search first.
 - compaction_marker: Archived 9 entries
-=======
+
 - Compacted at: 2026-04-12T10:51:01.760104+00:00
 - Entries archived: 9
 
@@ -18,10 +18,7 @@
 - final: Enough context has been gathered.
 - compaction_marker: Archived 9 entries
 - tool_result: Use web search first.
-Stashed changes
-=======
-Stashed changes
-main
+
 - final: Enough context has been gathered.
 - tool_result: Sub-agent will read the root agent file.
 - final: Sub-agent completed after one tool step.
