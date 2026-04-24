@@ -1,0 +1,52 @@
+{
+  "receipt_id": "acd637219e674bd0bf94e5e8dfe945b9-decision_1-2026-04-22T134516.488564_0000",
+  "task_id": "acd637219e674bd0bf94e5e8dfe945b9",
+  "step": "decision_1",
+  "status": "ok",
+  "created_at": "2026-04-22T13:45:16.488564+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "ca017f9e0c95ff674d134139cec1f31eecdb5b7d343f475db92d854d70c455c5",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "decision_type": "final",
+    "reasoning_summary": "Enough context has been gathered.",
+    "final_response": "Completed task 'Delegate this bounded file task to a subagent' with 1 history events."
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "tool_result",
+      "tool_name": "web_search",
+      "summary": "Use web search first.",
+      "created_at": "2026-04-22T13:45:14.644812+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-22T13:45:14.781903+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Sub-agent will read the root agent file.",
+      "created_at": "2026-04-22T13:45:16.119347+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-22T13:45:16.219322+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Sub-agent completed after one tool step.",
+      "created_at": "2026-04-22T13:45:16.339340+00:00"
+    },
+    {
+      "event_type": "delegate_result",
+      "summary": "This task is bounded and can be delegated.",
+      "created_at": "2026-04-22T13:45:16.416530+00:00"
+    }
+  ]
+}
