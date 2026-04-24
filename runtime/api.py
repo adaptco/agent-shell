@@ -111,7 +111,11 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return {"task": result, "operator": operator.__dict__}
 
     @app.get("/tasks/{task_id}/stream")
-    async def stream_task(task_id: str, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def stream_task(
+        task_id: str,
+        operator: OperatorIdentity = Depends(service_auth),
+        service: AgentService = Depends(svc),
+    ):
         task_info = service.get_task(task_id)
         if task_info is None:
             raise HTTPException(status_code=404, detail="Task not found")
@@ -120,19 +124,20 @@ def create_app(cfg: dict | None = None) -> FastAPI:
             import asyncio
             import json
             from runtime.utils import read_json
-            
+
             seen_receipts = set()
             while True:
                 current_task = service.get_task(task_id)
-                
+
                 if service.receipts and service.receipts.root.exists():
                     # Use to_thread to avoid blocking event loop with rglob
                     def get_new_receipts():
                         return [
-                            str(p) for p in service.receipts.root.rglob(f"*{task_id}*.json")
+                            str(p)
+                            for p in service.receipts.root.rglob(f"*{task_id}*.json")
                             if str(p) not in seen_receipts
                         ]
-                    
+
                     new_paths = await asyncio.to_thread(get_new_receipts)
                     for path_str in sorted(new_paths):
                         try:
@@ -141,18 +146,18 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                             seen_receipts.add(path_str)
                         except Exception:
                             pass
-                
+
                 if current_task:
                     status = current_task.get("status")
                     if status in ("done", "failed"):
                         yield f"event: final\ndata: {json.dumps(current_task)}\n\n"
                         break
-                        
+
                 await asyncio.sleep(2)
 
         from fastapi.responses import StreamingResponse
-        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
     @app.post("/run")
     def run_task(
@@ -169,7 +174,10 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
-        return {"runtime_state": service.get_runtime_state(), "operator": operator.__dict__}
+        return {
+            "runtime_state": service.get_runtime_state(),
+            "operator": operator.__dict__,
+        }
 
     @app.post("/heartbeat")
     def emit_heartbeat(
@@ -189,7 +197,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         )
 
     @app.exception_handler(RequestValidationError)
-    async def handled_validation_exception(request: Request, exc: RequestValidationError):
+    async def handled_validation_exception(
+        request: Request, exc: RequestValidationError
+    ):
         return JSONResponse(
             status_code=422,
             content=_error_content(request, exc.errors(), "RequestValidationError"),
@@ -199,7 +209,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     async def unhandled_exception_handler(request: Request, exc: Exception):
         return JSONResponse(
             status_code=500,
-            content=_error_content(request, "Internal server error", type(exc).__name__),
+            content=_error_content(
+                request, "Internal server error", type(exc).__name__
+            ),
         )
 
     return app

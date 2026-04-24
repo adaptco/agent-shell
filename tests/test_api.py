@@ -48,7 +48,9 @@ def test_tasks_endpoint_and_lookup():
 
 def test_run_endpoint():
     client = _client()
-    response = client.post("/run", json={"task": "Read the agent file", "backend": "mock"})
+    response = client.post(
+        "/run", json={"task": "Read the agent file", "backend": "mock"}
+    )
     assert response.status_code == 200
     assert response.json()["result"]["status"] == "done"
 
@@ -86,7 +88,10 @@ def test_service_boundary_trusted_proxy_auth():
     assert unauthorized.status_code == 401
     authorized = client.get(
         "/health",
-        headers={"x-auth-request-user": "operator-1", "x-auth-request-email": "operator@example.com"},
+        headers={
+            "x-auth-request-user": "operator-1",
+            "x-auth-request-email": "operator@example.com",
+        },
     )
     assert authorized.status_code == 200
     assert authorized.json()["operator"]["subject"] == "operator-1"

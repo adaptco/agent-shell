@@ -11,11 +11,17 @@ from runtime.external_ci import (
 
 
 def test_parse_repo_from_https_origin() -> None:
-    assert _parse_repo_from_origin_url("https://github.com/adaptco/agent-shell.git") == "adaptco/agent-shell"
+    assert (
+        _parse_repo_from_origin_url("https://github.com/adaptco/agent-shell.git")
+        == "adaptco/agent-shell"
+    )
 
 
 def test_parse_repo_from_ssh_origin() -> None:
-    assert _parse_repo_from_origin_url("git@github.com:adaptco/agent-shell.git") == "adaptco/agent-shell"
+    assert (
+        _parse_repo_from_origin_url("git@github.com:adaptco/agent-shell.git")
+        == "adaptco/agent-shell"
+    )
 
 
 def test_trim_description_when_over_limit() -> None:
