@@ -51,7 +51,14 @@ class AgentLoop:
             decision = self.backend.decide(context, self.decision_schema, depth=depth)
             validate(decision, self.decision_schema)
             self.hooks.run("after_model_call", task["task_id"], {"decision": decision})
-            self.receipts.emit(task["task_id"], f"decision_{step_index}", "ok", {"history_length": len(history)}, decision)
+            self.receipts.emit(
+                task["task_id"],
+                f"decision_{step_index}",
+                "ok",
+                {"history_length": len(history)},
+                decision,
+                memory_snapshot=self._get_memory_snapshot()
+            )
             if decision["decision_type"] == "tool_call":
                 hook_result = self.hooks.run(
                     "before_tool_call",
@@ -60,7 +67,14 @@ class AgentLoop:
                 )
                 if not hook_result["allow"]:
                     error = {"status": "blocked", "reason": hook_result.get("reason", "tool blocked")}
-                    self.receipts.emit(task["task_id"], f"tool_{step_index}", "blocked", decision, error)
+                    self.receipts.emit(
+                        task["task_id"],
+                        f"tool_{step_index}",
+                        "blocked",
+                        decision,
+                        error,
+                        memory_snapshot=self._get_memory_snapshot()
+                    )
                     return error
                 tool_result = self.tools.execute(decision["tool_name"], hook_result["payload"]["tool_input"])
                 tool_result = self.hooks.run(
@@ -99,7 +113,14 @@ class AgentLoop:
                 )
                 if not hook_result["allow"]:
                     error = {"status": "blocked", "reason": hook_result.get("reason", "delegate blocked")}
-                    self.receipts.emit(task["task_id"], f"delegate_{step_index}", "blocked", decision, error)
+                    self.receipts.emit(
+                        task["task_id"],
+                        f"delegate_{step_index}",
+                        "blocked",
+                        decision,
+                        error,
+                        memory_snapshot=self._get_memory_snapshot()
+                    )
                     return error
                 delegate_result = self.subagents.delegate(task, decision, self.backend.name, depth)
                 delegate_result = self.hooks.run("after_delegate", task["task_id"], delegate_result)["payload"]
@@ -123,10 +144,27 @@ class AgentLoop:
                 "history_length": len(history),
             }
             self.memory.append({"event_type": "final", "summary": decision["reasoning_summary"], "created_at": utc_now()}, task_id=task["task_id"])
-            self.receipts.emit(task["task_id"], "final", "ok", {"history_length": len(history)}, final)
+            self.receipts.emit(
+                task["task_id"],
+                "final",
+                "ok",
+                {"history_length": len(history)},
+                final,
+                memory_snapshot=self._get_memory_snapshot()
+            )
             self._update_markdown_state(task, final)
             return final
         error = {"status": "failed", "final_response": "max steps exceeded"}
-        self.receipts.emit(task["task_id"], "max_steps", "failed", {"max_steps": max_steps}, error)
+        self.receipts.emit(
+            task["task_id"],
+            "max_steps",
+            "failed",
+            {"max_steps": max_steps},
+            error,
+            memory_snapshot=self._get_memory_snapshot()
+        )
         self._update_markdown_state(task, error)
         return error
+
+    def _get_memory_snapshot(self) -> list[dict]:
+        return self.memory.entries()
