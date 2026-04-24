@@ -1,0 +1,19 @@
+{
+  "receipt_id": "b363bab83e2e47bd951be8366a0c64c0-memory_compact-2026-04-20T182736.105367_0000",
+  "task_id": "b363bab83e2e47bd951be8366a0c64c0",
+  "step": "memory_compact",
+  "status": "ok",
+  "created_at": "2026-04-20T18:27:36.105367+00:00",
+  "inputs_sha256": "75147a8569e4837a27fc8fd8678e692dfa35f5d2c9b3ab5b57c2deb371a5456c",
+  "outputs_sha256": "6303bc5676a3f208d6d96d61499549b9781ce6a454686b078983bacd5329ead2",
+  "inputs": {
+    "entry_count": 9
+  },
+  "outputs": {
+    "compacted": true,
+    "archive_path": "C:\\Users\\eqhsp\\Agent Projects\\agent-shell.worktrees\\copilot-worktree-2026-04-18T17-09-03\\.runtime-store\\objects\\memory\\archive\\2026-04-20T182736.072598_0000.jsonl",
+    "retained": 3
+  },
+  "error": null,
+  "memory_snapshot": null
+}

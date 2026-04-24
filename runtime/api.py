@@ -66,13 +66,8 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         request.state.auth_context = operator.__dict__
         return operator
 
-    @app.get("/healthz")
-    async def healthz():
-        """Unauthenticated liveness probe for Docker HEALTHCHECK and CI."""
-        return {"status": "ok"}
-
     @app.get("/health")
-    def health(
+    async def health(
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
@@ -81,7 +76,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.get("/tasks")
-    def list_tasks(
+    async def list_tasks(
         limit: int = 100,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -91,7 +86,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.post("/tasks")
-    def create_task(
+    async def create_task(
         body: TaskCreateRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -105,7 +100,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return JSONResponse(status_code=202, content=result)
 
     @app.get("/tasks/{task_id}")
-    def get_task(
+    async def get_task(
         task_id: str,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -160,7 +155,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
 
 
     @app.post("/run")
-    def run_task(
+    async def run_task(
         body: RunRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -170,14 +165,14 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.get("/heartbeat")
-    def heartbeat_state(
+    async def heartbeat_state(
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
         return {"runtime_state": service.get_runtime_state(), "operator": operator.__dict__}
 
     @app.post("/heartbeat")
-    def emit_heartbeat(
+    async def emit_heartbeat(
         body: HeartbeatRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
