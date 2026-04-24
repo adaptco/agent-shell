@@ -1,0 +1,21 @@
+{
+  "receipt_id": "a44af550f7a7403b8976f437dd7ec1f2-decision_0-2026-04-17T010817.247299_0000",
+  "task_id": "a44af550f7a7403b8976f437dd7ec1f2",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-17T01:08:17.247299+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "312dc968a6de84efc204709e11a1043296bb86dca1f6a410e76e6e50954c10f4",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "tool_call",
+    "reasoning_summary": "Use bash to list the workspace.",
+    "tool_name": "bash",
+    "tool_input": {
+      "command": "ls -1"
+    }
+  },
+  "error": null
+}

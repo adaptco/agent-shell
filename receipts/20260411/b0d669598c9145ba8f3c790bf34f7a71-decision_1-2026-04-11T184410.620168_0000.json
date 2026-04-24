@@ -1,0 +1,18 @@
+{
+  "receipt_id": "b0d669598c9145ba8f3c790bf34f7a71-decision_1-2026-04-11T184410.620168_0000",
+  "task_id": "b0d669598c9145ba8f3c790bf34f7a71",
+  "step": "decision_1",
+  "status": "ok",
+  "created_at": "2026-04-11T18:44:10.620168+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "519270428b0659ba3150e456ac0740e8e9132e2e7c8ad3875314e86cc9f3f582",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "decision_type": "final",
+    "reasoning_summary": "Enough context has been gathered.",
+    "final_response": "Completed task 'Read the agent file 6' with 1 history events."
+  },
+  "error": null
+}
