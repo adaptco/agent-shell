@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "receipt_id",
+    "task_id",
+    "step",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "step": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "inputs_sha256": {
+      "type": "string"
+    },
+    "outputs_sha256": {
+      "type": "string"
+    },
+    "error": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

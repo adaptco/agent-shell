@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.pytest_cache/
+.venv/
+*.egg-info/
+
+# Runtime artifact stores (local-only)
+.runtime-store/
+logs/
+memory/
+queue/
+receipts/
+state/
+
+# Secrets and OS noise
+.env
+.DS_Store
+

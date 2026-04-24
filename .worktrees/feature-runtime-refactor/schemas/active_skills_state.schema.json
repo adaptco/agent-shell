@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/active_skills_state.schema.json",
+  "title": "ActiveSkillsState",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "active_skills_version",
+    "active_skill_paths",
+    "prior_skills_version",
+    "prior_skill_paths",
+    "activated_at",
+    "activation_run_id"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.3.0" },
+    "active_skills_version": { "type": ["string", "null"] },
+    "active_skill_paths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "prior_skills_version": { "type": ["string", "null"] },
+    "prior_skill_paths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "activated_at": { "type": ["string", "null"], "format": "date-time" },
+    "activation_run_id": { "type": ["string", "null"] }
+  }
+}

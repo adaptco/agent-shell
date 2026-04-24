@@ -1,0 +1,39 @@
+{
+  "name": "file_read",
+  "description": "Read a UTF-8 text file inside the workspace and return content plus metadata.",
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "path"
+    ],
+    "properties": {
+      "path": {
+        "type": "string"
+      },
+      "max_bytes": {
+        "type": "integer"
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": [
+      "path",
+      "content",
+      "bytes_read"
+    ],
+    "properties": {
+      "path": {
+        "type": "string"
+      },
+      "content": {
+        "type": "string"
+      },
+      "bytes_read": {
+        "type": "integer"
+      }
+    },
+    "additionalProperties": false
+  }
+}

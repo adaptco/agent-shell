@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/dailyrun.schema.json",
+  "title": "DailyRun",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "run_type",
+    "status",
+    "trigger",
+    "inputs_manifest",
+    "artifacts",
+    "proposals",
+    "eval_report",
+    "promotion_decision",
+    "rollback_token"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "run_type": {
+      "type": "string",
+      "enum": ["scheduled", "manual", "replay"]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "validating",
+        "evaluating",
+        "held",
+        "quarantined",
+        "canary",
+        "promoted",
+        "verified",
+        "failed"
+      ]
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "triggered_at"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["k8s_cronjob", "temporal", "airflow", "manual", "replay"]
+        },
+        "schedule": {
+          "type": ["string", "null"]
+        },
+        "triggered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trigger_ref": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "inputs_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sources", "source_manifest_sha256"],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source_id", "source_type"],
+            "properties": {
+              "source_id": {"type": "string"},
+              "source_type": {"type": "string"},
+              "uri": {"type": ["string", "null"]},
+              "content_hash": {
+                "type": ["string", "null"],
+                "pattern": "^(sha256:[a-f0-9]{64})?$"
+              }
+            }
+          }
+        },
+        "source_manifest_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_root", "dailybrief_json", "dailyrun_json", "eval_report_json"],
+      "properties": {
+        "artifact_root": {"type": "string"},
+        "dailybrief_json": {"type": "string"},
+        "dailybrief_md": {"type": ["string", "null"]},
+        "dailyrun_json": {"type": "string"},
+        "eval_report_json": {"type": "string"},
+        "gate_decision_json": {"type": ["string", "null"]},
+        "proposal_bundle_json": {"type": ["string", "null"]},
+        "proposal_validation_json": {"type": ["string", "null"]}
+      }
+    },
+    "proposals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tools", "skills", "configs"],
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": {"type": "object"}
+        },
+        "skills": {
+          "type": "array",
+          "items": {"type": "object"}
+        },
+        "configs": {
+          "type": "array",
+          "items": {"type": "object"}
+        }
+      }
+    },
+    "eval_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall_gate"],
+      "properties": {
+        "candidate_id": {"type": ["string", "null"]},
+        "golden_task_pass_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "tool_call_validity_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "replay_stability_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "unsupported_claim_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "policy_violations": {"type": ["integer", "null"], "minimum": 0},
+        "safety_violations": {"type": ["integer", "null"], "minimum": 0},
+        "cost_delta_pct": {"type": ["number", "null"]},
+        "latency_delta_pct": {"type": ["number", "null"]},
+        "overall_gate": {
+          "type": "string",
+          "enum": ["pass", "warn", "fail", "hold"]
+        },
+        "notes": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "promotion_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "reason", "decided_at"],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": ["promote", "canary", "hold", "quarantine"]
+        },
+        "reason": {"type": "string"},
+        "decided_at": {"type": "string", "format": "date-time"},
+        "gate_failures": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "gate_warnings": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "rollback_token": {
+      "type": ["string", "null"],
+      "pattern": "^(rb_[A-Za-z0-9._:-]+)?$"
+    }
+  }
+}

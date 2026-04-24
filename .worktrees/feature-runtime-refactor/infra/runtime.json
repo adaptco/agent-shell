@@ -1,0 +1,181 @@
+{
+  "name": "agent-shell-service-runtime",
+  "version": "0.5.1",
+  "workspace_root": ".",
+  "runtime_storage": {
+    "type": "filesystem_object_store",
+    "root_dir": ".runtime-store/objects",
+    "note": "Runtime artifacts are stored outside tracked source paths."
+  },
+  "agent_file": "agent.md",
+  "skill_dir": "skill",
+  "subagent_dir": "subagents",
+  "state": {
+    "markdown_state": ".runtime-store/objects/state/agent-state.md",
+    "runtime_state": ".runtime-store/objects/state/runtime.json"
+  },
+  "queue": {
+    "mode": "file_inbox",
+    "inbox_dir": ".runtime-store/objects/queue/inbox",
+    "working_dir": ".runtime-store/objects/queue/working",
+    "done_dir": ".runtime-store/objects/queue/done",
+    "failed_dir": ".runtime-store/objects/queue/failed",
+    "handoff_dir": ".runtime-store/objects/queue/handoffs",
+    "poll_seconds": 1
+  },
+  "memory": {
+    "journal_path": ".runtime-store/objects/memory/journal.jsonl",
+    "summary_path": ".runtime-store/objects/memory/summary.md",
+    "archive_dir": ".runtime-store/objects/memory/archive",
+    "compaction": {
+      "enabled": true,
+      "max_entries": 8,
+      "keep_last": 3
+    }
+  },
+  "receipts": {
+    "dir": ".runtime-store/objects/receipts",
+    "emit_per_step": true
+  },
+  "logging": {
+    "path": ".runtime-store/objects/logs/agent.log",
+    "max_bytes": 262144,
+    "backup_count": 5
+  },
+  "worker": {
+    "default_worker_id": "node-local",
+    "max_steps": 8,
+    "max_delegate_depth": 2
+  },
+  "tools": {
+    "registry_dir": "tools",
+    "bash": {
+      "timeout_seconds": 15,
+      "allow_prefixes": [
+        "ls",
+        "dir",
+        "pwd",
+        "echo",
+        "cat",
+        "type",
+        "python",
+        "py"
+      ]
+    },
+    "web_search": {
+      "provider": "mock",
+      "duckduckgo_url": "https://api.duckduckgo.com/",
+      "mock_results": [
+        {
+          "title": "Mock runtime result",
+          "url": "https://example.invalid/agent-shell",
+          "snippet": "Mock web search result used for offline smoke tests."
+        }
+      ]
+    }
+  },
+  "hooks": {
+    "registry_dir": "hooks"
+  },
+  "plugins": {
+    "tools": [
+      {
+        "type": "builtin",
+        "module": "runtime.tools",
+        "enabled": true
+      },
+      {
+        "type": "mcp",
+        "module": "runtime.mcp_adapter",
+        "enabled": false
+      },
+      {
+        "type": "desktop",
+        "module": "runtime.computer_use_tool",
+        "enabled": false
+      }
+    ],
+    "hooks": [
+      {
+        "type": "builtin",
+        "module": "runtime.hook_plugins",
+        "enabled": true
+      },
+      {
+        "type": "safety",
+        "module": "runtime.safety_hooks",
+        "enabled": false
+      }
+    ]
+  },
+  "middleware": {
+    "enabled": [
+      "correlation",
+      "logging",
+      "timing"
+    ]
+  },
+  "llm": {
+    "default_backend": "mock",
+    "openai": {
+      "endpoint": "https://api.openai.com/v1/responses",
+      "model": "gpt-4.1"
+    },
+    "mistral": {
+      "endpoint": "https://api.mistral.ai/v1/chat/completions",
+      "model": "mistral-large-latest"
+    }
+  },
+  "auth": {
+    "mode": "server_side_api_keys",
+    "note": "OpenAI and Mistral calls from this runtime use server-side Bearer API keys. ChatGPT sign-in is not an API auth substitute.",
+    "user_login": {
+      "enabled": false,
+      "protocol": "oidc",
+      "provider": null,
+      "note": "Reserved for a future app-layer user login. Disabled in this build."
+    },
+    "providers": {
+      "openai": {
+        "type": "api_key",
+        "env_var": "OPENAI_API_KEY",
+        "chatgpt_login_supported": false
+      },
+      "mistral": {
+        "type": "api_key",
+        "env_var": "MISTRAL_API_KEY"
+      }
+    },
+    "service_boundary": {
+      "enabled": false,
+      "mode": "disabled",
+      "static_bearer_env_var": "AGENT_SERVICE_BEARER_TOKEN",
+      "trusted_proxy_headers": [
+        "x-auth-request-user",
+        "x-auth-request-email",
+        "x-auth-request-groups"
+      ],
+      "oidc": {
+        "issuer": "",
+        "audience": "",
+        "jwks_url": "",
+        "required_scopes": [
+          "agent:operate"
+        ]
+      },
+      "note": "User/operator auth terminates at the service boundary. Provider API keys remain server-side and are never sent to clients."
+    }
+  },
+  "service": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 8000,
+    "base_path": "",
+    "title": "Agent Shell Service Runtime API",
+    "cors": {
+      "enabled": false,
+      "allow_origins": []
+    },
+    "trusted_proxy_headers": false
+  }
+}

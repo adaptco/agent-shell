@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "decision_type",
+    "reasoning_summary"
+  ],
+  "properties": {
+    "decision_type": {
+      "enum": [
+        "tool_call",
+        "delegate",
+        "final"
+      ]
+    },
+    "reasoning_summary": {
+      "type": "string"
+    },
+    "tool_name": {
+      "type": "string"
+    },
+    "tool_input": {
+      "type": "object"
+    },
+    "subagent_name": {
+      "type": "string"
+    },
+    "subtask": {
+      "type": "string"
+    },
+    "handoff_contract": {
+      "type": "object"
+    },
+    "final_response": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

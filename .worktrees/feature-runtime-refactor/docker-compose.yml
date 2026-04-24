@@ -1,0 +1,64 @@
+services:
+  agent-shell-api:
+    image: ghcr.io/${REGISTRY_OWNER}/${REGISTRY_REPO}:${IMAGE_TAG:-latest}
+    container_name: agent-shell-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      # Development: bind mount for hot reload
+      - ./runtime:/app/runtime
+      - ./scripts:/app/scripts
+      - ./.runtime-store:/app/.runtime-store
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - agent-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+  # Development service with live reload
+  agent-shell-api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agent-shell-api-dev
+    ports:
+      - "8001:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
+    volumes:
+      - ./:/app
+    command: agent-shell-api --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    profiles:
+      - dev
+
+volumes:
+  agent-store:
+    driver: local
+  agent-configs:
+    driver: local
+
+networks:
+  agent-network:
+    driver: bridge
