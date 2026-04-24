@@ -1,0 +1,14 @@
+{
+  "handoff_id": "0634d4d5e49149c38eca6dde80107fa9",
+  "parent_task_id": "0dd40cd1564f4c7a8592aa7d6e5d8f9f",
+  "subagent_name": "file_worker",
+  "subtask": "Read agent.md and summarize the operating rules.",
+  "context_files": [
+    "agent.md",
+    "skill/RUNTIME.md"
+  ],
+  "return_contract": {
+    "expects": "delegate_result",
+    "max_steps": 4
+  }
+}

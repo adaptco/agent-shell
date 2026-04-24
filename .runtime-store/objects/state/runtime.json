@@ -1,10 +1,19 @@
 {
   "status": "idle",
+<<<<<<< Updated upstream
   "last_heartbeat": "2026-04-20T18:27:36.165788+00:00",
   "last_task_id": "9b04cdac4554477bb66166c703f89ba8",
   "last_worker_id": null,
   "memory": {
     "entries": 4,
     "last_compaction": "2026-04-20T18:27:41.077118+00:00"
+=======
+  "last_heartbeat": "2026-04-12T10:50:58.898618+00:00",
+  "last_task_id": "10acf4de8ef245148d6be014786bf613",
+  "last_worker_id": null,
+  "memory": {
+    "entries": 5,
+    "last_compaction": "2026-04-12T10:51:01.794476+00:00"
+>>>>>>> Stashed changes
   }
 }

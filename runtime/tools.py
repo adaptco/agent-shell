@@ -55,11 +55,10 @@ class BuiltinToolPlugin(ToolPlugin):
 
     def _bash(self, tool_input: dict) -> dict:
         import shlex
-        import os
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
         # Avoid shell=True for security to mitigate shell injection
-        args = shlex.split(command, posix=(os.name != "nt"))
+        args = shlex.split(command)
         completed = subprocess.run(
             args,
             shell=False,
