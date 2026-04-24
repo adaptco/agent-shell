@@ -56,12 +56,12 @@ Commit to main/develop
 **Triggers:** Push to main/develop, Pull requests
 
 **Jobs:**
-- **test**: Runs unit tests with coverage analysis on Python 3.11 and 3.12
+- **test**: Runs unit tests with coverage analysis on Python 3.13
 - **docker-build**: Builds and tests Docker image with health check
 - **security-scan**: Runs Trivy to scan for vulnerabilities
 
 **Key Features:**
-- Multi-version Python testing (3.11, 3.12)
+- Single-version Python testing (3.13)
 - Code coverage tracking with Codecov
 - Ruff linting
 - Trivy security scanning with SARIF report upload
@@ -330,7 +330,7 @@ On production deployment failure, you must manually intervene:
 - Requires buildx setup (automated by docker/setup-buildx-action)
 
 ### Test Parallelization
-- Tests run on Python 3.11 and 3.12 in parallel
+- Tests run on Python 3.13 in parallel
 - Docker build and security scan run in parallel
 
 ## Next Steps

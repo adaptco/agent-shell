@@ -1,0 +1,18 @@
+{
+  "receipt_id": "fa17014707bd4eecbae93ae87465b0e4-decision_1-2026-04-12T102552.315978_0000",
+  "task_id": "fa17014707bd4eecbae93ae87465b0e4",
+  "step": "decision_1",
+  "status": "ok",
+  "created_at": "2026-04-12T10:25:52.315978+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "ca017f9e0c95ff674d134139cec1f31eecdb5b7d343f475db92d854d70c455c5",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "decision_type": "final",
+    "reasoning_summary": "Enough context has been gathered.",
+    "final_response": "Completed task 'Delegate this bounded file task to a subagent' with 1 history events."
+  },
+  "error": null
+}

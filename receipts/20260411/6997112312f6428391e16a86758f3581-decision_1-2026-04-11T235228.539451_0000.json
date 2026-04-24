@@ -1,0 +1,18 @@
+{
+  "receipt_id": "6997112312f6428391e16a86758f3581-decision_1-2026-04-11T235228.539451_0000",
+  "task_id": "6997112312f6428391e16a86758f3581",
+  "step": "decision_1",
+  "status": "ok",
+  "created_at": "2026-04-11T23:52:28.539451+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "22dc71a4fddeb578da54ef44a48c2bef5a48829c6eed01f80e45bb3a22d6f4d7",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "decision_type": "final",
+    "reasoning_summary": "Sub-agent completed after one tool step.",
+    "final_response": "Sub-agent completed task: Read agent.md and summarize the operating rules."
+  },
+  "error": null
+}

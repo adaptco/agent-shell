@@ -1,0 +1,47 @@
+{
+  "receipt_id": "3ac2e525261a45fd9afc04ed543f166b-decision_1-2026-04-19T191512.991208_0000",
+  "task_id": "3ac2e525261a45fd9afc04ed543f166b",
+  "step": "decision_1",
+  "status": "ok",
+  "created_at": "2026-04-19T19:15:12.991208+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "1ce135476c826f2003e52c9e0f5afd332d12126737696373b3d688fa0b646e80",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "decision_type": "final",
+    "reasoning_summary": "Enough context has been gathered.",
+    "final_response": "Completed task 'Search the web for runtime architecture' with 1 history events."
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T19:15:10.791306+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "bash",
+      "summary": "Use bash to list the workspace.",
+      "created_at": "2026-04-19T19:15:11.846706+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T19:15:11.874784+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-19T19:15:11.894255+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "web_search",
+      "summary": "Use web search first.",
+      "created_at": "2026-04-19T19:15:12.949172+00:00"
+    }
+  ]
+}

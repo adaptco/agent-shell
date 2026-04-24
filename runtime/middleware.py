@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 from time import perf_counter
 from uuid import uuid4
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 
 from runtime.logger import get_logger
 from runtime.utils import utc_now
@@ -27,7 +28,7 @@ class APIMiddleware:
         self.service_name = service_name
         self.enabled_layers = enabled_layers or {"correlation", "logging", "timing"}
 
-    async def __call__(self, request: Request, call_next):
+    async def __call__(self, request, call_next):
         request_id = request.headers.get("x-request-id") or uuid4().hex
         correlation_id = request.headers.get("x-correlation-id") or request_id
 
