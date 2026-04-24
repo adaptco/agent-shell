@@ -66,6 +66,11 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         request.state.auth_context = operator.__dict__
         return operator
 
+    @app.get("/healthz")
+    async def healthz():
+        """Unauthenticated liveness probe for Docker HEALTHCHECK and CI."""
+        return {"status": "ok"}
+
     @app.get("/health")
     def health(
         operator: OperatorIdentity = Depends(auth_operator),
