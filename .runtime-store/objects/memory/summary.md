@@ -1,6 +1,6 @@
 # Memory Summary
 
-<<<<<<< Updated upstream
+Updated upstream
 - Compacted at: 2026-04-20T18:27:41.042239+00:00
 - Entries archived: 9
 
@@ -19,7 +19,7 @@
 - final: Enough context has been gathered.
 - compaction_marker: Archived 9 entries
 - tool_result: Use web search first.
->>>>>>> Stashed changes
+Stashed changes
 - final: Enough context has been gathered.
 - tool_result: Sub-agent will read the root agent file.
 - final: Sub-agent completed after one tool step.
@@ -27,4 +27,4 @@
 <<<<<<< Updated upstream
 - final: Enough context has been gathered.
 =======
->>>>>>> Stashed changes
+Stashed changes
