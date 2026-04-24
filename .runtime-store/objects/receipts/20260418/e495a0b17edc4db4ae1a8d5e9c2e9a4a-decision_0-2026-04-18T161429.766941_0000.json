@@ -1,0 +1,22 @@
+{
+  "receipt_id": "e495a0b17edc4db4ae1a8d5e9c2e9a4a-decision_0-2026-04-18T161429.766941_0000",
+  "task_id": "e495a0b17edc4db4ae1a8d5e9c2e9a4a",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-18T16:14:29.766941+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "22695ce40d8786f3140fc81f167b566a9f50f7aeb05c224fa574090873169cec",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "tool_call",
+    "reasoning_summary": "Sub-agent will read the root agent file.",
+    "tool_name": "file_read",
+    "tool_input": {
+      "path": "agent.md",
+      "max_bytes": 1200
+    }
+  },
+  "error": null
+}

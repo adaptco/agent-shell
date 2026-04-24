@@ -1,0 +1,7 @@
+[console_scripts]
+agent-shell = runtime.cli:main
+agent-shell-api = runtime.server:main
+<<<<<<< Updated upstream
+agent-shell-external-ci = runtime.external_ci:main
+=======
+>>>>>>> Stashed changes

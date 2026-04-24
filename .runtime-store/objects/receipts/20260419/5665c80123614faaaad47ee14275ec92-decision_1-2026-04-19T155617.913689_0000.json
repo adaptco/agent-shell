@@ -1,0 +1,42 @@
+{
+  "receipt_id": "5665c80123614faaaad47ee14275ec92-decision_1-2026-04-19T155617.913689_0000",
+  "task_id": "5665c80123614faaaad47ee14275ec92",
+  "step": "decision_1",
+  "status": "ok",
+  "created_at": "2026-04-19T15:56:17.913689+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "22dc71a4fddeb578da54ef44a48c2bef5a48829c6eed01f80e45bb3a22d6f4d7",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "decision_type": "final",
+    "reasoning_summary": "Sub-agent completed after one tool step.",
+    "final_response": "Sub-agent completed task: Read agent.md and summarize the operating rules."
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "tool_result",
+      "tool_name": "web_search",
+      "summary": "Use web search first.",
+      "created_at": "2026-04-19T15:56:16.798487+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-19T15:56:16.833341+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Sub-agent will read the root agent file.",
+      "created_at": "2026-04-19T15:56:17.828806+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-19T15:56:17.849235+00:00"
+    }
+  ]
+}

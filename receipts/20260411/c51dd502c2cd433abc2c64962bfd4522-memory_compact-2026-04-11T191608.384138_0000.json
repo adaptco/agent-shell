@@ -1,0 +1,18 @@
+{
+  "receipt_id": "c51dd502c2cd433abc2c64962bfd4522-memory_compact-2026-04-11T191608.384138_0000",
+  "task_id": "c51dd502c2cd433abc2c64962bfd4522",
+  "step": "memory_compact",
+  "status": "ok",
+  "created_at": "2026-04-11T19:16:08.384138+00:00",
+  "inputs_sha256": "75147a8569e4837a27fc8fd8678e692dfa35f5d2c9b3ab5b57c2deb371a5456c",
+  "outputs_sha256": "7f6d6c40fbe933244be257e3cf033c7e0d047098a4d01d0461c268e939df7329",
+  "inputs": {
+    "entry_count": 9
+  },
+  "outputs": {
+    "compacted": true,
+    "archive_path": "/mnt/data/agent-shell-api-runtime/agent-shell-service/memory/archive/2026-04-11T191608.382701_0000.jsonl",
+    "retained": 3
+  },
+  "error": null
+}
