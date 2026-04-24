@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-shell-service-runtime"
-version = "0.5.0"
+version = "0.5.1"
 description = "Filesystem-backed agent runtime with an inbound FastAPI service above the LLM layer"
 requires-python = ">=3.11"
 dependencies = [
@@ -21,3 +21,6 @@ agent-shell-external-ci = "runtime.external_ci:main"
 
 [tool.setuptools]
 packages = ["runtime"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

@@ -1,0 +1,19 @@
+{
+  "receipt_id": "486977f608354b949d49f057a5c7ee4a-decision_0-2026-04-11T185754.797345_0000",
+  "task_id": "486977f608354b949d49f057a5c7ee4a",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-11T18:57:54.797345+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "e6d4bd2889bf559d1644d3b7681979e3ef7a318647b9ab9e45554761a075664d",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "delegate",
+    "reasoning_summary": "This task is bounded and can be delegated.",
+    "subagent_name": "file_worker",
+    "subtask": "Read agent.md and summarize the operating rules."
+  },
+  "error": null
+}
