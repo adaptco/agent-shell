@@ -1,0 +1,22 @@
+{
+  "receipt_id": "2ed0f438f6fc49199ac121d4238e3238-decision_0-2026-04-11T184221.283966_0000",
+  "task_id": "2ed0f438f6fc49199ac121d4238e3238",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-11T18:42:21.283966+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "e9d82ffa57c4fecb2fbe288a1a1fdd491e61c00e8968591192d39e7230a734c9",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "tool_call",
+    "reasoning_summary": "Read agent.md before answering.",
+    "tool_name": "file_read",
+    "tool_input": {
+      "path": "agent.md",
+      "max_bytes": 2000
+    }
+  },
+  "error": null
+}
