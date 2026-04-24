@@ -23,7 +23,7 @@ This package keeps the file-backed runtime kernel and adds an inbound FastAPI ap
 
 ## Runtime toolchain contract
 
-- Python `>=3.11`
+- Python `>=3.13`
 - Node.js `v24` (pinned via `.nvmrc` and `.node-version`)
 
 ## Workspace setup scripts

@@ -1,0 +1,8 @@
+# config.toml
+
+[security]
+trusted_projects = [
+  "C:\\Users\\eqhsp\\Projects\\agent-shell",
+ ]
+approval_policy = "all"
+
