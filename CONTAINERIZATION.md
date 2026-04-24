@@ -63,9 +63,7 @@ docker build -t agent-shell:latest .
 - Development: 8001 (maps to 8000 inside container)
 
 ## Health Check
-
-Endpoint: GET /healthz on port 8000
-
+Endpoint: GET /health on port 8000
 - Interval: 30s
 - Timeout: 10s
 - Start period: 5s
