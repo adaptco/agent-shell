@@ -1,4 +1,4 @@
-<<<<<<< Updated upstream
+Updated upstream
 2026-04-19 11:56:12,269 INFO api.request.start request_id=f5ac8b7f24bb461693d70d968f10c74f correlation_id=f5ac8b7f24bb461693d70d968f10c74f method=GET path=/health
 2026-04-19 11:56:12,272 INFO middleware.start operation=health correlation_id=health-2026-04-19T15:56:12.272635+00:00
 2026-04-19 11:56:12,272 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-19T15:56:12.272895+00:00
@@ -458,4 +458,4 @@
 2026-04-12 06:51:01,149 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-12T10:51:01.021094+00:00
 2026-04-12 06:51:01,593 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-12T10:51:01.593090+00:00
 2026-04-12 06:51:01,879 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-12T10:51:01.593090+00:00
->>>>>>> Stashed changes
+Stashed changes
