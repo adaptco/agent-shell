@@ -126,15 +126,21 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                 current_task = service.get_task(task_id)
                 
                 if service.receipts and service.receipts.root.exists():
-                    for r_path in sorted(service.receipts.root.rglob(f"*{task_id}*.json")):
-                        path_str = str(r_path)
-                        if path_str not in seen_receipts:
-                            try:
-                                r_data = read_json(r_path)
-                                yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
-                                seen_receipts.add(path_str)
-                            except Exception:
-                                pass
+                    # Use to_thread to avoid blocking event loop with rglob
+                    def get_new_receipts():
+                        return [
+                            p for p in service.receipts.root.rglob(f"*{task_id}*.json")
+                            if str(p) not in seen_receipts
+                        ]
+                    
+                    new_paths = await asyncio.to_thread(get_new_receipts)
+                    for r_path in sorted(new_paths):
+                        try:
+                            r_data = await asyncio.to_thread(read_json, r_path)
+                            yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
+                            seen_receipts.add(str(r_path))
+                        except Exception:
+                            pass
                 
                 if current_task:
                     status = current_task.get("status")
