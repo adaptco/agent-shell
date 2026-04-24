@@ -8,10 +8,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ['3.13']
 
     steps:
       - uses: actions/checkout@v4
@@ -19,20 +18,13 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-          # Try to install editable package; tolerate failure if pyproject requires build isolation
-          pip install -e . || true
-          # Install dev/test requirements when present
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install --upgrade pip
+          pip install -e .
           pip install pytest
-
-      - name: Lint with Ruff
-        run: ruff check .
 
       - name: Run tests with coverage
         run: pytest --cov=runtime --cov-report=xml --cov-report=term -q

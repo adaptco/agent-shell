@@ -99,7 +99,7 @@ class OpenAIResponsesBackend(BaseBackend):
         self.cfg = cfg
         self.endpoint = cfg["llm"]["openai"]["endpoint"]
         self.model = cfg["llm"]["openai"]["model"]
-        self.api_key = os.environ.get(cfg.get("auth", {}).get("providers", {}).get("openai", {}).get("env_var", "OPENAI_API_KEY"))
+        self.api_key = get_env(cfg.get("auth", {}).get("providers", {}).get("openai", {}).get("env_var", "OPENAI_API_KEY"))
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
         system_prompt, user_prompt = _build_decision_prompt(context)
@@ -139,9 +139,9 @@ class MistralChatBackend(BaseBackend):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.endpoint = cfg["llm"]["mistral"]["endpoint"]
+        self.endpoint = cfg["llm"]["endpoint"]
         self.model = cfg["llm"]["mistral"]["model"]
-        self.api_key = os.environ.get(cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var", "MISTRAL_API_KEY"))
+        self.api_key = get_env(cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var"))
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
         system_prompt, user_prompt = _build_decision_prompt(context)
