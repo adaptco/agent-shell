@@ -86,8 +86,12 @@ uvicorn runtime.api:create_app --factory --host 127.0.0.1 --port 8000
 - `GET http://127.0.0.1:8000/health`
 - `POST http://127.0.0.1:8000/tasks`
 - `GET http://127.0.0.1:8000/tasks`
+- `GET http://127.0.0.1:8000/tasks/{task_id}`
 - `POST http://127.0.0.1:8000/run`
 - `GET http://127.0.0.1:8000/heartbeat`
+- `POST http://127.0.0.1:8000/heartbeat`
+
+All responses include boundary middleware headers: `X-Agent-Service`, `X-Correlation-Id`, and `X-Process-Time-Ms`.
 
 ## External CI without GitHub Actions minutes
 

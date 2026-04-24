@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/dailybrief.schema.json",
+  "title": "DailyBrief",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "date",
+    "executive_delta",
+    "evidence_and_sources",
+    "proposals",
+    "eval_report",
+    "recommended_actions",
+    "rollback"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "executive_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "primary_improvements", "regressions_or_risks"],
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": ["promote", "hold", "rollback_recommended", "quarantine"]
+        },
+        "primary_improvements": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "regressions_or_risks": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "evidence_and_sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_manifest_sha256", "sources"],
+      "properties": {
+        "source_manifest_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source_id", "source_type"],
+            "properties": {
+              "source_id": {"type": "string"},
+              "source_type": {"type": "string"},
+              "title": {"type": ["string", "null"]},
+              "uri": {"type": ["string", "null"]},
+              "relevance": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+              "content_hash": {
+                "type": ["string", "null"],
+                "pattern": "^(sha256:[a-f0-9]{64})?$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "proposals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tools", "skills", "configs"],
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": {"type": "object"}
+        },
+        "skills": {
+          "type": "array",
+          "items": {"type": "object"}
+        },
+        "configs": {
+          "type": "array",
+          "items": {"type": "object"}
+        }
+      }
+    },
+    "eval_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall_gate"],
+      "properties": {
+        "candidate_id": {"type": ["string", "null"]},
+        "golden_task_pass_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "tool_call_validity_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "replay_stability_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "unsupported_claim_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "policy_violations": {"type": ["integer", "null"], "minimum": 0},
+        "safety_violations": {"type": ["integer", "null"], "minimum": 0},
+        "cost_delta_pct": {"type": ["number", "null"]},
+        "latency_delta_pct": {"type": ["number", "null"]},
+        "overall_gate": {
+          "type": "string",
+          "enum": ["pass", "warn", "fail", "hold"]
+        },
+        "notes": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "recommended_actions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["promote_changes", "create_tickets", "notes"],
+      "properties": {
+        "promote_changes": {"type": "boolean"},
+        "create_tickets": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "notes": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prior_best_version", "rollback_token"],
+      "properties": {
+        "prior_best_version": {"type": ["string", "null"]},
+        "rollback_token": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

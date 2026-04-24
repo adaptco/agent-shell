@@ -2,11 +2,13 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from runtime.api_auth import OperatorIdentity, get_auth_dependency
 from runtime.config import load_config
+from runtime.middleware import install_http_middleware
 from runtime.service import AgentService
 
 
@@ -25,14 +27,23 @@ class HeartbeatRequest(BaseModel):
     worker_id: str | None = None
 
 
+def _error_content(request: Request, detail: object, error: str) -> dict[str, object]:
+    return {
+        "error": error,
+        "detail": detail,
+        "correlation_id": getattr(request.state, "correlation_id", None),
+    }
+
+
 def create_app(cfg: dict | None = None) -> FastAPI:
     cfg = cfg or load_config()
     service_auth = get_auth_dependency(cfg)
+    service = AgentService(cfg)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         app.state.cfg = cfg
-        app.state.service = AgentService(cfg)
+        app.state.service = service
         yield
 
     app = FastAPI(
@@ -41,59 +52,153 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     app.state.cfg = cfg
-    app.state.service = AgentService(cfg)
+    app.state.service = service
 
-    @app.middleware("http")
-    async def request_middleware(request: Request, call_next):
-        response = await call_next(request)
-        response.headers["X-Agent-Service"] = cfg.get("name", "agent-shell-service-runtime")
-        return response
+    install_http_middleware(app, cfg)
 
     def svc(request: Request) -> AgentService:
         return request.app.state.service
 
+    async def auth_operator(
+        request: Request,
+        operator: OperatorIdentity = Depends(service_auth),
+    ) -> OperatorIdentity:
+        request.state.auth_context = operator.__dict__
+        return operator
+
+    @app.get("/healthz")
+    async def healthz():
+        """Unauthenticated liveness probe for Docker HEALTHCHECK and CI."""
+        return {"status": "ok"}
+
     @app.get("/health")
-    async def health(request: Request, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def health(
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.health()
         result["operator"] = operator.__dict__
         return result
 
     @app.get("/tasks")
-    async def list_tasks(limit: int = 100, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def list_tasks(
+        limit: int = 100,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.list_tasks(limit=limit)
         result["operator"] = operator.__dict__
         return result
 
     @app.post("/tasks")
-    async def create_task(body: TaskCreateRequest, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
-        result = service.queue_add(body.task, parent_task_id=body.parent_task_id, assigned_subagent=body.assigned_subagent)
+    async def create_task(
+        body: TaskCreateRequest,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
+        result = service.queue_add(
+            body.task,
+            parent_task_id=body.parent_task_id,
+            assigned_subagent=body.assigned_subagent,
+        )
         result["operator"] = operator.__dict__
         return JSONResponse(status_code=202, content=result)
 
     @app.get("/tasks/{task_id}")
-    async def get_task(task_id: str, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def get_task(
+        task_id: str,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.get_task(task_id)
         if result is None:
             raise HTTPException(status_code=404, detail="Task not found")
         return {"task": result, "operator": operator.__dict__}
 
+    @app.get("/tasks/{task_id}/stream")
+    async def stream_task(task_id: str, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+        task_info = service.get_task(task_id)
+        if task_info is None:
+            raise HTTPException(status_code=404, detail="Task not found")
+
+        async def event_generator():
+            import asyncio
+            import json
+            from runtime.utils import read_json
+            
+            seen_receipts = set()
+            while True:
+                current_task = service.get_task(task_id)
+                
+                if service.receipts and service.receipts.root.exists():
+                    for r_path in sorted(service.receipts.root.rglob(f"*{task_id}*.json")):
+                        path_str = str(r_path)
+                        if path_str not in seen_receipts:
+                            try:
+                                r_data = read_json(r_path)
+                                yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
+                                seen_receipts.add(path_str)
+                            except Exception:
+                                pass
+                
+                if current_task:
+                    status = current_task.get("status")
+                    if status in ("done", "failed"):
+                        yield f"event: final\ndata: {json.dumps(current_task)}\n\n"
+                        break
+                        
+                await asyncio.sleep(2)
+
+        from fastapi.responses import StreamingResponse
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
     @app.post("/run")
-    async def run_task(body: RunRequest, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def run_task(
+        body: RunRequest,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.run_task(body.task, body.backend)
         result["operator"] = operator.__dict__
         return result
 
     @app.get("/heartbeat")
-    async def heartbeat_state(operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def heartbeat_state(
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         return {"runtime_state": service.get_runtime_state(), "operator": operator.__dict__}
 
     @app.post("/heartbeat")
-    async def emit_heartbeat(body: HeartbeatRequest, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def emit_heartbeat(
+        body: HeartbeatRequest,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
         result = service.heartbeat(worker_id=body.worker_id)
         return {"runtime_state": result, "operator": operator.__dict__}
 
+    @app.exception_handler(HTTPException)
+    async def handled_http_exception(request: Request, exc: HTTPException):
+        return JSONResponse(
+            status_code=exc.status_code,
+            headers=exc.headers,
+            content=_error_content(request, exc.detail, "HTTPException"),
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def handled_validation_exception(request: Request, exc: RequestValidationError):
+        return JSONResponse(
+            status_code=422,
+            content=_error_content(request, exc.errors(), "RequestValidationError"),
+        )
+
     @app.exception_handler(Exception)
     async def unhandled_exception_handler(request: Request, exc: Exception):
-        return JSONResponse(status_code=500, content={"error": type(exc).__name__, "detail": str(exc)})
+        return JSONResponse(
+            status_code=500,
+            content=_error_content(request, "Internal server error", type(exc).__name__),
+        )
 
     return app
