@@ -1,6 +1,10 @@
 Metadata-Version: 2.4
 Name: agent-shell-service-runtime
+<<<<<<< Updated upstream
 Version: 0.5.1
+=======
+Version: 0.5.0
+>>>>>>> Stashed changes
 Summary: Filesystem-backed agent runtime with an inbound FastAPI service above the LLM layer
 Requires-Python: >=3.11
 Requires-Dist: fastapi<1,>=0.115

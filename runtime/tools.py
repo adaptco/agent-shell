@@ -54,11 +54,14 @@ class BuiltinToolPlugin(ToolPlugin):
         return {"path": str(path.relative_to(Path(self.config["_workspace"]))), "content": content, "bytes_read": len(content.encode('utf-8'))}
 
     def _bash(self, tool_input: dict) -> dict:
+        import shlex
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
+        # Avoid shell=True for security to mitigate shell injection
+        args = shlex.split(command)
         completed = subprocess.run(
-            command,
-            shell=True,
+            args,
+            shell=False,
             capture_output=True,
             text=True,
             cwd=self.config["_workspace"],

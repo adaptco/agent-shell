@@ -44,4 +44,3 @@ def get_env(name: str, required: bool = True, message: str | None = None) -> str
     if required and (val is None or val == ""):
         raise RuntimeError(message or f"Missing required environment variable: {name}")
     return val
-
