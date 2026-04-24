@@ -18,11 +18,12 @@
 - final: Enough context has been gathered.
 - compaction_marker: Archived 9 entries
 - tool_result: Use web search first.
->>>>>>> Stashed changes
+Stashed changes
+=======
+Stashed changes
+main
 - final: Enough context has been gathered.
 - tool_result: Sub-agent will read the root agent file.
 - final: Sub-agent completed after one tool step.
 - delegate_result: This task is bounded and can be delegated.
-<<<<<<< Updated upstream
 - final: Enough context has been gathered.
-=======
