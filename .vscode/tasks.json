@@ -7,7 +7,7 @@
 			"command": "dotnet",
 			"args": [
 				"build",
-				"c:/Users/eqhsp/Agent Projects/agent-shell/Database/Database.sqlproj"
+				"${workspaceFolder}/Database/Database.sqlproj"
 			],
 			"problemMatcher": "$sqlproj-problem-matcher",
 			"isBackground": true,

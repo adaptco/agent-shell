@@ -13,7 +13,7 @@ This guide provides step-by-step instructions to implement the MCP + desktop aut
 ### Prerequisites
 
 ```bash
-# Python 3.11+
+# Python 3.13+
 python --version
 
 # Node.js v24
