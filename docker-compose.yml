@@ -1,0 +1,47 @@
+services:
+  agent-shell-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agent-shell-api
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
+    volumes:
+      # Production: read-only mounts for source consistency
+      - ./runtime:/app/runtime:ro
+      - ./scripts:/app/scripts:ro
+      - ./.runtime-store:/app/.runtime-store
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  # Development service with live reload
+  agent-shell-api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agent-shell-api-dev
+    ports:
+      - "8001:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
+    volumes:
+      - ./:/app
+    command: agent-shell-api --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    profiles:
+      - dev
+    restart: unless-stopped
