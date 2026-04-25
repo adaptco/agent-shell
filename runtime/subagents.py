@@ -12,7 +12,9 @@ class SubagentManager:
         self.handoff_dir = Path(cfg["_workspace"]) / "queue" / "handoffs"
         self.handoff_dir.mkdir(parents=True, exist_ok=True)
 
-    def delegate(self, parent_task: dict, decision: dict, backend_name: str, depth: int) -> dict:
+    def delegate(
+        self, parent_task: dict, decision: dict, backend_name: str, depth: int
+    ) -> dict:
         handoff = decision.get("handoff_contract") or {
             "handoff_id": uuid4().hex,
             "parent_task_id": parent_task["task_id"],
@@ -22,6 +24,7 @@ class SubagentManager:
             "return_contract": {"expects": "delegate_result", "max_steps": 4},
         }
         from runtime.validation import validate
+
         validate(handoff, self.handoff_schema)
         write_json(self.handoff_dir / f"{handoff['handoff_id']}.json", handoff)
         loop = self.loop_factory(backend_name)
@@ -32,5 +35,7 @@ class SubagentManager:
             "created_at": parent_task["created_at"],
             "parent_task_id": parent_task["task_id"],
         }
-        result = loop.run_task(subtask, subagent_name=handoff["subagent_name"], depth=depth + 1)
+        result = loop.run_task(
+            subtask, subagent_name=handoff["subagent_name"], depth=depth + 1
+        )
         return {"handoff": handoff, "delegate_result": result}
