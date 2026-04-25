@@ -109,7 +109,9 @@ def test_auth_mode_oidc_jwt_fails_closed_when_unconfigured():
 
 def test_http_exception_includes_correlation_id():
     client = _client()
-    response = client.get("/tasks/not-found", headers={"x-correlation-id": "req-404"})
+    # Use a valid hex ID that doesn't exist to trigger 404
+    fake_id = "0" * 32
+    response = client.get(f"/tasks/{fake_id}", headers={"x-correlation-id": "req-404"})
     assert response.status_code == 404
     assert response.json()["detail"] == "Task not found"
     assert response.json()["correlation_id"] == "req-404"

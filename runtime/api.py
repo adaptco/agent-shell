@@ -10,6 +10,7 @@ from runtime.api_auth import OperatorIdentity, get_auth_dependency
 from runtime.config import load_config
 from runtime.middleware import install_http_middleware
 from runtime.service import AgentService
+from runtime.utils import is_valid_id
 
 
 class TaskCreateRequest(BaseModel):
@@ -105,6 +106,8 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
+        if not is_valid_id(task_id):
+            raise HTTPException(status_code=400, detail="Invalid task ID format")
         result = service.get_task(task_id)
         if result is None:
             raise HTTPException(status_code=404, detail="Task not found")
@@ -116,6 +119,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         operator: OperatorIdentity = Depends(service_auth),
         service: AgentService = Depends(svc),
     ):
+        if not is_valid_id(task_id):
+            raise HTTPException(status_code=400, detail="Invalid task ID format")
+
         task_info = service.get_task(task_id)
         if task_info is None:
             raise HTTPException(status_code=404, detail="Task not found")
@@ -132,11 +138,16 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                 if service.receipts and service.receipts.root.exists():
                     # Use to_thread to avoid blocking event loop with rglob
                     def get_new_receipts():
-                        return [
-                            str(p)
-                            for p in service.receipts.root.rglob(f"*{task_id}*.json")
-                            if str(p) not in seen_receipts
-                        ]
+                        # Find receipts containing the specific task_id in their filename
+                        # Since we've validated task_id, using it in a glob is now safer,
+                        # but we still prefer a non-recursive approach or explicit check if possible.
+                        # Given receipts are in date-partitioned dirs, rglob is used.
+                        # We use literal match in the name part to avoid glob character injection.
+                        results = []
+                        for p in service.receipts.root.rglob("*.json"):
+                            if task_id in p.name and str(p) not in seen_receipts:
+                                results.append(str(p))
+                        return results
 
                     new_paths = await asyncio.to_thread(get_new_receipts)
                     for path_str in sorted(new_paths):
