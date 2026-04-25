@@ -106,5 +106,5 @@ def test_http_exception_includes_correlation_id():
     client = _client()
     response = client.get("/tasks/not-found", headers={"x-correlation-id": "req-404"})
     assert response.status_code == 404
-    assert response.json()["detail"] == "Task not found"
+    assert "Task not found" in response.json()["detail"]
     assert response.json()["correlation_id"] == "req-404"

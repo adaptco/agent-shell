@@ -136,3 +136,167 @@
 2026-04-11 19:52:27,996 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-11T23:52:27.873534+00:00
 2026-04-11 19:52:28,447 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-11T23:52:28.447607+00:00
 2026-04-11 19:52:28,652 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-11T23:52:28.447607+00:00
+2026-04-25 04:38:23,865 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:38:23.865841+00:00
+2026-04-25 04:38:23,866 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:38:23.865841+00:00
+2026-04-25 04:41:45,880 INFO api.request.start request_id=ecbcdabd2b494522832991e44cdea911 correlation_id=ecbcdabd2b494522832991e44cdea911 method=GET path=/health
+2026-04-25 04:41:45,883 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:41:45.883827+00:00
+2026-04-25 04:41:45,884 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:41:45.884173+00:00
+2026-04-25 04:41:45,884 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:41:45.884173+00:00
+2026-04-25 04:41:45,884 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:45.884845+00:00
+2026-04-25 04:41:45,885 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:45.884845+00:00
+2026-04-25 04:41:45,885 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:41:45.883827+00:00
+2026-04-25 04:41:45,886 INFO api.request.end request_id=ecbcdabd2b494522832991e44cdea911 correlation_id=ecbcdabd2b494522832991e44cdea911 status=200 duration_ms=5.50 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:45,907 INFO api.request.start request_id=89976ac7ee914e06941cfe2d0f8cd6d4 correlation_id=req-123 method=GET path=/health
+2026-04-25 04:41:45,909 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:41:45.909536+00:00
+2026-04-25 04:41:45,909 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:41:45.909806+00:00
+2026-04-25 04:41:45,910 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:41:45.909806+00:00
+2026-04-25 04:41:45,910 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:45.910344+00:00
+2026-04-25 04:41:45,910 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:45.910344+00:00
+2026-04-25 04:41:45,911 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:41:45.909536+00:00
+2026-04-25 04:41:45,911 INFO api.request.end request_id=89976ac7ee914e06941cfe2d0f8cd6d4 correlation_id=req-123 status=200 duration_ms=4.32 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:45,933 INFO api.request.start request_id=5001a5a4a177423eb40d5470dd46e9c3 correlation_id=5001a5a4a177423eb40d5470dd46e9c3 method=POST path=/tasks
+2026-04-25 04:41:45,936 INFO middleware.start operation=queue_add correlation_id=queue_add-2026-04-25T04:41:45.936207+00:00
+2026-04-25 04:41:45,936 INFO middleware.end operation=queue_add correlation_id=queue_add-2026-04-25T04:41:45.936207+00:00
+2026-04-25 04:41:45,937 INFO api.request.end request_id=5001a5a4a177423eb40d5470dd46e9c3 correlation_id=5001a5a4a177423eb40d5470dd46e9c3 status=202 duration_ms=3.54 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:45,940 INFO api.request.start request_id=5439aa5b0c07429bbabde74c87fc0735 correlation_id=5439aa5b0c07429bbabde74c87fc0735 method=GET path=/tasks
+2026-04-25 04:41:45,942 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:45.942857+00:00
+2026-04-25 04:41:45,943 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:45.942857+00:00
+2026-04-25 04:41:45,944 INFO api.request.end request_id=5439aa5b0c07429bbabde74c87fc0735 correlation_id=5439aa5b0c07429bbabde74c87fc0735 status=200 duration_ms=3.28 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:45,948 INFO api.request.start request_id=db2d856f682542bc9dbe1c10617978a4 correlation_id=db2d856f682542bc9dbe1c10617978a4 method=GET path=/tasks/fa0afd98cae848f39d79c0899ca1f406
+2026-04-25 04:41:45,949 INFO middleware.start operation=get_task correlation_id=get_task-2026-04-25T04:41:45.949835+00:00
+2026-04-25 04:41:45,950 INFO middleware.end operation=get_task correlation_id=get_task-2026-04-25T04:41:45.949835+00:00
+2026-04-25 04:41:45,951 INFO api.request.end request_id=db2d856f682542bc9dbe1c10617978a4 correlation_id=db2d856f682542bc9dbe1c10617978a4 status=200 duration_ms=3.17 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:45,974 INFO api.request.start request_id=b93683b9462143948577761f70fa74d2 correlation_id=b93683b9462143948577761f70fa74d2 method=POST path=/run
+2026-04-25 04:41:45,976 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:41:45.976775+00:00
+2026-04-25 04:41:45,985 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:41:45.976775+00:00
+2026-04-25 04:41:45,985 INFO api.request.end request_id=b93683b9462143948577761f70fa74d2 correlation_id=b93683b9462143948577761f70fa74d2 status=200 duration_ms=11.64 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:46,005 INFO api.request.start request_id=a314a2221fb54ffd996fbb7abdbc33db correlation_id=a314a2221fb54ffd996fbb7abdbc33db method=GET path=/heartbeat
+2026-04-25 04:41:46,008 INFO api.request.end request_id=a314a2221fb54ffd996fbb7abdbc33db correlation_id=a314a2221fb54ffd996fbb7abdbc33db status=200 duration_ms=2.41 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:46,011 INFO api.request.start request_id=1b6f1f284f9b43448ce97143c354c1fb correlation_id=1b6f1f284f9b43448ce97143c354c1fb method=POST path=/heartbeat
+2026-04-25 04:41:46,013 INFO middleware.start operation=heartbeat correlation_id=heartbeat-2026-04-25T04:41:46.013414+00:00
+2026-04-25 04:41:46,014 INFO middleware.end operation=heartbeat correlation_id=heartbeat-2026-04-25T04:41:46.013414+00:00
+2026-04-25 04:41:46,014 INFO api.request.end request_id=1b6f1f284f9b43448ce97143c354c1fb correlation_id=1b6f1f284f9b43448ce97143c354c1fb status=200 duration_ms=3.67 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:46,035 INFO api.request.start request_id=f24deaa243c84b4abcea6ee738be39b0 correlation_id=unauth-1 method=GET path=/health
+2026-04-25 04:41:46,036 INFO api.request.end request_id=f24deaa243c84b4abcea6ee738be39b0 correlation_id=unauth-1 status=401 duration_ms=1.17 subject=anonymous auth_mode=unknown
+2026-04-25 04:41:46,039 INFO api.request.start request_id=370ce56c8d534182b09cac581abab18c correlation_id=370ce56c8d534182b09cac581abab18c method=GET path=/health
+2026-04-25 04:41:46,041 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:41:46.041285+00:00
+2026-04-25 04:41:46,041 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:41:46.041500+00:00
+2026-04-25 04:41:46,041 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:41:46.041500+00:00
+2026-04-25 04:41:46,042 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:46.042070+00:00
+2026-04-25 04:41:46,042 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:46.042070+00:00
+2026-04-25 04:41:46,042 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:41:46.041285+00:00
+2026-04-25 04:41:46,043 INFO api.request.end request_id=370ce56c8d534182b09cac581abab18c correlation_id=370ce56c8d534182b09cac581abab18c status=200 duration_ms=3.65 subject=operator auth_mode=static_bearer
+2026-04-25 04:41:46,064 INFO api.request.start request_id=6f55f3e736194fcf816b116438334453 correlation_id=6f55f3e736194fcf816b116438334453 method=GET path=/health
+2026-04-25 04:41:46,065 INFO api.request.end request_id=6f55f3e736194fcf816b116438334453 correlation_id=6f55f3e736194fcf816b116438334453 status=401 duration_ms=0.97 subject=anonymous auth_mode=unknown
+2026-04-25 04:41:46,068 INFO api.request.start request_id=61a29fb702f94cd18a9ffb2ad4230673 correlation_id=61a29fb702f94cd18a9ffb2ad4230673 method=GET path=/health
+2026-04-25 04:41:46,069 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:41:46.069852+00:00
+2026-04-25 04:41:46,070 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:41:46.070034+00:00
+2026-04-25 04:41:46,070 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:41:46.070034+00:00
+2026-04-25 04:41:46,070 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:46.070607+00:00
+2026-04-25 04:41:46,071 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:41:46.070607+00:00
+2026-04-25 04:41:46,071 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:41:46.069852+00:00
+2026-04-25 04:41:46,071 INFO api.request.end request_id=61a29fb702f94cd18a9ffb2ad4230673 correlation_id=61a29fb702f94cd18a9ffb2ad4230673 status=200 duration_ms=3.51 subject=operator-1 auth_mode=trusted_proxy_oidc
+2026-04-25 04:41:46,091 INFO api.request.start request_id=1b96c7de4e3b47c7b2084a89aed07c77 correlation_id=1b96c7de4e3b47c7b2084a89aed07c77 method=GET path=/health
+2026-04-25 04:41:46,092 INFO api.request.end request_id=1b96c7de4e3b47c7b2084a89aed07c77 correlation_id=1b96c7de4e3b47c7b2084a89aed07c77 status=500 duration_ms=1.03 subject=anonymous auth_mode=unknown
+2026-04-25 04:41:46,111 INFO api.request.start request_id=317c67f59d6e497996f9873f00c7a5c3 correlation_id=req-404 method=GET path=/tasks/not-found
+2026-04-25 04:41:46,114 INFO middleware.start operation=get_task correlation_id=get_task-2026-04-25T04:41:46.114190+00:00
+2026-04-25 04:41:46,114 INFO middleware.end operation=get_task correlation_id=get_task-2026-04-25T04:41:46.114190+00:00
+2026-04-25 04:41:46,115 INFO api.request.end request_id=317c67f59d6e497996f9873f00c7a5c3 correlation_id=req-404 status=404 duration_ms=3.34 subject=anonymous auth_mode=disabled
+2026-04-25 04:41:46,812 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:41:46.812008+00:00
+2026-04-25 04:41:46,812 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:41:46.812008+00:00
+2026-04-25 04:41:47,722 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:41:47.722237+00:00
+2026-04-25 04:41:47,729 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:41:47.722237+00:00
+2026-04-25 04:41:48,386 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:41:48.386478+00:00
+2026-04-25 04:41:48,399 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:41:48.386478+00:00
+2026-04-25 04:41:49,068 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:41:49.068222+00:00
+2026-04-25 04:41:49,076 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:41:49.068222+00:00
+2026-04-25 04:41:49,729 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:41:49.729450+00:00
+2026-04-25 04:41:49,741 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:41:49.729450+00:00
+2026-04-25 04:42:11,715 INFO api.request.start request_id=41415ef6334c4d9b96f80ef86d87e02c correlation_id=41415ef6334c4d9b96f80ef86d87e02c method=GET path=/health
+2026-04-25 04:42:11,718 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:42:11.718330+00:00
+2026-04-25 04:42:11,718 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:42:11.718631+00:00
+2026-04-25 04:42:11,719 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:42:11.718631+00:00
+2026-04-25 04:42:11,719 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:11.719292+00:00
+2026-04-25 04:42:11,719 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:11.719292+00:00
+2026-04-25 04:42:11,720 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:42:11.718330+00:00
+2026-04-25 04:42:11,720 INFO api.request.end request_id=41415ef6334c4d9b96f80ef86d87e02c correlation_id=41415ef6334c4d9b96f80ef86d87e02c status=200 duration_ms=5.90 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:11,765 INFO api.request.start request_id=e202f0d9fc1d4fb7964b5c59aa906cff correlation_id=req-123 method=GET path=/health
+2026-04-25 04:42:11,769 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:42:11.769153+00:00
+2026-04-25 04:42:11,769 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:42:11.769561+00:00
+2026-04-25 04:42:11,770 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:42:11.769561+00:00
+2026-04-25 04:42:11,770 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:11.770796+00:00
+2026-04-25 04:42:11,772 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:11.770796+00:00
+2026-04-25 04:42:11,772 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:42:11.769153+00:00
+2026-04-25 04:42:11,773 INFO api.request.end request_id=e202f0d9fc1d4fb7964b5c59aa906cff correlation_id=req-123 status=200 duration_ms=8.27 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:11,814 INFO api.request.start request_id=dd9ab0e9bb2d4b41a986681e7fa68b7f correlation_id=dd9ab0e9bb2d4b41a986681e7fa68b7f method=POST path=/tasks
+2026-04-25 04:42:11,819 INFO middleware.start operation=queue_add correlation_id=queue_add-2026-04-25T04:42:11.818978+00:00
+2026-04-25 04:42:11,820 INFO middleware.end operation=queue_add correlation_id=queue_add-2026-04-25T04:42:11.818978+00:00
+2026-04-25 04:42:11,821 INFO api.request.end request_id=dd9ab0e9bb2d4b41a986681e7fa68b7f correlation_id=dd9ab0e9bb2d4b41a986681e7fa68b7f status=202 duration_ms=6.98 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:11,826 INFO api.request.start request_id=13fc1f62f77c4e238369002663796f7d correlation_id=13fc1f62f77c4e238369002663796f7d method=GET path=/tasks
+2026-04-25 04:42:11,830 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:11.830238+00:00
+2026-04-25 04:42:11,831 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:11.830238+00:00
+2026-04-25 04:42:11,832 INFO api.request.end request_id=13fc1f62f77c4e238369002663796f7d correlation_id=13fc1f62f77c4e238369002663796f7d status=200 duration_ms=6.16 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:11,838 INFO api.request.start request_id=b3d4a30763494ba09085655a9d4020c2 correlation_id=b3d4a30763494ba09085655a9d4020c2 method=GET path=/tasks/d42ea666e5b84b608e60f44ab44b0e92
+2026-04-25 04:42:11,842 INFO middleware.start operation=get_task correlation_id=get_task-2026-04-25T04:42:11.842353+00:00
+2026-04-25 04:42:11,843 INFO middleware.end operation=get_task correlation_id=get_task-2026-04-25T04:42:11.842353+00:00
+2026-04-25 04:42:11,844 INFO api.request.end request_id=b3d4a30763494ba09085655a9d4020c2 correlation_id=b3d4a30763494ba09085655a9d4020c2 status=200 duration_ms=5.77 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:11,882 INFO api.request.start request_id=62dea00ffaea42e58c1afe0b9341a96e correlation_id=62dea00ffaea42e58c1afe0b9341a96e method=POST path=/run
+2026-04-25 04:42:11,886 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:42:11.886592+00:00
+2026-04-25 04:42:11,898 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:42:11.886592+00:00
+2026-04-25 04:42:11,899 INFO api.request.end request_id=62dea00ffaea42e58c1afe0b9341a96e correlation_id=62dea00ffaea42e58c1afe0b9341a96e status=200 duration_ms=17.37 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:11,938 INFO api.request.start request_id=8adc6fafef154fa9a3565654c54eb541 correlation_id=8adc6fafef154fa9a3565654c54eb541 method=GET path=/heartbeat
+2026-04-25 04:42:11,943 INFO api.request.end request_id=8adc6fafef154fa9a3565654c54eb541 correlation_id=8adc6fafef154fa9a3565654c54eb541 status=200 duration_ms=4.55 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:11,949 INFO api.request.start request_id=bd9f0ae1b491467daa4e990ffce38bcc correlation_id=bd9f0ae1b491467daa4e990ffce38bcc method=POST path=/heartbeat
+2026-04-25 04:42:11,953 INFO middleware.start operation=heartbeat correlation_id=heartbeat-2026-04-25T04:42:11.953277+00:00
+2026-04-25 04:42:11,955 INFO middleware.end operation=heartbeat correlation_id=heartbeat-2026-04-25T04:42:11.953277+00:00
+2026-04-25 04:42:11,956 INFO api.request.end request_id=bd9f0ae1b491467daa4e990ffce38bcc correlation_id=bd9f0ae1b491467daa4e990ffce38bcc status=200 duration_ms=6.92 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:11,997 INFO api.request.start request_id=ea05164fcd8c42ea98e290da35adb292 correlation_id=unauth-1 method=GET path=/health
+2026-04-25 04:42:11,999 INFO api.request.end request_id=ea05164fcd8c42ea98e290da35adb292 correlation_id=unauth-1 status=401 duration_ms=1.87 subject=anonymous auth_mode=unknown
+2026-04-25 04:42:12,005 INFO api.request.start request_id=675679c35d93408a8a9dc78be97f1ead correlation_id=675679c35d93408a8a9dc78be97f1ead method=GET path=/health
+2026-04-25 04:42:12,007 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:42:12.007761+00:00
+2026-04-25 04:42:12,008 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:42:12.008229+00:00
+2026-04-25 04:42:12,008 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:42:12.008229+00:00
+2026-04-25 04:42:12,009 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:12.009275+00:00
+2026-04-25 04:42:12,010 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:12.009275+00:00
+2026-04-25 04:42:12,010 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:42:12.007761+00:00
+2026-04-25 04:42:12,011 INFO api.request.end request_id=675679c35d93408a8a9dc78be97f1ead correlation_id=675679c35d93408a8a9dc78be97f1ead status=200 duration_ms=6.60 subject=operator auth_mode=static_bearer
+2026-04-25 04:42:12,047 INFO api.request.start request_id=7bd4efae2a85401dba15dd4744f4aa58 correlation_id=7bd4efae2a85401dba15dd4744f4aa58 method=GET path=/health
+2026-04-25 04:42:12,049 INFO api.request.end request_id=7bd4efae2a85401dba15dd4744f4aa58 correlation_id=7bd4efae2a85401dba15dd4744f4aa58 status=401 duration_ms=2.16 subject=anonymous auth_mode=unknown
+2026-04-25 04:42:12,055 INFO api.request.start request_id=90747b1f2d23443ab9f76c7185329be1 correlation_id=90747b1f2d23443ab9f76c7185329be1 method=GET path=/health
+2026-04-25 04:42:12,058 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:42:12.058054+00:00
+2026-04-25 04:42:12,058 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:42:12.058436+00:00
+2026-04-25 04:42:12,059 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:42:12.058436+00:00
+2026-04-25 04:42:12,059 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:12.059533+00:00
+2026-04-25 04:42:12,060 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:12.059533+00:00
+2026-04-25 04:42:12,060 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:42:12.058054+00:00
+2026-04-25 04:42:12,061 INFO api.request.end request_id=90747b1f2d23443ab9f76c7185329be1 correlation_id=90747b1f2d23443ab9f76c7185329be1 status=200 duration_ms=5.77 subject=operator-1 auth_mode=trusted_proxy_oidc
+2026-04-25 04:42:12,082 INFO api.request.start request_id=63b030f802474bcba542ae8ce5e8d6fb correlation_id=63b030f802474bcba542ae8ce5e8d6fb method=GET path=/health
+2026-04-25 04:42:12,083 INFO api.request.end request_id=63b030f802474bcba542ae8ce5e8d6fb correlation_id=63b030f802474bcba542ae8ce5e8d6fb status=500 duration_ms=1.45 subject=anonymous auth_mode=unknown
+2026-04-25 04:42:12,103 INFO api.request.start request_id=663dd6c7d860437d9d51baf8570bae8a correlation_id=req-404 method=GET path=/tasks/not-found
+2026-04-25 04:42:12,106 INFO middleware.start operation=get_task correlation_id=get_task-2026-04-25T04:42:12.106048+00:00
+2026-04-25 04:42:12,106 INFO middleware.end operation=get_task correlation_id=get_task-2026-04-25T04:42:12.106048+00:00
+2026-04-25 04:42:12,107 INFO api.request.end request_id=663dd6c7d860437d9d51baf8570bae8a correlation_id=req-404 status=404 duration_ms=3.54 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:12,696 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:42:12.695945+00:00
+2026-04-25 04:42:12,696 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:42:12.695945+00:00
+2026-04-25 04:42:13,361 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:42:13.361160+00:00
+2026-04-25 04:42:13,369 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:42:13.361160+00:00
+2026-04-25 04:42:14,099 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:42:14.099295+00:00
+2026-04-25 04:42:14,107 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:42:14.099295+00:00
+2026-04-25 04:42:14,843 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:42:14.843683+00:00
+2026-04-25 04:42:14,849 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:42:14.843683+00:00
+2026-04-25 04:42:15,555 INFO middleware.start operation=run_task correlation_id=run_task-2026-04-25T04:42:15.555607+00:00
+2026-04-25 04:42:15,568 INFO middleware.end operation=run_task correlation_id=run_task-2026-04-25T04:42:15.555607+00:00
+2026-04-25 04:42:44,507 INFO api.request.start request_id=0c71545f0e3148098f0a7bd818eeb74d correlation_id=0c71545f0e3148098f0a7bd818eeb74d method=GET path=/
+2026-04-25 04:42:44,510 INFO api.request.end request_id=0c71545f0e3148098f0a7bd818eeb74d correlation_id=0c71545f0e3148098f0a7bd818eeb74d status=307 duration_ms=3.22 subject=anonymous auth_mode=unknown
+2026-04-25 04:42:44,534 INFO api.request.start request_id=8282faf7694e4d74a6be802f96e91390 correlation_id=8282faf7694e4d74a6be802f96e91390 method=GET path=/healthz
+2026-04-25 04:42:44,536 INFO middleware.start operation=health correlation_id=health-2026-04-25T04:42:44.536408+00:00
+2026-04-25 04:42:44,536 INFO middleware.start operation=doctor correlation_id=doctor-2026-04-25T04:42:44.536780+00:00
+2026-04-25 04:42:44,537 INFO middleware.end operation=doctor correlation_id=doctor-2026-04-25T04:42:44.536780+00:00
+2026-04-25 04:42:44,537 INFO middleware.start operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:44.537440+00:00
+2026-04-25 04:42:44,538 INFO middleware.end operation=list_tasks correlation_id=list_tasks-2026-04-25T04:42:44.537440+00:00
+2026-04-25 04:42:44,538 INFO middleware.end operation=health correlation_id=health-2026-04-25T04:42:44.536408+00:00
+2026-04-25 04:42:44,539 INFO api.request.end request_id=8282faf7694e4d74a6be802f96e91390 correlation_id=8282faf7694e4d74a6be802f96e91390 status=200 duration_ms=4.98 subject=anonymous auth_mode=disabled
+2026-04-25 04:42:44,562 INFO api.request.start request_id=ff45777c2af748fca8c300ad229f518f correlation_id=ff45777c2af748fca8c300ad229f518f method=GET path=/tasks/missing-task-123
+2026-04-25 04:42:44,565 INFO middleware.start operation=get_task correlation_id=get_task-2026-04-25T04:42:44.565734+00:00
+2026-04-25 04:42:44,566 INFO middleware.end operation=get_task correlation_id=get_task-2026-04-25T04:42:44.565734+00:00
+2026-04-25 04:42:44,567 INFO api.request.end request_id=ff45777c2af748fca8c300ad229f518f correlation_id=ff45777c2af748fca8c300ad229f518f status=404 duration_ms=4.09 subject=anonymous auth_mode=disabled

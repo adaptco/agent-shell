@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 from runtime.api_auth import OperatorIdentity, get_auth_dependency
@@ -13,18 +13,35 @@ from runtime.service import AgentService
 
 
 class TaskCreateRequest(BaseModel):
-    task: str = Field(..., min_length=1)
-    parent_task_id: str | None = None
-    assigned_subagent: str | None = None
+    task: str = Field(
+        ...,
+        min_length=1,
+        description="The text description of the task to be enqueued.",
+    )
+    parent_task_id: str | None = Field(
+        None, description="Optional ID of a parent task if this is a subtask."
+    )
+    assigned_subagent: str | None = Field(
+        None, description="Optional name of a specific subagent to handle this task."
+    )
 
 
 class RunRequest(BaseModel):
-    task: str = Field(..., min_length=1)
-    backend: str = "mock"
+    task: str = Field(
+        ...,
+        min_length=1,
+        description="The task to run immediately in the reasoning loop.",
+    )
+    backend: str = Field(
+        "mock",
+        description="The LLM backend to use for this execution (e.g., 'mock', 'openai', 'mistral').",
+    )
 
 
 class HeartbeatRequest(BaseModel):
-    worker_id: str | None = None
+    worker_id: str | None = Field(
+        None, description="Optional identifier for the worker emitting the heartbeat."
+    )
 
 
 def _error_content(request: Request, detail: object, error: str) -> dict[str, object]:
@@ -66,7 +83,13 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         request.state.auth_context = operator.__dict__
         return operator
 
+    @app.get("/", include_in_schema=False)
+    def root_redirect():
+        """Redirect root to API documentation."""
+        return RedirectResponse(url="/docs")
+
     @app.get("/health")
+    @app.get("/healthz", include_in_schema=False)
     def health(
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -107,32 +130,37 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     ):
         result = service.get_task(task_id)
         if result is None:
-            raise HTTPException(status_code=404, detail="Task not found")
+            raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
         return {"task": result, "operator": operator.__dict__}
 
     @app.get("/tasks/{task_id}/stream")
-    async def stream_task(task_id: str, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def stream_task(
+        task_id: str,
+        operator: OperatorIdentity = Depends(service_auth),
+        service: AgentService = Depends(svc),
+    ):
         task_info = service.get_task(task_id)
         if task_info is None:
-            raise HTTPException(status_code=404, detail="Task not found")
+            raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
 
         async def event_generator():
             import asyncio
             import json
             from runtime.utils import read_json
-            
+
             seen_receipts = set()
             while True:
                 current_task = service.get_task(task_id)
-                
+
                 if service.receipts and service.receipts.root.exists():
                     # Use to_thread to avoid blocking event loop with rglob
                     def get_new_receipts():
                         return [
-                            str(p) for p in service.receipts.root.rglob(f"*{task_id}*.json")
+                            str(p)
+                            for p in service.receipts.root.rglob(f"*{task_id}*.json")
                             if str(p) not in seen_receipts
                         ]
-                    
+
                     new_paths = await asyncio.to_thread(get_new_receipts)
                     for path_str in sorted(new_paths):
                         try:
@@ -141,18 +169,18 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                             seen_receipts.add(path_str)
                         except Exception:
                             pass
-                
+
                 if current_task:
                     status = current_task.get("status")
                     if status in ("done", "failed"):
                         yield f"event: final\ndata: {json.dumps(current_task)}\n\n"
                         break
-                        
+
                 await asyncio.sleep(2)
 
         from fastapi.responses import StreamingResponse
-        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
     @app.post("/run")
     def run_task(
@@ -169,7 +197,10 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
-        return {"runtime_state": service.get_runtime_state(), "operator": operator.__dict__}
+        return {
+            "runtime_state": service.get_runtime_state(),
+            "operator": operator.__dict__,
+        }
 
     @app.post("/heartbeat")
     def emit_heartbeat(
@@ -189,7 +220,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         )
 
     @app.exception_handler(RequestValidationError)
-    async def handled_validation_exception(request: Request, exc: RequestValidationError):
+    async def handled_validation_exception(
+        request: Request, exc: RequestValidationError
+    ):
         return JSONResponse(
             status_code=422,
             content=_error_content(request, exc.errors(), "RequestValidationError"),
@@ -199,7 +232,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     async def unhandled_exception_handler(request: Request, exc: Exception):
         return JSONResponse(
             status_code=500,
-            content=_error_content(request, "Internal server error", type(exc).__name__),
+            content=_error_content(
+                request, "Internal server error", type(exc).__name__
+            ),
         )
 
     return app
