@@ -110,8 +110,9 @@ class FileTaskQueue:
 
         # 1. Direct lookups for states where filename is exactly {task_id}.json
         # This is O(1) per directory checked.
+        dirs = self._dirs()
         for status in ["queued", "done", "failed"]:
-            directory = self._dirs()[status]
+            directory = dirs[status]
             path = directory / filename
             if path.is_file():
                 data = read_json(path)
