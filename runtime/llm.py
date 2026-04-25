@@ -155,7 +155,10 @@ class MistralChatBackend(BaseBackend):
         self.endpoint = cfg["llm"]["mistral"]["endpoint"]
         self.model = cfg["llm"]["mistral"]["model"]
         self.api_key = get_env(
-            cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var")
+            cfg.get("auth", {})
+            .get("providers", {})
+            .get("mistral", {})
+            .get("env_var", "MISTRAL_API_KEY")
         )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
