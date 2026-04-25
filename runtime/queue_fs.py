@@ -18,7 +18,12 @@ class FileTaskQueue:
         for path in [self.inbox, self.working, self.done, self.failed]:
             path.mkdir(parents=True, exist_ok=True)
 
-    def enqueue(self, task_text: str, parent_task_id: str | None = None, assigned_subagent: str | None = None) -> Path:
+    def enqueue(
+        self,
+        task_text: str,
+        parent_task_id: str | None = None,
+        assigned_subagent: str | None = None,
+    ) -> Path:
         task_id = uuid4().hex
         task = {
             "task_id": task_id,
@@ -89,15 +94,38 @@ class FileTaskQueue:
                 data["queue_state"] = status
                 data["path"] = str(path)
                 items.append(data)
-        items.sort(key=lambda item: item.get("updated_at") or item.get("created_at") or "", reverse=True)
+        items.sort(
+            key=lambda item: item.get("updated_at") or item.get("created_at") or "",
+            reverse=True,
+        )
         return {"counts": counts, "items": items[:limit]}
 
     def get_task(self, task_id: str) -> dict | None:
-        suffix = f"{task_id}.json"
-        for status, directory in self._dirs().items():
-            for path in directory.glob(f"*{suffix}"):
+        """
+        Retrieves a task by its ID.
+        Optimized to use direct filesystem lookups for queued, done, and failed tasks,
+        and a targeted glob for working tasks to avoid O(N) directory scanning.
+        """
+        filename = f"{task_id}.json"
+
+        # 1. Direct lookups for states where filename is exactly {task_id}.json
+        # This is O(1) per directory checked.
+        for status in ["queued", "done", "failed"]:
+            directory = self._dirs()[status]
+            path = directory / filename
+            if path.is_file():
                 data = read_json(path)
                 data["queue_state"] = status
                 data["path"] = str(path)
                 return data
+
+        # 2. Targeted lookup for working tasks (named "{worker_id}--{task_id}.json")
+        # Narrows the glob search significantly.
+        for path in self.working.glob(f"*--{filename}"):
+            if path.is_file():
+                data = read_json(path)
+                data["queue_state"] = "working"
+                data["path"] = str(path)
+                return data
+
         return None
