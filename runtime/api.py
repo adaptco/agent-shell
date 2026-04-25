@@ -150,7 +150,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
 
             seen_receipts = set()
             while True:
-                current_task = service.get_task(task_id)
+                current_task = await asyncio.to_thread(service.get_task, task_id)
 
                 if service.receipts and service.receipts.root.exists():
                     # Use to_thread to avoid blocking event loop with rglob
