@@ -157,11 +157,11 @@ class ToolRegistry:
 
             # Lazy load plugins
             if plugin_type == "mcp":
-                from runtime.mcp_adapter import MCPToolPlugin
+                from runtime.mcp_adapter import MCPToolPlugin  # type: ignore
 
                 plugin = MCPToolPlugin(self.cfg)
             elif plugin_type == "desktop":
-                from runtime.computer_use_tool import ComputerUseTool
+                from runtime.computer_use_tool import ComputerUseTool  # type: ignore
 
                 plugin = ComputerUseTool(self.cfg)
             else:
