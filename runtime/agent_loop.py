@@ -34,13 +34,13 @@ class AgentLoop:
         path = Path(self.cfg["_workspace"]) / self.cfg["state"]["markdown_state"]
         path.write_text(
             "# Agent State\n\n"
-            "## Status\n"
+            "## Status\n\n"
             f"{result.get('status', 'complete')}\n\n"
-            "## Last Task\n"
+            "## Last Task\n\n"
             f"{task['task']}\n\n"
-            "## Last Result\n"
+            "## Last Result\n\n"
             f"{result.get('final_response', result.get('summary', 'n/a'))}\n\n"
-            "## Last Updated\n"
+            "## Last Updated\n\n"
             f"{utc_now()}\n",
             encoding="utf-8",
         )

@@ -59,14 +59,23 @@ class BuiltinToolPlugin(ToolPlugin):
 
     def _bash(self, tool_input: dict) -> dict:
         import shlex
+        import os
 
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
-        # Avoid shell=True for security to mitigate shell injection
-        args = shlex.split(command)
+
+        is_windows = os.name == "nt"
+        if is_windows:
+            args = command
+            use_shell = True
+        else:
+            # Avoid shell=True for security to mitigate shell injection
+            args = shlex.split(command)
+            use_shell = False
+
         completed = subprocess.run(
             args,
-            shell=False,
+            shell=use_shell,
             capture_output=True,
             text=True,
             cwd=self.config["_workspace"],
@@ -148,11 +157,11 @@ class ToolRegistry:
 
             # Lazy load plugins
             if plugin_type == "mcp":
-                from runtime.mcp_adapter import MCPToolPlugin
+                from runtime.mcp_adapter import MCPToolPlugin  # type: ignore
 
                 plugin = MCPToolPlugin(self.cfg)
             elif plugin_type == "desktop":
-                from runtime.computer_use_tool import ComputerUseTool
+                from runtime.computer_use_tool import ComputerUseTool  # type: ignore
 
                 plugin = ComputerUseTool(self.cfg)
             else:

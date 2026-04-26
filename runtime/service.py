@@ -135,13 +135,13 @@ class AgentService:
             "run_next", {"backend_name": backend_name, "worker_id": worker_id}, _handler
         )
 
-    def run_task(self, task: str, backend_name: str) -> dict:
+    def run_task(self, task: str, backend_name: str, subagent_name: str | None = None) -> dict:
         def _handler(payload):
-            queued = self.queue.enqueue(task)
+            queued = self.queue.enqueue(task, assigned_subagent=subagent_name)
             task_obj = read_json(queued)
             queued.unlink()
             loop = self._loop_factory(backend_name)
-            result = loop.run_task(task_obj)
+            result = loop.run_task(task_obj, subagent_name=subagent_name)
             return {"result": result}
 
         return self.middleware.run(

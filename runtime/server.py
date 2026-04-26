@@ -11,7 +11,7 @@ def main(argv=None) -> int:
         "--host", default=cfg.get("service", {}).get("host", "127.0.0.1")
     )
     parser.add_argument(
-        "--port", type=int, default=cfg.get("service", {}).get("port", 8000)
+        "--port", type=int, default=cfg.get("service", {}).get("port", 0)
     )
     parser.add_argument("--reload", action="store_true")
     args = parser.parse_args(argv)
