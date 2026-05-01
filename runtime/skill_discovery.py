@@ -31,15 +31,14 @@ class SkillDiscovery:
                     # Simple extraction of title/description
                     title = item.name
                     description = content.split("\n", 1)[0].lstrip("#").strip()
-                    
-                    if not query or query in title.lower() or query in description.lower():
-                        skills.append({
-                            "name": title,
-                            "description": description,
-                            "path": str(item.relative_to(Path(self.config["_workspace"])))
-                        })
 
-        return {
-            "skills": skills,
-            "count": len(skills)
-        }
+                    if not query or query in title.lower() or query in description.lower():
+                        skills.append(
+                            {
+                                "name": title,
+                                "description": description,
+                                "path": str(item.relative_to(Path(self.config["_workspace"]))),
+                            }
+                        )
+
+        return {"skills": skills, "count": len(skills)}

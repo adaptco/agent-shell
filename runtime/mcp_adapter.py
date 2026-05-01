@@ -13,7 +13,7 @@ class MCPToolPlugin(ToolPlugin):
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
         self.specs: Dict[str, Dict] = {}
-        # For now, we'll implement a built-in 'discover_skills' tool 
+        # For now, we'll implement a built-in 'discover_skills' tool
         # as a bridge to Phase 4, served via the MCP adapter logic.
         self._load_local_mcp_specs()
 
@@ -24,9 +24,10 @@ class MCPToolPlugin(ToolPlugin):
         # For debugging, we expose the 'discover_skills' tool here.
         registry_dir = resolve_path(self.config, self.config["tools"]["registry_dir"])
         discovery_spec_path = registry_dir / "discover_skills.json"
-        
+
         if discovery_spec_path.exists():
             from runtime.utils import read_json
+
             self.specs["discover_skills"] = read_json(discovery_spec_path)
 
     def get_tool_specs(self) -> Dict[str, Dict]:
@@ -35,7 +36,8 @@ class MCPToolPlugin(ToolPlugin):
     def execute(self, tool_name: str, tool_input: Dict[str, Any]) -> Dict[str, Any]:
         if tool_name == "discover_skills":
             from runtime.skill_discovery import SkillDiscovery
+
             discovery = SkillDiscovery(self.config)
             return discovery.run(tool_input)
-        
+
         raise ValueError(f"MCP tool not found: {tool_name}")

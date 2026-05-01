@@ -13,7 +13,7 @@ class SafetyHookHandler(HookHandler):
             return self._check_tool_call(payload)
         elif hook_name == "before_model_call":
             return self._check_model_input(payload)
-        
+
         return {"allow": True, "payload": payload}
 
     def _check_tool_call(self, payload: dict) -> dict:
@@ -40,9 +40,9 @@ class SafetyHookHandler(HookHandler):
                     return {
                         "allow": False,
                         "payload": payload,
-                        "reason": f"Dangerous command pattern detected: {pattern}"
+                        "reason": f"Dangerous command pattern detected: {pattern}",
                     }
-        
+
         return {"allow": True, "payload": payload}
 
     def _check_model_input(self, payload: dict) -> dict:

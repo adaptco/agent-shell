@@ -32,21 +32,21 @@ def apply_refactor(feedback, cfg):
         return False
 
     print(f"Found {len(feedback)} comments. Starting refactor...")
-    
+
     # Load LLM backend from config
     backend_name = cfg["llm"]["default_backend"]
     _ = get_backend(backend_name, cfg)
-    
+
     # Build a prompt to refactor the code based on feedback
     # Note: A real implementation would need to identify which files to refactor.
     # For now, we'll focus on the intent and a sample file if provided in feedback.
-    
+
     # [Placeholder for complex file identification logic]
     # In a real scenario, we'd loop through files mentioned or relevant to the feedback.
-    
+
     print("Self-heal script: Refactoring logic would call the LLM backend here.")
     # result = backend.decide(...)
-    
+
     return True
 
 
@@ -62,7 +62,7 @@ def main():
     cfg = load_config()
     comments = fetch_comments(pr_number)
     feedback = extract_gemini_feedback(comments)
-    
+
     if apply_refactor(feedback, cfg):
         # Commit and push changes
         print("Committing and pushing refactored code...")

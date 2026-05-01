@@ -48,10 +48,7 @@ class ReceiptWriter:
         """Recursively scrub sensitive keys from data"""
         sensitive_keys = {"api_key", "token", "secret", "password", "auth", "bearer", "authorization"}
         if isinstance(data, dict):
-            return {
-                k: (self._scrub(v) if k.lower() not in sensitive_keys else "[REDACTED]")
-                for k, v in data.items()
-            }
+            return {k: (self._scrub(v) if k.lower() not in sensitive_keys else "[REDACTED]") for k, v in data.items()}
         elif isinstance(data, list):
             return [self._scrub(item) for item in data]
         return data
