@@ -139,7 +139,6 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     @app.get("/tasks/{task_id}/stream")
     async def stream_task(
         task_id: str,
-<<<<<<< HEAD
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
