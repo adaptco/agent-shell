@@ -10,6 +10,7 @@ from runtime.api_auth import OperatorIdentity, get_auth_dependency
 from runtime.config import load_config
 from runtime.middleware import install_http_middleware
 from runtime.service import AgentService
+from runtime.utils import is_valid_id
 
 
 class TaskCreateRequest(BaseModel):
@@ -105,6 +106,8 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
+        if not is_valid_id(task_id):
+            raise HTTPException(status_code=400, detail="Invalid task ID format")
         result = service.get_task(task_id)
         if result is None:
             raise HTTPException(status_code=404, detail="Task not found")
@@ -116,6 +119,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         operator: OperatorIdentity = Depends(service_auth),
         service: AgentService = Depends(svc),
     ):
+        if not is_valid_id(task_id):
+            raise HTTPException(status_code=400, detail="Invalid task ID format")
+
         task_info = service.get_task(task_id)
         if task_info is None:
             raise HTTPException(status_code=404, detail="Task not found")
