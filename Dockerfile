@@ -35,12 +35,17 @@ COPY infra ./infra
 COPY tools ./tools
 COPY configs ./configs
 COPY skill ./skill
+COPY schemas ./schemas
+COPY state ./state
+
+# Pre-create data directories
+RUN mkdir -p logs receipts memory queue/inbox queue/working queue/done queue/failed
 
 # Ensure the installed package scripts are in the PATH
 ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONUNBUFFERED=1
 
-# Health check
+# Health check (Public endpoint, no auth required)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 

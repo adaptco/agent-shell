@@ -85,13 +85,8 @@ def create_app(cfg: dict | None = None) -> FastAPI:
 
     @app.get("/health")
     @app.get("/healthz", include_in_schema=False)
-    def health(
-        operator: OperatorIdentity = Depends(auth_operator),
-        service: AgentService = Depends(svc),
-    ):
-        result = service.health()
-        result["operator"] = operator.__dict__
-        return result
+    def health():
+        return {"status": "ok", "version": cfg.get("version", "0.0.0")}
 
     @app.get("/tasks")
     def list_tasks(
