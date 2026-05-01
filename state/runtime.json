@@ -1,10 +1,10 @@
 {
   "status": "idle",
-  "last_heartbeat": "2026-05-01T16:24:58.486790+00:00",
-  "last_task_id": "e5f654088a6347c5a565a04e2a5520cf",
+  "last_heartbeat": "2026-05-01T16:26:12.776129+00:00",
+  "last_task_id": "56b0f37e3e8944668006969230a06aa8",
   "last_worker_id": null,
   "memory": {
-    "entries": 8,
-    "last_compaction": "2026-05-01T16:24:58.433443+00:00"
+    "entries": 5,
+    "last_compaction": "2026-05-01T16:26:16.889892+00:00"
   }
 }
