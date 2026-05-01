@@ -27,8 +27,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Copy only the installed packages from builder
+# Copy from builder
 COPY --from=builder /root/.local /root/.local
+
+# Copy necessary configuration and asset directories
+COPY infra ./infra
+COPY tools ./tools
+COPY configs ./configs
+COPY skill ./skill
 
 # Ensure the installed package scripts are in the PATH
 ENV PATH=/root/.local/bin:$PATH
