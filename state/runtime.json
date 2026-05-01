@@ -1,4 +1,5 @@
 {
+<<<<<<< sentinel/fix-glob-injection-13435241567245700627
   "status": "alive",
   "last_heartbeat": "2026-04-26T21:50:31.779449+00:00",
   "last_task_id": "c8c2a8bb6d9948939be6c8053cbb79a4",
@@ -6,5 +7,14 @@
   "memory": {
     "entries": 5,
     "last_compaction": "2026-04-26T21:50:31.753709+00:00"
+=======
+  "status": "idle",
+  "last_heartbeat": "2026-04-25T13:45:31.893721+00:00",
+  "last_task_id": "2bb1f7d456c9461d8494f2b229d45cd5",
+  "last_worker_id": null,
+  "memory": {
+    "entries": 6,
+    "last_compaction": "2026-04-25T14:00:35.809662+00:00"
+>>>>>>> main
   }
 }
