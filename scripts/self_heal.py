@@ -3,7 +3,6 @@ import sys
 import time
 import json
 import subprocess
-from pathlib import Path
 from runtime.config import load_config
 from runtime.llm import get_backend
 
@@ -36,7 +35,7 @@ def apply_refactor(feedback, cfg):
     
     # Load LLM backend from config
     backend_name = cfg["llm"]["default_backend"]
-    backend = get_backend(backend_name, cfg)
+    _ = get_backend(backend_name, cfg)
     
     # Build a prompt to refactor the code based on feedback
     # Note: A real implementation would need to identify which files to refactor.

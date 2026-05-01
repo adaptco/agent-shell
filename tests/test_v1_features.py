@@ -1,9 +1,6 @@
 import pytest
-import json
-from pathlib import Path
 from runtime.safety_hooks import SafetyHookHandler
 from runtime.receipts import ReceiptWriter
-from runtime.mcp_adapter import MCPToolPlugin
 from runtime.skill_discovery import SkillDiscovery
 
 

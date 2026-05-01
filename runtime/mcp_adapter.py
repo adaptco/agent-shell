@@ -1,5 +1,4 @@
 from __future__ import annotations
-import json
 from typing import Dict, Any
 from runtime.plugin_base import ToolPlugin
 from runtime.config import resolve_path
