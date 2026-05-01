@@ -58,6 +58,7 @@ class BuiltinToolPlugin(ToolPlugin):
 
     def _bash(self, tool_input: dict) -> dict:
         import shlex
+        import shutil
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
         allowed = set(self.config.get("tools", {}).get("bash", {}).get("allow_prefixes", []))
@@ -66,8 +67,13 @@ class BuiltinToolPlugin(ToolPlugin):
             raise ValueError("empty command")
         if allowed and args[0] not in allowed:
             raise ValueError(f"command not allowed: {args[0]}")
+        # Resolve the executable via PATH so Windows can locate .exe/.cmd files
+        # without introducing a shell layer (which would allow metacharacter injection).
+        executable = shutil.which(args[0])
+        if executable is None:
+            raise ValueError(f"executable not found: {args[0]}")
         completed = subprocess.run(
-            (["cmd.exe", "/c"] + args if os.name == "nt" else args),
+            [executable] + args[1:],
             shell=False,
             capture_output=True,
             text=True,
