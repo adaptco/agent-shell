@@ -143,11 +143,11 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                         # but we still prefer a non-recursive approach or explicit check if possible.
                         # Given receipts are in date-partitioned dirs, rglob is used.
                         # We use literal match in the name part to avoid glob character injection.
-                        results = []
-                        for p in service.receipts.root.rglob("*.json"):
-                            if task_id in p.name and str(p) not in seen_receipts:
-                                results.append(str(p))
-                        return results
+                        return [
+                            str(p)
+                            for p in service.receipts.root.rglob(f"*{task_id}*.json")
+                            if str(p) not in seen_receipts
+                        ]
 
                     new_paths = await asyncio.to_thread(get_new_receipts)
                     for path_str in sorted(new_paths):
