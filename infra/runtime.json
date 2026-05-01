@@ -163,7 +163,7 @@
   "service": {
     "enabled": true,
     "host": "127.0.0.1",
-    "port": 8000,
+    "port": 0,
     "base_path": "",
     "title": "Agent Shell Service Runtime API",
     "cors": {

@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from uuid import uuid4
 from runtime.config import resolve_path
-from runtime.utils import utc_now, read_json, write_json
+from runtime.utils import utc_now, read_json, write_json, is_valid_id
 from runtime.validation import validate
 
 
@@ -104,8 +104,12 @@ class FileTaskQueue:
         """
         Retrieves a task by its ID.
         Optimized to use direct filesystem lookups for queued, done, and failed tasks,
-        and a targeted glob for working tasks to avoid O(N) directory scanning.
+        and a targeted scan for working tasks.
+        Validates ID format to prevent path traversal or injection.
         """
+        if not is_valid_id(task_id):
+            return None
+
         filename = f"{task_id}.json"
 
         # 1. Direct lookups for states where filename is exactly {task_id}.json
@@ -120,13 +124,15 @@ class FileTaskQueue:
                 data["path"] = str(path)
                 return data
 
-        # 2. Targeted lookup for working tasks (named "{worker_id}--{task_id}.json")
-        # Narrows the glob search significantly.
-        for path in self.working.glob(f"*--{filename}"):
-            if path.is_file():
+        # 2. Targeted scan for working tasks (named "{worker_id}--{task_id}.json")
+        # Uses iterdir + endswith to avoid glob character injection issues.
+        for path in self.working.iterdir():
+            if path.name.endswith(f"--{filename}"):
                 data = read_json(path)
                 data["queue_state"] = "working"
                 data["path"] = str(path)
                 return data
+
+        return None
 
         return None

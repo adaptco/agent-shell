@@ -1,4 +1,0 @@
-{"event_type": "final", "summary": "Sub-agent completed after one tool step.", "created_at": "2026-04-25T04:46:44.108105+00:00"}
-{"event_type": "delegate_result", "summary": "This task is bounded and can be delegated.", "created_at": "2026-04-25T04:46:44.109155+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-25T04:46:44.110190+00:00"}
-{"event_type": "compaction_marker", "summary": "Archived 9 entries", "created_at": "2026-04-25T04:46:44.111124+00:00"}

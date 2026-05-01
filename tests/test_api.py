@@ -48,7 +48,9 @@ def test_tasks_endpoint_and_lookup():
 
 def test_run_endpoint():
     client = _client()
-    response = client.post("/run", json={"task": "Read the agent file", "backend": "mock"})
+    response = client.post(
+        "/run", json={"task": "Read the agent file", "backend": "mock"}
+    )
     assert response.status_code == 200
     assert response.json()["result"]["status"] == "done"
 
@@ -86,7 +88,10 @@ def test_service_boundary_trusted_proxy_auth():
     assert unauthorized.status_code == 401
     authorized = client.get(
         "/health",
-        headers={"x-auth-request-user": "operator-1", "x-auth-request-email": "operator@example.com"},
+        headers={
+            "x-auth-request-user": "operator-1",
+            "x-auth-request-email": "operator@example.com",
+        },
     )
     assert authorized.status_code == 200
     assert authorized.json()["operator"]["subject"] == "operator-1"
@@ -104,7 +109,9 @@ def test_auth_mode_oidc_jwt_fails_closed_when_unconfigured():
 
 def test_http_exception_includes_correlation_id():
     client = _client()
-    response = client.get("/tasks/not-found", headers={"x-correlation-id": "req-404"})
+    # Use a valid hex ID that doesn't exist to trigger 404
+    fake_id = "0" * 32
+    response = client.get(f"/tasks/{fake_id}", headers={"x-correlation-id": "req-404"})
     assert response.status_code == 404
     assert response.json()["detail"] == "Task not found"
     assert response.json()["correlation_id"] == "req-404"
