@@ -4,6 +4,8 @@ __pycache__/
 
 .pytest_cache/
 .venv/
+.coverage
+coverage.xml
 
 # Build outputs
 dist/
@@ -13,14 +15,10 @@ build/
 # Runtime output / local state
 receipts/
 logs/
-memory/journal.jsonl
-memory/summary.md
+memory/
+queue/
 state/runtime.json
 state/agent-state.md
-memory/archive/
-queue/inbox/*.json
-queue/handoffs/*.json
 
 # Local nested clone (do not commit)
 agent-shell/
-

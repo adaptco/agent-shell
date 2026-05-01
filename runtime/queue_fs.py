@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from uuid import uuid4
 from runtime.config import resolve_path
-from runtime.utils import utc_now, read_json, write_json
+from runtime.utils import utc_now, read_json, write_json, is_valid_id
 from runtime.validation import validate
 
 
@@ -18,7 +18,12 @@ class FileTaskQueue:
         for path in [self.inbox, self.working, self.done, self.failed]:
             path.mkdir(parents=True, exist_ok=True)
 
-    def enqueue(self, task_text: str, parent_task_id: str | None = None, assigned_subagent: str | None = None) -> Path:
+    def enqueue(
+        self,
+        task_text: str,
+        parent_task_id: str | None = None,
+        assigned_subagent: str | None = None,
+    ) -> Path:
         task_id = uuid4().hex
         task = {
             "task_id": task_id,
@@ -89,15 +94,39 @@ class FileTaskQueue:
                 data["queue_state"] = status
                 data["path"] = str(path)
                 items.append(data)
-        items.sort(key=lambda item: item.get("updated_at") or item.get("created_at") or "", reverse=True)
+        items.sort(
+            key=lambda item: item.get("updated_at") or item.get("created_at") or "",
+            reverse=True,
+        )
         return {"counts": counts, "items": items[:limit]}
 
     def get_task(self, task_id: str) -> dict | None:
-        suffix = f"{task_id}.json"
-        for status, directory in self._dirs().items():
-            for path in directory.glob(f"*{suffix}"):
+        """Retrieve a task by ID. Validates ID format to prevent glob injection."""
+        if not is_valid_id(task_id):
+            return None
+
+        filename = f"{task_id}.json"
+
+        # 1. Direct checks for inbox, done, failed (O(1))
+        for status, directory in [
+            ("queued", self.inbox),
+            ("done", self.done),
+            ("failed", self.failed),
+        ]:
+            path = directory / filename
+            if path.exists():
                 data = read_json(path)
                 data["queue_state"] = status
                 data["path"] = str(path)
                 return data
+
+        # 2. Check working directory (files are prefixed with worker_id--)
+        # Use literal string match on suffix to avoid glob injection
+        for path in self.working.iterdir():
+            if path.name.endswith(f"--{filename}"):
+                data = read_json(path)
+                data["queue_state"] = "working"
+                data["path"] = str(path)
+                return data
+
         return None

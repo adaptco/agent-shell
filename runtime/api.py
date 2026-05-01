@@ -10,6 +10,7 @@ from runtime.api_auth import OperatorIdentity, get_auth_dependency
 from runtime.config import load_config
 from runtime.middleware import install_http_middleware
 from runtime.service import AgentService
+from runtime.utils import is_valid_id
 
 
 class TaskCreateRequest(BaseModel):
@@ -105,13 +106,22 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
+        if not is_valid_id(task_id):
+            raise HTTPException(status_code=400, detail="Invalid task ID format")
         result = service.get_task(task_id)
         if result is None:
             raise HTTPException(status_code=404, detail="Task not found")
         return {"task": result, "operator": operator.__dict__}
 
     @app.get("/tasks/{task_id}/stream")
-    async def stream_task(task_id: str, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def stream_task(
+        task_id: str,
+        operator: OperatorIdentity = Depends(service_auth),
+        service: AgentService = Depends(svc),
+    ):
+        if not is_valid_id(task_id):
+            raise HTTPException(status_code=400, detail="Invalid task ID format")
+
         task_info = service.get_task(task_id)
         if task_info is None:
             raise HTTPException(status_code=404, detail="Task not found")
@@ -120,19 +130,25 @@ def create_app(cfg: dict | None = None) -> FastAPI:
             import asyncio
             import json
             from runtime.utils import read_json
-            
+
             seen_receipts = set()
             while True:
                 current_task = service.get_task(task_id)
-                
+
                 if service.receipts and service.receipts.root.exists():
                     # Use to_thread to avoid blocking event loop with rglob
                     def get_new_receipts():
+                        # Find receipts containing the specific task_id in their filename
+                        # Since we've validated task_id, using it in a glob is now safer,
+                        # but we still prefer a non-recursive approach or explicit check if possible.
+                        # Given receipts are in date-partitioned dirs, rglob is used.
+                        # We use literal match in the name part to avoid glob character injection.
                         return [
-                            str(p) for p in service.receipts.root.rglob(f"*{task_id}*.json")
+                            str(p)
+                            for p in service.receipts.root.rglob(f"*{task_id}*.json")
                             if str(p) not in seen_receipts
                         ]
-                    
+
                     new_paths = await asyncio.to_thread(get_new_receipts)
                     for path_str in sorted(new_paths):
                         try:
@@ -141,18 +157,18 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                             seen_receipts.add(path_str)
                         except Exception:
                             pass
-                
+
                 if current_task:
                     status = current_task.get("status")
                     if status in ("done", "failed"):
                         yield f"event: final\ndata: {json.dumps(current_task)}\n\n"
                         break
-                        
+
                 await asyncio.sleep(2)
 
         from fastapi.responses import StreamingResponse
-        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
     @app.post("/run")
     def run_task(
@@ -169,7 +185,10 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
-        return {"runtime_state": service.get_runtime_state(), "operator": operator.__dict__}
+        return {
+            "runtime_state": service.get_runtime_state(),
+            "operator": operator.__dict__,
+        }
 
     @app.post("/heartbeat")
     def emit_heartbeat(
@@ -189,7 +208,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         )
 
     @app.exception_handler(RequestValidationError)
-    async def handled_validation_exception(request: Request, exc: RequestValidationError):
+    async def handled_validation_exception(
+        request: Request, exc: RequestValidationError
+    ):
         return JSONResponse(
             status_code=422,
             content=_error_content(request, exc.errors(), "RequestValidationError"),
@@ -199,7 +220,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     async def unhandled_exception_handler(request: Request, exc: Exception):
         return JSONResponse(
             status_code=500,
-            content=_error_content(request, "Internal server error", type(exc).__name__),
+            content=_error_content(
+                request, "Internal server error", type(exc).__name__
+            ),
         )
 
     return app

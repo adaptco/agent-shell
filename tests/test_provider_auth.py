@@ -20,7 +20,9 @@ def test_mistral_backend_uses_server_side_env_var(monkeypatch: pytest.MonkeyPatc
     assert backend.api_key == "mistral-test-key"
 
 
-def test_provider_backend_rejects_missing_server_side_keys(monkeypatch: pytest.MonkeyPatch):
+def test_provider_backend_rejects_missing_server_side_keys(
+    monkeypatch: pytest.MonkeyPatch,
+):
     cfg = load_config()
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
