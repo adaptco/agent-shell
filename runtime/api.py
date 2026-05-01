@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 from runtime.api_auth import OperatorIdentity, get_auth_dependency
@@ -14,18 +14,35 @@ from runtime.utils import is_valid_id
 
 
 class TaskCreateRequest(BaseModel):
-    task: str = Field(..., min_length=1)
-    parent_task_id: str | None = None
-    assigned_subagent: str | None = None
+    task: str = Field(
+        ...,
+        min_length=1,
+        description="The text description of the task to be enqueued.",
+    )
+    parent_task_id: str | None = Field(
+        None, description="Optional ID of a parent task if this is a subtask."
+    )
+    assigned_subagent: str | None = Field(
+        None, description="Optional name of a specific subagent to handle this task."
+    )
 
 
 class RunRequest(BaseModel):
-    task: str = Field(..., min_length=1)
-    backend: str = "mock"
+    task: str = Field(
+        ...,
+        min_length=1,
+        description="The task to run immediately in the reasoning loop.",
+    )
+    backend: str = Field(
+        "mock",
+        description="The LLM backend to use for this execution (e.g., 'mock', 'openai', 'mistral').",
+    )
 
 
 class HeartbeatRequest(BaseModel):
-    worker_id: str | None = None
+    worker_id: str | None = Field(
+        None, description="Optional identifier for the worker emitting the heartbeat."
+    )
 
 
 def _error_content(request: Request, detail: object, error: str) -> dict[str, object]:
@@ -67,7 +84,13 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         request.state.auth_context = operator.__dict__
         return operator
 
+    @app.get("/", include_in_schema=False)
+    def root_redirect():
+        """Redirect root to API documentation."""
+        return RedirectResponse(url="/docs")
+
     @app.get("/health")
+    @app.get("/healthz", include_in_schema=False)
     def health(
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -110,13 +133,14 @@ def create_app(cfg: dict | None = None) -> FastAPI:
             raise HTTPException(status_code=400, detail="Invalid task ID format")
         result = service.get_task(task_id)
         if result is None:
-            raise HTTPException(status_code=404, detail="Task not found")
+            raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
         return {"task": result, "operator": operator.__dict__}
 
     @app.get("/tasks/{task_id}/stream")
     async def stream_task(
         task_id: str,
-        operator: OperatorIdentity = Depends(service_auth),
+<<<<<<< HEAD
+        operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
         if not is_valid_id(task_id):
@@ -124,7 +148,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
 
         task_info = service.get_task(task_id)
         if task_info is None:
-            raise HTTPException(status_code=404, detail="Task not found")
+            raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
 
         async def event_generator():
             import asyncio
@@ -133,7 +157,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
 
             seen_receipts = set()
             while True:
-                current_task = service.get_task(task_id)
+                current_task = await asyncio.to_thread(service.get_task, task_id)
 
                 if service.receipts and service.receipts.root.exists():
                     # Use to_thread to avoid blocking event loop with rglob
