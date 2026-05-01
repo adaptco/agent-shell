@@ -8,7 +8,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def run(*args):
-    return subprocess.run([sys.executable, "-m", "runtime.cli", *args], cwd=ROOT, capture_output=True, text=True, check=True)
+    return subprocess.run(
+        [sys.executable, "-m", "runtime.cli", *args],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
 
 
 def test_doctor():
@@ -30,12 +36,24 @@ def test_run_task_bash():
 
 
 def test_run_task_web_search():
-    out = run("run-task", "--backend", "mock", "--task", "Search the web for runtime architecture")
+    out = run(
+        "run-task",
+        "--backend",
+        "mock",
+        "--task",
+        "Search the web for runtime architecture",
+    )
     data = json.loads(out.stdout)
     assert data["result"]["status"] == "done"
 
 
 def test_delegate():
-    out = run("run-task", "--backend", "mock", "--task", "Delegate this bounded file task to a subagent")
+    out = run(
+        "run-task",
+        "--backend",
+        "mock",
+        "--task",
+        "Delegate this bounded file task to a subagent",
+    )
     data = json.loads(out.stdout)
     assert data["result"]["status"] == "done"
