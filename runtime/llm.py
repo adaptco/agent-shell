@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 import json
 import urllib.request
-from runtime.utils import sha256_hex, get_env
+
+from runtime.utils import get_env, sha256_hex
 
 
 class BaseBackend:
@@ -61,7 +63,7 @@ class MockBackend(BaseBackend):
                     "decision_type": "tool_call",
                     "reasoning_summary": "Use bash to list the workspace.",
                     "tool_name": "bash",
-                    "tool_input": {"command": "ls -1"},
+                    "tool_input": {"command": "python -c \"import os; print('\\n'.join(os.listdir('.')))\""},
                 }
             return {
                 "decision_type": "tool_call",
@@ -104,10 +106,8 @@ class OpenAIResponsesBackend(BaseBackend):
         self.endpoint = cfg["llm"]["openai"]["endpoint"]
         self.model = cfg["llm"]["openai"]["model"]
         self.api_key = get_env(
-            cfg.get("auth", {})
-            .get("providers", {})
-            .get("openai", {})
-            .get("env_var", "OPENAI_API_KEY")
+            cfg.get("auth", {}).get("providers", {}).get("openai", {}).get("env_var", "OPENAI_API_KEY"),
+            required=True,
         )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
@@ -155,10 +155,8 @@ class MistralChatBackend(BaseBackend):
         self.endpoint = cfg["llm"]["mistral"]["endpoint"]
         self.model = cfg["llm"]["mistral"]["model"]
         self.api_key = get_env(
-            cfg.get("auth", {})
-            .get("providers", {})
-            .get("mistral", {})
-            .get("env_var", "MISTRAL_API_KEY")
+            cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var", "MISTRAL_API_KEY"),
+            required=True,
         )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:

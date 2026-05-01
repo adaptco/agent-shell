@@ -1,14 +1,16 @@
 from __future__ import annotations
+
 import json
 import subprocess
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
 from runtime.config import resolve_path
+from runtime.plugin_base import ToolPlugin
 from runtime.utils import read_json
 from runtime.validation import validate
-from runtime.plugin_base import ToolPlugin
 
 
 class BuiltinToolPlugin(ToolPlugin):
@@ -59,23 +61,23 @@ class BuiltinToolPlugin(ToolPlugin):
 
     def _bash(self, tool_input: dict) -> dict:
         import shlex
-        import os
-
+        import shutil
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
-        
-        is_windows = os.name == "nt"
-        if is_windows:
-            args = command
-            use_shell = True
-        else:
-            # Avoid shell=True for security to mitigate shell injection
-            args = shlex.split(command)
-            use_shell = False
-            
+        allowed = set(self.config.get("tools", {}).get("bash", {}).get("allow_prefixes", []))
+        args = shlex.split(command)
+        if not args:
+            raise ValueError("empty command")
+        if allowed and args[0] not in allowed:
+            raise ValueError(f"command not allowed: {args[0]}")
+        # Resolve the executable via PATH so Windows can locate .exe/.cmd files
+        # without introducing a shell layer (which would allow metacharacter injection).
+        executable = shutil.which(args[0])
+        if executable is None:
+            raise ValueError(f"executable not found: {args[0]}")
         completed = subprocess.run(
-            args,
-            shell=use_shell,
+            [executable] + args[1:],
+            shell=False,
             capture_output=True,
             text=True,
             cwd=self.config["_workspace"],

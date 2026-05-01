@@ -17,6 +17,7 @@ def _client():
 def test_health_endpoint():
     client = _client()
     response = client.get("/health")
+    print(f"DEBUG RESPONSE: {response.text}")
     assert response.status_code == 200
     assert response.headers["x-request-id"]
     assert response.headers["x-response-time-ms"]
