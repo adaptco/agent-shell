@@ -83,10 +83,19 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         """Redirect root to API documentation."""
         return RedirectResponse(url="/docs")
 
+    @app.get("/ping", include_in_schema=False)
+    def ping():
+        return {"status": "ok"}
+
     @app.get("/health")
     @app.get("/healthz", include_in_schema=False)
-    def health():
-        return {"status": "ok", "version": cfg.get("version", "0.0.0")}
+    def health(
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
+        result = service.health()
+        result["operator"] = operator.__dict__
+        return result
 
     @app.get("/tasks")
     def list_tasks(
