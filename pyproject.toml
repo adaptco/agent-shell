@@ -24,3 +24,18 @@ packages = ["runtime"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+testpaths = ["tests"]
+norecursedirs = ["agent-shell"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = [
+  "agent-shell",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["runtime"]
