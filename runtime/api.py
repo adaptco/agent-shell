@@ -162,11 +162,6 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                 if service.receipts and service.receipts.root.exists():
                     # Use to_thread to avoid blocking event loop with rglob
                     def get_new_receipts():
-                        # Find receipts containing the specific task_id in their filename
-                        # Since we've validated task_id, using it in a glob is now safer,
-                        # but we still prefer a non-recursive approach or explicit check if possible.
-                        # Given receipts are in date-partitioned dirs, rglob is used.
-                        # We use literal match in the name part to avoid glob character injection.
                         return [
                             str(p)
                             for p in service.receipts.root.rglob(f"*{task_id}*.json")
