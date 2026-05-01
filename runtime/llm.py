@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import json
+import os
 import urllib.request
-from runtime.utils import sha256_hex, get_env
+
+from runtime.utils import get_env, sha256_hex
 
 
 class BaseBackend:
@@ -53,11 +56,12 @@ class MockBackend(BaseBackend):
                     "tool_input": {"query": context["task"]["task"], "limit": 3},
                 }
             if "list" in task_text or "workspace" in task_text or "directory" in task_text:
+                list_cmd = "dir" if os.name == "nt" else "ls -1"
                 return {
                     "decision_type": "tool_call",
                     "reasoning_summary": "Use bash to list the workspace.",
                     "tool_name": "bash",
-                    "tool_input": {"command": "ls -1"},
+                    "tool_input": {"command": list_cmd},
                 }
             return {
                 "decision_type": "tool_call",
@@ -99,7 +103,10 @@ class OpenAIResponsesBackend(BaseBackend):
         self.cfg = cfg
         self.endpoint = cfg["llm"]["openai"]["endpoint"]
         self.model = cfg["llm"]["openai"]["model"]
-        self.api_key = get_env(cfg.get("auth", {}).get("providers", {}).get("openai", {}).get("env_var", "OPENAI_API_KEY"))
+        self.api_key = get_env(
+            cfg.get("auth", {}).get("providers", {}).get("openai", {}).get("env_var", "OPENAI_API_KEY"),
+            required=False,
+        )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
         system_prompt, user_prompt = _build_decision_prompt(context)
@@ -139,9 +146,12 @@ class MistralChatBackend(BaseBackend):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.endpoint = cfg["llm"]["endpoint"]
+        self.endpoint = cfg["llm"]["mistral"]["endpoint"]
         self.model = cfg["llm"]["mistral"]["model"]
-        self.api_key = get_env(cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var"))
+        self.api_key = get_env(
+            cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var", "MISTRAL_API_KEY"),
+            required=False,
+        )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
         system_prompt, user_prompt = _build_decision_prompt(context)

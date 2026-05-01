@@ -1,14 +1,17 @@
 from __future__ import annotations
+
 import json
+import os
 import subprocess
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
 from runtime.config import resolve_path
+from runtime.plugin_base import ToolPlugin
 from runtime.utils import read_json
 from runtime.validation import validate
-from runtime.plugin_base import ToolPlugin
 
 
 class BuiltinToolPlugin(ToolPlugin):
@@ -57,10 +60,14 @@ class BuiltinToolPlugin(ToolPlugin):
         import shlex
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
-        # Avoid shell=True for security to mitigate shell injection
+        allowed = set(self.config.get("tools", {}).get("bash", {}).get("allow_prefixes", []))
         args = shlex.split(command)
+        if not args:
+            raise ValueError("empty command")
+        if allowed and args[0] not in allowed:
+            raise ValueError(f"command not allowed: {args[0]}")
         completed = subprocess.run(
-            args,
+            (["cmd.exe", "/c", command] if os.name == "nt" else args),
             shell=False,
             capture_output=True,
             text=True,

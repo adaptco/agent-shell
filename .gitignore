@@ -5,3 +5,22 @@ __pycache__/
 .pytest_cache/
 .venv/
 
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Runtime output / local state
+receipts/
+logs/
+memory/journal.jsonl
+memory/summary.md
+state/runtime.json
+state/agent-state.md
+memory/archive/
+queue/inbox/*.json
+queue/handoffs/*.json
+
+# Local nested clone (do not commit)
+agent-shell/
+
