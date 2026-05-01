@@ -63,7 +63,11 @@ class BuiltinToolPlugin(ToolPlugin):
 
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
+<<<<<<< sentinel/fix-glob-injection-13435241567245700627
+
+=======
         
+>>>>>>> main
         is_windows = os.name == "nt"
         if is_windows:
             args = command
@@ -72,7 +76,11 @@ class BuiltinToolPlugin(ToolPlugin):
             # Avoid shell=True for security to mitigate shell injection
             args = shlex.split(command)
             use_shell = False
+<<<<<<< sentinel/fix-glob-injection-13435241567245700627
+
+=======
             
+>>>>>>> main
         completed = subprocess.run(
             args,
             shell=use_shell,
