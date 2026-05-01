@@ -67,7 +67,7 @@ class BuiltinToolPlugin(ToolPlugin):
         if allowed and args[0] not in allowed:
             raise ValueError(f"command not allowed: {args[0]}")
         completed = subprocess.run(
-            (["cmd.exe", "/c", command] if os.name == "nt" else args),
+            (["cmd.exe", "/c"] + args if os.name == "nt" else args),
             shell=False,
             capture_output=True,
             text=True,
