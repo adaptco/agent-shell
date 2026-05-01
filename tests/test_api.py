@@ -49,9 +49,7 @@ def test_tasks_endpoint_and_lookup():
 
 def test_run_endpoint():
     client = _client()
-    response = client.post(
-        "/run", json={"task": "Read the agent file", "backend": "mock"}
-    )
+    response = client.post("/run", json={"task": "Read the agent file", "backend": "mock"})
     assert response.status_code == 200
     assert response.json()["result"]["status"] == "done"
 

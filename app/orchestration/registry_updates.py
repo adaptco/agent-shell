@@ -40,9 +40,7 @@ def stage_candidate_registry_bundle(
         "created_at": utc_now(),
     }
     write_json(Path(candidate_registry_path), proposal_bundle.get("registry", {}))
-    write_json(
-        Path(artifact_root) / "candidate_registry_bundle.json", candidate_registry
-    )
+    write_json(Path(artifact_root) / "candidate_registry_bundle.json", candidate_registry)
     return candidate_registry
 
 
@@ -79,12 +77,8 @@ def patch_active_registry_state(
 ) -> dict[str, Any]:
     patched = {
         "schema_version": "0.3.0",
-        "active_registry_version": candidate_registry_bundle.get(
-            "candidate_registry_version"
-        ),
-        "active_registry_path": candidate_registry_bundle.get(
-            "candidate_registry_path"
-        ),
+        "active_registry_version": candidate_registry_bundle.get("candidate_registry_version"),
+        "active_registry_path": candidate_registry_bundle.get("candidate_registry_path"),
         "prior_registry_version": active_registry_state.get("active_registry_version"),
         "prior_registry_path": active_registry_state.get("active_registry_path"),
         "activated_at": utc_now(),
@@ -103,16 +97,10 @@ def patch_active_skills_state(
 ) -> dict[str, Any]:
     patched = {
         "schema_version": "0.3.0",
-        "active_skills_version": candidate_skills_bundle.get(
-            "candidate_skills_version"
-        ),
-        "active_skill_paths": _coerce_string_list(
-            candidate_skills_bundle.get("candidate_skill_paths", [])
-        ),
+        "active_skills_version": candidate_skills_bundle.get("candidate_skills_version"),
+        "active_skill_paths": _coerce_string_list(candidate_skills_bundle.get("candidate_skill_paths", [])),
         "prior_skills_version": active_skills_state.get("active_skills_version"),
-        "prior_skill_paths": _coerce_string_list(
-            active_skills_state.get("active_skill_paths", [])
-        ),
+        "prior_skill_paths": _coerce_string_list(active_skills_state.get("active_skill_paths", [])),
         "activated_at": utc_now(),
         "activation_run_id": run_id,
     }

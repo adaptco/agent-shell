@@ -17,17 +17,13 @@ from app.orchestration.registry_updates import (
 ALLOWED_DECISIONS = {"promote", "hold", "quarantine", "rollback"}
 
 
-def _emit(
-    receipts: Any, run_id: str, step: str, status: str, outputs: dict[str, Any]
-) -> None:
+def _emit(receipts: Any, run_id: str, step: str, status: str, outputs: dict[str, Any]) -> None:
     if receipts is None:
         return
     receipts.emit(run_id, step, status, {"run_id": run_id}, outputs)
 
 
-def _write_decision(
-    artifact_root: Path, run_id: str, decision: str, reason: str
-) -> dict[str, Any]:
+def _write_decision(artifact_root: Path, run_id: str, decision: str, reason: str) -> dict[str, Any]:
     if decision not in ALLOWED_DECISIONS:
         raise ValueError(f"unsupported decision: {decision}")
     payload = {
@@ -41,9 +37,7 @@ def _write_decision(
     return payload
 
 
-def _state_inputs_valid(
-    active_registry_state: dict[str, Any], active_skills_state: dict[str, Any]
-) -> bool:
+def _state_inputs_valid(active_registry_state: dict[str, Any], active_skills_state: dict[str, Any]) -> bool:
     required_registry = {"active_registry_version", "active_registry_path"}
     required_skills = {"active_skills_version", "active_skill_paths"}
     if not required_registry.issubset(active_registry_state):
@@ -70,13 +64,8 @@ def promote_candidates(
     artifact_root = Path(artifact_root)
     artifact_root.mkdir(parents=True, exist_ok=True)
 
-    if (
-        not Path(active_registry_state_path).exists()
-        or not Path(active_skills_state_path).exists()
-    ):
-        decision = _write_decision(
-            artifact_root, run_id, "quarantine", "missing_active_pointer_files"
-        )
+    if not Path(active_registry_state_path).exists() or not Path(active_skills_state_path).exists():
+        decision = _write_decision(artifact_root, run_id, "quarantine", "missing_active_pointer_files")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
         return {
             "decision": decision,
@@ -100,9 +89,7 @@ def promote_candidates(
         }
 
     if not _state_inputs_valid(active_registry_state, active_skills_state):
-        decision = _write_decision(
-            artifact_root, run_id, "quarantine", "missing_active_state_fields"
-        )
+        decision = _write_decision(artifact_root, run_id, "quarantine", "missing_active_state_fields")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
         return {
             "decision": decision,
@@ -123,12 +110,10 @@ def promote_candidates(
         artifact_root=artifact_root,
     )
 
-    if not candidate_registry_bundle.get(
-        "candidate_registry_version"
-    ) or not candidate_skills_bundle.get("candidate_skills_version"):
-        decision = _write_decision(
-            artifact_root, run_id, "quarantine", "candidate_version_computation_failed"
-        )
+    if not candidate_registry_bundle.get("candidate_registry_version") or not candidate_skills_bundle.get(
+        "candidate_skills_version"
+    ):
+        decision = _write_decision(artifact_root, run_id, "quarantine", "candidate_version_computation_failed")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
         return {
             "decision": decision,
@@ -142,12 +127,8 @@ def promote_candidates(
         "candidate_state_staged",
         "ok",
         {
-            "candidate_registry_version": candidate_registry_bundle[
-                "candidate_registry_version"
-            ],
-            "candidate_skills_version": candidate_skills_bundle[
-                "candidate_skills_version"
-            ],
+            "candidate_registry_version": candidate_registry_bundle["candidate_registry_version"],
+            "candidate_skills_version": candidate_skills_bundle["candidate_skills_version"],
         },
     )
 

@@ -18,11 +18,7 @@ class JournalMemory:
     def entries(self) -> list[dict]:
         if not self.journal.exists():
             return []
-        lines = [
-            line
-            for line in self.journal.read_text(encoding="utf-8").splitlines()
-            if line.strip()
-        ]
+        lines = [line for line in self.journal.read_text(encoding="utf-8").splitlines() if line.strip()]
         result = []
         for line in lines:
             try:
@@ -43,10 +39,7 @@ class JournalMemory:
 
     def should_compact(self) -> bool:
         compaction = self.cfg["memory"]["compaction"]
-        return (
-            compaction.get("enabled", False)
-            and len(self.entries()) > compaction["max_entries"]
-        )
+        return compaction.get("enabled", False) and len(self.entries()) > compaction["max_entries"]
 
     def compact(self, task_id: str) -> dict:
         entries = self.entries()
@@ -58,17 +51,12 @@ class JournalMemory:
                     "compacted": False,
                     "reason": hook_result.get("reason", "blocked"),
                 }
-        archive_path = (
-            self.archive_dir / f"{utc_now().replace(':', '').replace('+', '_')}.jsonl"
-        )
-        archive_path.write_text(
-            self.journal.read_text(encoding="utf-8"), encoding="utf-8"
-        )
+        archive_path = self.archive_dir / f"{utc_now().replace(':', '').replace('+', '_')}.jsonl"
+        archive_path.write_text(self.journal.read_text(encoding="utf-8"), encoding="utf-8")
         keep_last = self.cfg["memory"]["compaction"]["keep_last"]
         retained = entries[-keep_last:]
         lines = [
-            f"- {e.get('event_type', 'event')}: {e.get('summary', e.get('tool_name', 'n/a'))}"
-            for e in entries[-10:]
+            f"- {e.get('event_type', 'event')}: {e.get('summary', e.get('tool_name', 'n/a'))}" for e in entries[-10:]
         ]
         self.summary.write_text(
             "# Memory Summary\n\n"

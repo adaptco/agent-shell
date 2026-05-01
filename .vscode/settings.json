@@ -3,5 +3,12 @@
         "agent-shell"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "github-actions.workflows.pinned.workflows": [
+        ".github/workflows/build-and-push.yml",
+        ".github/workflows/deploy.yml",
+        ".github/workflows/deploy-staging.yml",
+        ".github/workflows/release.yml",
+        ".github/workflows/test.yml"
+    ]
 }

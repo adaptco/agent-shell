@@ -17,13 +17,9 @@ class AgentService:
         self.cfg = cfg or load_config()
         self.logger = get_logger(self.cfg)
         self.middleware = MiddlewareStack(self.logger)
-        self.decision_schema = read_json(
-            resolve_path(self.cfg, "schemas/decision.schema.json")
-        )
+        self.decision_schema = read_json(resolve_path(self.cfg, "schemas/decision.schema.json"))
         self.task_schema = read_json(resolve_path(self.cfg, "schemas/task.schema.json"))
-        self.handoff_schema = read_json(
-            resolve_path(self.cfg, "schemas/handoff.schema.json")
-        )
+        self.handoff_schema = read_json(resolve_path(self.cfg, "schemas/handoff.schema.json"))
         self.hooks = HookRegistry(self.cfg)
         self.tools = ToolRegistry(self.cfg)
         self.receipts = ReceiptWriter(self.cfg)
@@ -50,18 +46,10 @@ class AgentService:
             checks = {
                 "agent_md": resolve_path(self.cfg, self.cfg["agent_file"]).exists(),
                 "skills": resolve_path(self.cfg, self.cfg["skill_dir"]).exists(),
-                "tools": resolve_path(
-                    self.cfg, self.cfg["tools"]["registry_dir"]
-                ).exists(),
-                "hooks": resolve_path(
-                    self.cfg, self.cfg["hooks"]["registry_dir"]
-                ).exists(),
-                "queue_inbox": resolve_path(
-                    self.cfg, self.cfg["queue"]["inbox_dir"]
-                ).exists(),
-                "runtime_state": resolve_path(
-                    self.cfg, self.cfg["state"]["runtime_state"]
-                ).exists(),
+                "tools": resolve_path(self.cfg, self.cfg["tools"]["registry_dir"]).exists(),
+                "hooks": resolve_path(self.cfg, self.cfg["hooks"]["registry_dir"]).exists(),
+                "queue_inbox": resolve_path(self.cfg, self.cfg["queue"]["inbox_dir"]).exists(),
+                "runtime_state": resolve_path(self.cfg, self.cfg["state"]["runtime_state"]).exists(),
             }
             return {"ok": all(checks.values()), "checks": checks}
 
@@ -93,9 +81,7 @@ class AgentService:
         assigned_subagent: str | None = None,
     ) -> dict:
         def _handler(payload):
-            path = self.queue.enqueue(
-                task, parent_task_id=parent_task_id, assigned_subagent=assigned_subagent
-            )
+            path = self.queue.enqueue(task, parent_task_id=parent_task_id, assigned_subagent=assigned_subagent)
             return {"queued": True, "path": str(path), "task_id": path.stem}
 
         return self.middleware.run("queue_add", {"task": task}, _handler)
@@ -131,9 +117,7 @@ class AgentService:
             failed = self.queue.fail(task, working_path, result)
             return {"queued": True, "failed_path": str(failed), "result": result}
 
-        return self.middleware.run(
-            "run_next", {"backend_name": backend_name, "worker_id": worker_id}, _handler
-        )
+        return self.middleware.run("run_next", {"backend_name": backend_name, "worker_id": worker_id}, _handler)
 
     def run_task(self, task: str, backend_name: str, subagent_name: str | None = None) -> dict:
         def _handler(payload):
@@ -144,25 +128,19 @@ class AgentService:
             result = loop.run_task(task_obj, subagent_name=subagent_name)
             return {"result": result}
 
-        return self.middleware.run(
-            "run_task", {"task": task, "backend_name": backend_name}, _handler
-        )
+        return self.middleware.run("run_task", {"task": task, "backend_name": backend_name}, _handler)
 
     def heartbeat(self, worker_id: str | None = None) -> dict:
         worker_id = worker_id or self.cfg["worker"]["default_worker_id"]
 
         def _handler(payload):
-            runtime_state_path = resolve_path(
-                self.cfg, self.cfg["state"]["runtime_state"]
-            )
+            runtime_state_path = resolve_path(self.cfg, self.cfg["state"]["runtime_state"])
             runtime_state = read_json(runtime_state_path)
             runtime_state["last_heartbeat"] = utc_now()
             runtime_state["last_worker_id"] = worker_id
             runtime_state["status"] = "alive"
             write_json(runtime_state_path, runtime_state)
-            self.receipts.emit(
-                "system", "heartbeat", "ok", {"worker_id": worker_id}, runtime_state
-            )
+            self.receipts.emit("system", "heartbeat", "ok", {"worker_id": worker_id}, runtime_state)
             return runtime_state
 
         return self.middleware.run("heartbeat", {"worker_id": worker_id}, _handler)

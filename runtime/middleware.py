@@ -21,9 +21,7 @@ class MiddlewareStack:
             operation_name,
             correlation_id,
         )
-        result = handler(
-            {**payload, "_correlation_id": correlation_id, "_started_at": start}
-        )
+        result = handler({**payload, "_correlation_id": correlation_id, "_started_at": start})
         self.logger.info(
             "middleware.end operation=%s correlation_id=%s",
             operation_name,
@@ -33,9 +31,7 @@ class MiddlewareStack:
 
 
 class APIMiddleware:
-    def __init__(
-        self, logger, service_name: str, enabled_layers: set[str] | None = None
-    ):
+    def __init__(self, logger, service_name: str, enabled_layers: set[str] | None = None):
         self.logger = logger
         self.service_name = service_name
         self.enabled_layers = enabled_layers or {"correlation", "logging", "timing"}

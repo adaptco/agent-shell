@@ -73,12 +73,8 @@ def test_promotion_runtime_stages_and_promotes_on_pass(tmp_path: Path):
     assert (tmp_path / "artifacts/run-10/candidate_registry_bundle.json").exists()
     assert (tmp_path / "artifacts/run-10/candidate_skills_bundle.json").exists()
     assert (tmp_path / "artifacts/run-10/promotion_decision.json").exists()
-    assert read_json(active_registry_path)["active_registry_version"].startswith(
-        "registry-run-10-"
-    )
-    assert read_json(active_skills_path)["active_skills_version"].startswith(
-        "skills-run-10-"
-    )
+    assert read_json(active_registry_path)["active_registry_version"].startswith("registry-run-10-")
+    assert read_json(active_skills_path)["active_skills_version"].startswith("skills-run-10-")
     assert "active_state_patched" in [event[1] for event in receipts.events]
 
 

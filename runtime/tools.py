@@ -62,6 +62,7 @@ class BuiltinToolPlugin(ToolPlugin):
     def _bash(self, tool_input: dict) -> dict:
         import shlex
         import shutil
+
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
         allowed = set(self.config.get("tools", {}).get("bash", {}).get("allow_prefixes", []))
@@ -98,9 +99,7 @@ class BuiltinToolPlugin(ToolPlugin):
             return {"query": query, "results": results}
         if provider == "duckduckgo":
             base = self.config["tools"]["web_search"]["duckduckgo_url"]
-            params = urllib.parse.urlencode(
-                {"q": query, "format": "json", "no_html": "1", "skip_disambig": "1"}
-            )
+            params = urllib.parse.urlencode({"q": query, "format": "json", "no_html": "1", "skip_disambig": "1"})
             with urllib.request.urlopen(base + "?" + params, timeout=10) as response:
                 data = json.loads(response.read().decode("utf-8"))
             results = []

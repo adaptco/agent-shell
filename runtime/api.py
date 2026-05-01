@@ -19,12 +19,8 @@ class TaskCreateRequest(BaseModel):
         min_length=1,
         description="The text description of the task to be enqueued.",
     )
-    parent_task_id: str | None = Field(
-        None, description="Optional ID of a parent task if this is a subtask."
-    )
-    assigned_subagent: str | None = Field(
-        None, description="Optional name of a specific subagent to handle this task."
-    )
+    parent_task_id: str | None = Field(None, description="Optional ID of a parent task if this is a subtask.")
+    assigned_subagent: str | None = Field(None, description="Optional name of a specific subagent to handle this task.")
 
 
 class RunRequest(BaseModel):
@@ -40,9 +36,7 @@ class RunRequest(BaseModel):
 
 
 class HeartbeatRequest(BaseModel):
-    worker_id: str | None = Field(
-        None, description="Optional identifier for the worker emitting the heartbeat."
-    )
+    worker_id: str | None = Field(None, description="Optional identifier for the worker emitting the heartbeat.")
 
 
 def _error_content(request: Request, detail: object, error: str) -> dict[str, object]:
@@ -226,9 +220,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         )
 
     @app.exception_handler(RequestValidationError)
-    async def handled_validation_exception(
-        request: Request, exc: RequestValidationError
-    ):
+    async def handled_validation_exception(request: Request, exc: RequestValidationError):
         return JSONResponse(
             status_code=422,
             content=_error_content(request, exc.errors(), "RequestValidationError"),
@@ -238,9 +230,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     async def unhandled_exception_handler(request: Request, exc: Exception):
         return JSONResponse(
             status_code=500,
-            content=_error_content(
-                request, "Internal server error", type(exc).__name__
-            ),
+            content=_error_content(request, "Internal server error", type(exc).__name__),
         )
 
     return app

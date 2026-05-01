@@ -38,10 +38,7 @@ class BuiltinHookHandler(HookHandler):
     def _before_delegate(self, task_id: str, payload: dict) -> dict:
         """Validate subagent existence"""
         subagent_name = payload.get("subagent_name")
-        subagent_path = (
-            resolve_path(self.config, self.config["subagent_dir"])
-            / f"{subagent_name}.md"
-        )
+        subagent_path = resolve_path(self.config, self.config["subagent_dir"]) / f"{subagent_name}.md"
         if not subagent_path.exists():
             return {
                 "allow": False,
@@ -50,9 +47,7 @@ class BuiltinHookHandler(HookHandler):
             }
         return {"allow": True, "payload": payload}
 
-    def _trigger_webhook(
-        self, hook_name: str, task_id: str, payload: dict, result: dict
-    ):
+    def _trigger_webhook(self, hook_name: str, task_id: str, payload: dict, result: dict):
         webhooks = self.config.get("webhooks", {})
         webhook_url = webhooks.get("url")
         webhook_events = webhooks.get("events", [])

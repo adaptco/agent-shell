@@ -22,24 +22,15 @@ def run_canary(
     artifact_root: Path,
 ) -> dict[str, Any]:
     """Run deterministic simulated canary checks and persist canary_result.json."""
-    promoted_tools = _coerce_string_list(
-        candidate_registry_bundle.get("promoted_tool_ids", [])
-    )
-    promoted_skills = _coerce_string_list(
-        candidate_skills_bundle.get("promoted_skill_ids", [])
-    )
-    candidate_registry_version = candidate_registry_bundle.get(
-        "candidate_registry_version"
-    )
+    promoted_tools = _coerce_string_list(candidate_registry_bundle.get("promoted_tool_ids", []))
+    promoted_skills = _coerce_string_list(candidate_skills_bundle.get("promoted_skill_ids", []))
+    candidate_registry_version = candidate_registry_bundle.get("candidate_registry_version")
     candidate_skills_version = candidate_skills_bundle.get("candidate_skills_version")
 
     checks: list[str] = []
     failures: list[str] = []
 
-    if (
-        not isinstance(candidate_registry_version, str)
-        or not candidate_registry_version
-    ):
+    if not isinstance(candidate_registry_version, str) or not candidate_registry_version:
         failures.append("missing_candidate_registry_version")
     if not isinstance(candidate_skills_version, str) or not candidate_skills_version:
         failures.append("missing_candidate_skills_version")
