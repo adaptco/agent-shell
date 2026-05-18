@@ -31,11 +31,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /root/.local /root/.local
 
 # Copy necessary configuration and asset directories
+COPY agent.md ./agent.md
 COPY infra ./infra
 COPY tools ./tools
 COPY configs ./configs
+COPY hooks ./hooks
 COPY skill ./skill
 COPY schemas ./schemas
+COPY subagents ./subagents
 COPY state ./state
 
 # Pre-create data directories
@@ -44,6 +47,7 @@ RUN mkdir -p logs receipts memory queue/inbox queue/working queue/done queue/fai
 # Ensure the installed package scripts are in the PATH
 ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONUNBUFFERED=1
+ENV AGENT_SHELL_WORKSPACE=/app
 
 # Health check (Public endpoint, no auth required)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

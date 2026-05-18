@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from typing import Any
 from pathlib import Path
+
 from runtime.config import resolve_path
 from runtime.utils import utc_now, sha256_hex, write_json
 

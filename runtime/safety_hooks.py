@@ -20,10 +20,7 @@ class SafetyHookHandler(HookHandler):
         tool_name = payload.get("tool_name")
         tool_input = payload.get("tool_input", {})
 
-        if tool_name == "bash":
-            if not self.config.get("safety", {}).get("block_dangerous_bash", True):
-                return {"allow": True, "payload": payload}
-
+        if tool_name == "bash" and self.config.get("safety", {}).get("block_dangerous_bash", True):
             command = tool_input.get("command", "")
             # Block extremely dangerous patterns
             dangerous_patterns = [
