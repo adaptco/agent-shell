@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 import json
 import urllib.request
-from runtime.utils import sha256_hex, get_env
+
+from runtime.utils import get_env, sha256_hex
 
 
 class BaseBackend:
@@ -57,7 +59,7 @@ class MockBackend(BaseBackend):
                     "decision_type": "tool_call",
                     "reasoning_summary": "Use bash to list the workspace.",
                     "tool_name": "bash",
-                    "tool_input": {"command": "ls -1"},
+                    "tool_input": {"command": "python -c \"import os; print('\\n'.join(os.listdir('.')))\""},
                 }
             return {
                 "decision_type": "tool_call",
@@ -74,8 +76,7 @@ class MockBackend(BaseBackend):
 
 def _build_decision_prompt(context: dict) -> tuple[str, str]:
     system_prompt = (
-        "You are the decision layer for an agent shell runtime. "
-        "Return only a JSON object matching the supplied schema."
+        "You are the decision layer for an agent shell runtime. Return only a JSON object matching the supplied schema."
     )
     user_prompt = json.dumps(
         {
@@ -99,11 +100,12 @@ class OpenAIResponsesBackend(BaseBackend):
         self.cfg = cfg
         self.endpoint = cfg["llm"]["openai"]["endpoint"]
         self.model = cfg["llm"]["openai"]["model"]
-        self.api_key = get_env(cfg.get("auth", {}).get("providers", {}).get("openai", {}).get("env_var", "OPENAI_API_KEY"), required=False)
+        self.api_key = get_env(
+            cfg.get("auth", {}).get("providers", {}).get("openai", {}).get("env_var", "OPENAI_API_KEY"),
+            required=True,
+        )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
-        if not self.api_key:
-            raise RuntimeError("OPENAI_API_KEY is not set")
         system_prompt, user_prompt = _build_decision_prompt(context)
         payload = {
             "model": self.model,
@@ -143,15 +145,15 @@ class MistralChatBackend(BaseBackend):
         self.cfg = cfg
         self.endpoint = cfg["llm"]["mistral"]["endpoint"]
         self.model = cfg["llm"]["mistral"]["model"]
-        self.api_key = get_env(cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var", "MISTRAL_API_KEY"), required=False)
+        self.api_key = get_env(
+            cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var", "MISTRAL_API_KEY"),
+            required=True,
+        )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
-        if not self.api_key:
-            raise RuntimeError("MISTRAL_API_KEY is not set")
         system_prompt, user_prompt = _build_decision_prompt(context)
-        schema_prompt = (
-            "Return only a JSON object that matches this JSON schema exactly: "
-            + json.dumps(decision_schema, ensure_ascii=False)
+        schema_prompt = "Return only a JSON object that matches this JSON schema exactly: " + json.dumps(
+            decision_schema, ensure_ascii=False
         )
         payload = {
             "model": self.model,
@@ -176,7 +178,7 @@ class MistralChatBackend(BaseBackend):
         request.add_header("Content-Type", "application/json")
         with urllib.request.urlopen(request, timeout=60) as response:
             body = json.loads(response.read().decode("utf-8"))
-        content = (((body.get("choices") or [{}])[0].get("message") or {}).get("content"))
+        content = ((body.get("choices") or [{}])[0].get("message") or {}).get("content")
         if isinstance(content, list):
             text_parts = []
             for item in content:

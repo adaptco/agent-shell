@@ -1,0 +1,4 @@
+## 2026-04-25 - Glob Injection in Task and Receipt Lookup
+**Vulnerability:** User-provided task IDs were used directly in `Path.glob()` and `Path.rglob()` patterns. An attacker could use glob characters like `*` to retrieve arbitrary tasks or leak information about receipts.
+**Learning:** This filesystem-backed architecture is prone to glob injection when using convenience methods like `glob()` for lookups. `Path("../../file")` traversal was mitigated by `glob()` behavior in some cases, but wildcard injection remained a high-priority issue.
+**Prevention:** Always validate user-provided IDs against a strict pattern (e.g., hexadecimal) before using them in filesystem operations. Use direct path existence checks (`Path.exists()`) for lookups when the filename is predictable, rather than searching with globs.

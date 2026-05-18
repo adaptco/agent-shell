@@ -4,16 +4,21 @@ __pycache__/
 
 .pytest_cache/
 .venv/
+.coverage
+coverage.xml
+
+# Build outputs
+dist/
+build/
 *.egg-info/
 
-# Runtime artifact stores (local-only)
-.runtime-store/
+# Runtime output / local state
+receipts/
 logs/
 memory/
 queue/
-receipts/
-state/
+state/runtime.json
+state/agent-state.md
 
-# Secrets and OS noise
-.env
-.DS_Store
+# Local nested clone (do not commit)
+agent-shell/

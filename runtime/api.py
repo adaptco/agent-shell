@@ -3,28 +3,40 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 from runtime.api_auth import OperatorIdentity, get_auth_dependency
 from runtime.config import load_config
 from runtime.middleware import install_http_middleware
 from runtime.service import AgentService
+from runtime.utils import is_valid_id
 
 
 class TaskCreateRequest(BaseModel):
-    task: str = Field(..., min_length=1)
-    parent_task_id: str | None = None
-    assigned_subagent: str | None = None
+    task: str = Field(
+        ...,
+        min_length=1,
+        description="The text description of the task to be enqueued.",
+    )
+    parent_task_id: str | None = Field(None, description="Optional ID of a parent task if this is a subtask.")
+    assigned_subagent: str | None = Field(None, description="Optional name of a specific subagent to handle this task.")
 
 
 class RunRequest(BaseModel):
-    task: str = Field(..., min_length=1)
-    backend: str = "mock"
+    task: str = Field(
+        ...,
+        min_length=1,
+        description="The task to run immediately in the reasoning loop.",
+    )
+    backend: str = Field(
+        "mock",
+        description="The LLM backend to use for this execution (e.g., 'mock', 'openai', 'mistral').",
+    )
 
 
 class HeartbeatRequest(BaseModel):
-    worker_id: str | None = None
+    worker_id: str | None = Field(None, description="Optional identifier for the worker emitting the heartbeat.")
 
 
 def _error_content(request: Request, detail: object, error: str) -> dict[str, object]:
@@ -66,13 +78,14 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         request.state.auth_context = operator.__dict__
         return operator
 
-    @app.get("/healthz")
-    async def healthz():
-        """Unauthenticated liveness probe for Docker HEALTHCHECK and CI."""
-        return {"status": "ok"}
+    @app.get("/", include_in_schema=False)
+    def root_redirect():
+        """Redirect root to API documentation."""
+        return RedirectResponse(url="/docs")
 
     @app.get("/health")
-    async def health(
+    @app.get("/healthz", include_in_schema=False)
+    def health(
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
@@ -81,7 +94,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.get("/tasks")
-    async def list_tasks(
+    def list_tasks(
         limit: int = 100,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -91,7 +104,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.post("/tasks")
-    async def create_task(
+    def create_task(
         body: TaskCreateRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -105,56 +118,72 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return JSONResponse(status_code=202, content=result)
 
     @app.get("/tasks/{task_id}")
-    async def get_task(
+    def get_task(
         task_id: str,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
+        if not is_valid_id(task_id):
+            raise HTTPException(status_code=400, detail="Invalid task ID format")
         result = service.get_task(task_id)
         if result is None:
-            raise HTTPException(status_code=404, detail="Task not found")
+            raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
         return {"task": result, "operator": operator.__dict__}
 
     @app.get("/tasks/{task_id}/stream")
-    async def stream_task(task_id: str, operator: OperatorIdentity = Depends(service_auth), service: AgentService = Depends(svc)):
+    async def stream_task(
+        task_id: str,
+        operator: OperatorIdentity = Depends(auth_operator),
+        service: AgentService = Depends(svc),
+    ):
+        if not is_valid_id(task_id):
+            raise HTTPException(status_code=400, detail="Invalid task ID format")
+
         task_info = service.get_task(task_id)
         if task_info is None:
-            raise HTTPException(status_code=404, detail="Task not found")
+            raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
 
         async def event_generator():
             import asyncio
             import json
             from runtime.utils import read_json
-            
+
             seen_receipts = set()
             while True:
-                current_task = service.get_task(task_id)
-                
+                current_task = await asyncio.to_thread(service.get_task, task_id)
+
                 if service.receipts and service.receipts.root.exists():
-                    for r_path in sorted(service.receipts.root.rglob(f"*{task_id}*.json")):
-                        path_str = str(r_path)
-                        if path_str not in seen_receipts:
-                            try:
-                                r_data = read_json(r_path)
-                                yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
-                                seen_receipts.add(path_str)
-                            except Exception:
-                                pass
-                
+                    # Use to_thread to avoid blocking event loop with rglob
+                    def get_new_receipts():
+                        return [
+                            str(p)
+                            for p in service.receipts.root.rglob(f"*{task_id}*.json")
+                            if str(p) not in seen_receipts
+                        ]
+
+                    new_paths = await asyncio.to_thread(get_new_receipts)
+                    for path_str in sorted(new_paths):
+                        try:
+                            r_data = read_json(path_str)
+                            yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
+                            seen_receipts.add(path_str)
+                        except Exception:
+                            pass
+
                 if current_task:
                     status = current_task.get("status")
                     if status in ("done", "failed"):
                         yield f"event: final\ndata: {json.dumps(current_task)}\n\n"
                         break
-                        
+
                 await asyncio.sleep(2)
 
         from fastapi.responses import StreamingResponse
+
         return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-
     @app.post("/run")
-    async def run_task(
+    def run_task(
         body: RunRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
@@ -164,14 +193,17 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         return result
 
     @app.get("/heartbeat")
-    async def heartbeat_state(
+    def heartbeat_state(
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),
     ):
-        return {"runtime_state": service.get_runtime_state(), "operator": operator.__dict__}
+        return {
+            "runtime_state": service.get_runtime_state(),
+            "operator": operator.__dict__,
+        }
 
     @app.post("/heartbeat")
-    async def emit_heartbeat(
+    def emit_heartbeat(
         body: HeartbeatRequest,
         operator: OperatorIdentity = Depends(auth_operator),
         service: AgentService = Depends(svc),

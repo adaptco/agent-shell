@@ -1,0 +1,9 @@
+{"event_type": "delegate_result", "summary": "This task is bounded and can be delegated.", "created_at": "2026-04-11T23:52:28.569194+00:00"}
+{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-11T23:52:28.629243+00:00"}
+{"event_type": "tool_result", "tool_name": "file_read", "summary": "Read agent.md before answering.", "created_at": "2026-04-25T04:38:08.618158+00:00"}
+{"event_type": "compaction_marker", "summary": "Archived 9 entries", "created_at": "2026-04-25T04:38:08.619561+00:00"}
+{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-25T04:38:08.621995+00:00"}
+{"event_type": "tool_result", "tool_name": "file_read", "summary": "Read agent.md before answering.", "created_at": "2026-04-25T04:40:06.783396+00:00"}
+{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-25T04:40:06.784707+00:00"}
+{"event_type": "tool_result", "tool_name": "file_read", "summary": "Read agent.md before answering.", "created_at": "2026-04-25T04:40:08.136035+00:00"}
+{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-25T04:40:08.137479+00:00"}
