@@ -1,0 +1,24 @@
+[
+  {
+    "id": "mcp-local-mock",
+    "name": "Local mock MCP server",
+    "type": "mock",
+    "url": "http://127.0.0.1:5100",
+    "description": "Local development MCP server (mock). Replace with real MCP server details for staging/production.",
+    "auth": {
+      "type": "none"
+    },
+    "trust": "explicit",
+    "connection": {
+      "timeout_seconds": 10,
+      "pool_size": 2
+    },
+    "resources": [
+      {
+        "resource_id": "filesystem://local",
+        "capabilities": ["read","write","list"],
+        "metadata": {}
+      }
+    ]
+  }
+]
