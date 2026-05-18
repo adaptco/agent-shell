@@ -83,6 +83,10 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         """Redirect root to API documentation."""
         return RedirectResponse(url="/docs")
 
+    @app.get("/ping", include_in_schema=False)
+    def ping():
+        return {"status": "ok"}
+
     @app.get("/health")
     @app.get("/healthz", include_in_schema=False)
     def health(
