@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Required so git can see all tags for the version check
 
       - name: Extract version from pyproject.toml
         id: version
@@ -33,6 +33,8 @@ jobs:
         id: check
         run: |
           VERSION=$(grep -oP 'version = "\K[^"]+' pyproject.toml)
+          # Fetch tags explicitly to ensure git rev-parse can find them
+          git fetch --tags
           if git rev-parse "v$VERSION" >/dev/null 2>&1; then
             echo "❌ Tag v$VERSION already exists"
             echo "should-release=false" >> "$GITHUB_OUTPUT"
@@ -52,7 +54,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.13" # Cleaned up spacing string format
 
       - name: Build sdist/wheel
         run: |
@@ -82,10 +84,17 @@ jobs:
     if: always()
 
     steps:
+      # Triggers if create-release succeeded
       - name: Release created
-        if: success()
+        if: needs.create-release.result == 'success'
         run: echo "✅ Release v${{ needs.check-version.outputs.version }} created successfully"
 
+      # Triggers if check-version failed OR create-release actually failed
+      - name: Workflow failed
+        if: needs.check-version.result == 'failure' || needs.create-release.result == 'failure'
+        run: echo "❌ Workflow failed during execution"
+
+      # Triggers if check-version succeeded but determined no release was needed
       - name: No release needed
-        if: failure()
+        if: needs.check-version.result == 'success' && needs.check-version.outputs.should-release == 'false'
         run: echo "ℹ️ No new release (version unchanged or tag already exists)"
