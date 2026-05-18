@@ -81,7 +81,7 @@
       {
         "type": "mcp",
         "module": "runtime.mcp_adapter",
-        "enabled": false
+        "enabled": true
       },
       {
         "type": "desktop",
@@ -98,9 +98,13 @@
       {
         "type": "safety",
         "module": "runtime.safety_hooks",
-        "enabled": false
+        "enabled": true
       }
     ]
+  },
+  "safety": {
+    "enabled": true,
+    "block_dangerous_bash": true
   },
   "middleware": {
     "enabled": [

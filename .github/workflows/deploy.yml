@@ -21,6 +21,24 @@ permissions:
   deployments: write
 
 jobs:
+  determine-environments:
+    name: Determine Environments to Deploy
+    runs-on: ubuntu-latest
+    outputs:
+      environments: ${{ steps.set-envs.outputs.envs }}
+    steps:
+      - id: set-envs
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "envs=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "envs=[\"development\"]" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "envs=[\"staging\"]" >> $GITHUB_OUTPUT
+          else
+            echo "envs=[]" >> $GITHUB_OUTPUT
+          fi
+
   build:
     name: Build and Push
     runs-on: ubuntu-latest
@@ -62,17 +80,12 @@ jobs:
 
   deploy:
     name: Deploy to Environment
-    needs: build
+    needs: [build, determine-environments]
+    if: needs.determine-environments.outputs.environments != '[]'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [development, staging, production]
-    
-    # Logic to determine if we should deploy to this environment
-    if: |
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == matrix.environment) ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/develop' && matrix.environment == 'development') ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.environment == 'staging')
+        environment: ${{ fromJson(needs.determine-environments.outputs.environments) }}
 
     environment:
       name: ${{ matrix.environment }}
