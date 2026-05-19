@@ -1,141 +1,46 @@
-name: test
+from __future__ import annotations
+import argparse
+import uvicorn
+from runtime.config import load_config
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.13"]
+def main(argv=None) -> int:
+    cfg = load_config()
+    parser = argparse.ArgumentParser(prog="agent-shell-api")
+    parser.add_argument("--host", default=cfg.get("service", {}).get("host", "127.0.0.1"))
+    parser.add_argument("--port", type=int, default=cfg.get("service", {}).get("port", 0))
+    parser.add_argument("--reload", action="store_true")
+    args = parser.parse_args(argv)
 
-    steps:
-      - uses: actions/checkout@v4
+    try:
+        uvicorn.run(
+            "runtime.api:create_app",
+            factory=True,
+            host=args.host,
+            port=args.port,
+            reload=args.reload,
+        )
+    except OSError as e:
+        if (
+            (args.port != 0 and "address already in use" in str(e).lower())
+            or "10048" in str(e)
+        ):
+            print(
+                f"Port {args.port} is already in use. Retrying with auto-assigned port...",
+                flush=True,
+            )
+            uvicorn.run(
+                "runtime.api:create_app",
+                factory=True,
+                host=args.host,
+                port=0,
+                reload=args.reload,
+            )
+        else:
+            raise
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
+    return 0
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install -e .
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          python -m pip install pytest pytest-cov ruff
 
-      - name: Lint with ruff
-        run: |
-          python -m ruff check .
-          python -m ruff format --check .
-
-      - name: Run tests with coverage
-        run: python -m pytest --cov=runtime --cov-report=xml --cov-report=term -q
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage.xml
-          fail_ci_if_error: false
-
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: test
-    outputs:
-      image-tag: ${{ steps.meta.outputs.image_tag }}
-      dockerfile-present: ${{ steps.dockerfile-check.outputs.present }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check Dockerfile presence
-        id: dockerfile-check
-        run: |
-          if [ -f Dockerfile ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Compute image tag
-        if: ${{ steps.dockerfile-check.outputs.present == 'true' }}
-        id: meta
-        run: echo "image_tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-
-      - name: Set up Docker Buildx
-        if: ${{ steps.dockerfile-check.outputs.present == 'true' }}
-        uses: docker/setup-buildx-action@v3
-
-      - name: Set up Docker Build Cloud (optional)
-        if: ${{ steps.dockerfile-check.outputs.present == 'true' && vars.ENABLE_DOCKER_BUILD_CLOUD == 'true' }}
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver-options: |
-            image=moby/buildkit:latest
-            network=docker-bake
-
-      - name: Build Docker image
-        if: ${{ steps.dockerfile-check.outputs.present == 'true' }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          load: true
-          tags: ghcr.io/${{ github.repository }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Skip Docker checks (Dockerfile missing)
-        if: ${{ steps.dockerfile-check.outputs.present != 'true' }}
-        run: echo "No Dockerfile found in this branch. Skipping Docker build and scout checks."
-
-  docker-test:
-    runs-on: ubuntu-latest
-    needs: docker-build
-    if: ${{ needs.docker-build.outputs.dockerfile-present == 'true' }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          load: true
-          tags: agent-shell:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Run container health check
-        run: |
-          set +e
-          docker rm -f test-container >/dev/null 2>&1
-          docker run -d --name test-container -p 8000:8000 agent-shell:test
-
-          healthy=false
-          for attempt in $(seq 1 20); do
-            if curl -fsS http://localhost:8000/ping; then
-              healthy=true
-              break
-            fi
-            echo "Waiting for container health check, attempt ${attempt}/20..."
-            sleep 1
-          done
-
-          if [ "$healthy" != "true" ]; then
-            docker ps -a
-            docker logs test-container
-            docker rm -f test-container
-            exit 1
-          fi
-
-          docker rm -f test-container
+if __name__ == "__main__":
+    raise SystemExit(main())
