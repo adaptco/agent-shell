@@ -61,7 +61,7 @@ cat <file>
 #### c) Find all callers
 ```powershell
 # Search for function/class usage
-grep -r "function_name" . --include="*.py" | grep -v ".pyc"
+Get-ChildItem -Recurse -Filter *.py | Select-String "function_name"
 ```
 
 #### d) Check for tests
