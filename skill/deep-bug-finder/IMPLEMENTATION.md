@@ -209,7 +209,7 @@ pytest tests/test_cache.py::test_concurrent_cache_writes -v
 ### Inspection
 ```powershell
 # List changed files in last 7 days
-git log --since="7 days ago" --name-only --pretty=format: | sort | uniq
+git log --since="7 days ago" --name-only --pretty=format: | sort -Unique
 
 # Get full diff for a commit
 git show <hash>
