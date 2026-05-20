@@ -172,7 +172,7 @@ def set_cache_with_expiry(key, value, ttl):
            cache_module.set_cache_with_expiry(key, val, 60)
        
        threads = [
-           threading.Thread(target=write_cache, args=("key1", f"value{i}"))
+           threading.Thread(target=write_cache, args=(f"key{i}", f"value{i}"))
            for i in range(100)
        ]
        
