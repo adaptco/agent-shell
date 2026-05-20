@@ -185,7 +185,7 @@ def test_concurrent_writes():
     """Reproduces data loss under concurrent writes."""
     cache.clear()
     threads = [
-        Thread(target=cache_set, args=(key, f"val{i}"))
+        Thread(target=cache_set, args=(f"key{i}", f"val{i}"))
         for i in range(100)
     ]
     for t in threads:
