@@ -1,10 +1,10 @@
 {
-  "status": "alive",
-  "last_heartbeat": "2026-05-18T22:39:21.960417+00:00",
-  "last_task_id": "405432d990e94ffda4b360955c28bd8f",
-  "last_worker_id": "api-test",
+  "status": "idle",
+  "last_heartbeat": "2026-05-19T23:46:10.419443+00:00",
+  "last_task_id": "649a959387e24f69a6f9b05a099eee12",
+  "last_worker_id": null,
   "memory": {
     "entries": 6,
-    "last_compaction": "2026-05-01T17:13:56.489559+00:00"
+    "last_compaction": "2026-05-19T23:46:14.523139+00:00"
   }
 }

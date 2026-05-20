@@ -11,7 +11,7 @@ def main(argv=None) -> int:
     parser.add_argument("--port", type=int, default=cfg.get("service", {}).get("port", 0))
     parser.add_argument("--reload", action="store_true")
     args = parser.parse_args(argv)
-    
+
     try:
         uvicorn.run(
             "runtime.api:create_app",
@@ -21,8 +21,14 @@ def main(argv=None) -> int:
             reload=args.reload,
         )
     except OSError as e:
-        if args.port != 0 and "address already in use" in str(e).lower() or "10048" in str(e):
-            print(f"Port {args.port} is already in use. Retrying with auto-assigned port...", flush=True)
+        if (
+            (args.port != 0 and "address already in use" in str(e).lower())
+            or "10048" in str(e)
+        ):
+            print(
+                f"Port {args.port} is already in use. Retrying with auto-assigned port...",
+                flush=True,
+            )
             uvicorn.run(
                 "runtime.api:create_app",
                 factory=True,
@@ -32,7 +38,7 @@ def main(argv=None) -> int:
             )
         else:
             raise
-    
+
     return 0
 
 

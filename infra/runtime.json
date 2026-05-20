@@ -1,6 +1,6 @@
 {
   "name": "agent-shell-service-runtime",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "workspace_root": ".",
   "agent_file": "agent.md",
   "skill_dir": "skill",

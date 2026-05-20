@@ -1,25 +1,16 @@
-name: test
+name: Run Tests
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.13"]
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-
+          python-version: '3.13'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
@@ -117,25 +108,10 @@ jobs:
 
       - name: Run container health check
         run: |
-          set +e
-          docker rm -f test-container >/dev/null 2>&1
           docker run -d --name test-container -p 8000:8000 agent-shell:test
-
-          healthy=false
-          for attempt in $(seq 1 20); do
-            if curl -fsS http://localhost:8000/ping; then
-              healthy=true
-              break
-            fi
-            echo "Waiting for container health check, attempt ${attempt}/20..."
-            sleep 1
-          done
-
-          if [ "$healthy" != "true" ]; then
-            docker ps -a
-            docker logs test-container
-            docker rm -f test-container
-            exit 1
+          sleep 5
+          if ! curl -f http://localhost:8000/health; then
+            docker stop test-container
+            false
           fi
-
-          docker rm -f test-container
+          docker stop test-container
