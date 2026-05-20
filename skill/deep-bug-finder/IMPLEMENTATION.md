@@ -34,7 +34,7 @@ pytest --collect-only
 ### 2. Scan Recent Commits
 ```powershell
 # List last 7 days of commits with file changes
-git log --since="7 days ago" --name-status --pretty=format:"%H %s" | head -20
+git log --since="7 days ago" --name-status --pretty=format:"%H %s" | Select-Object -First 20
 ```
 
 ### 3. Identify High-Risk Changes
