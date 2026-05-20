@@ -245,7 +245,7 @@ pytest -vv tests/test_file.py
 grep -r "name" . --include="*.py" | grep -v test | grep -v ".pyc"
 
 # Count files changed
-git diff --name-only main..HEAD | wc -l
+(git diff --name-only main..HEAD).Count
 
 # List file with number of changes
 git diff --stat main..HEAD
