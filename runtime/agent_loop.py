@@ -5,18 +5,7 @@ from runtime.utils import utc_now
 
 
 class AgentLoop:
-    def __init__(
-        self,
-        cfg,
-        backend,
-        hooks,
-        tools,
-        memory,
-        receipts,
-        decision_schema,
-        subagents,
-        logger,
-    ):
+    def __init__(self, cfg, backend, hooks, tools, memory, receipts, decision_schema, subagents, logger):
         self.cfg = cfg
         self.backend = backend
         self.hooks = hooks
@@ -30,22 +19,20 @@ class AgentLoop:
 
     def _update_markdown_state(self, task: dict, result: dict) -> None:
         from pathlib import Path
-
         path = Path(self.cfg["_workspace"]) / self.cfg["state"]["markdown_state"]
         path.write_text(
             "# Agent State\n\n"
-            "## Status\n\n"
+            "## Status\n"
             f"{result.get('status', 'complete')}\n\n"
-            "## Last Task\n\n"
+            "## Last Task\n"
             f"{task['task']}\n\n"
-            "## Last Result\n\n"
+            "## Last Result\n"
             f"{result.get('final_response', result.get('summary', 'n/a'))}\n\n"
-            "## Last Updated\n\n"
+            "## Last Updated\n"
             f"{utc_now()}\n",
             encoding="utf-8",
         )
         from runtime.utils import read_json, write_json
-
         runtime_state_path = Path(self.cfg["_workspace"]) / self.cfg["state"]["runtime_state"]
         runtime_state = read_json(runtime_state_path)
         runtime_state["status"] = "idle"
@@ -60,11 +47,7 @@ class AgentLoop:
         max_steps = self.cfg["worker"]["max_steps"]
         for step_index in range(max_steps):
             context = self.context_builder.build(task, history, subagent_name=subagent_name)
-            self.hooks.run(
-                "before_model_call",
-                task["task_id"],
-                {"step_index": step_index, "history_length": len(history)},
-            )
+            self.hooks.run("before_model_call", task["task_id"], {"step_index": step_index, "history_length": len(history)})
             decision = self.backend.decide(context, self.decision_schema, depth=depth)
             validate(decision, self.decision_schema)
             self.hooks.run("after_model_call", task["task_id"], {"decision": decision})
@@ -74,29 +57,23 @@ class AgentLoop:
                 "ok",
                 {"history_length": len(history)},
                 decision,
-                memory_snapshot=self._get_memory_snapshot(),
+                memory_snapshot=self._get_memory_snapshot()
             )
             if decision["decision_type"] == "tool_call":
                 hook_result = self.hooks.run(
                     "before_tool_call",
                     task["task_id"],
-                    {
-                        "tool_name": decision["tool_name"],
-                        "tool_input": decision.get("tool_input", {}),
-                    },
+                    {"tool_name": decision["tool_name"], "tool_input": decision.get("tool_input", {})},
                 )
                 if not hook_result["allow"]:
-                    error = {
-                        "status": "blocked",
-                        "reason": hook_result.get("reason", "tool blocked"),
-                    }
+                    error = {"status": "blocked", "reason": hook_result.get("reason", "tool blocked")}
                     self.receipts.emit(
                         task["task_id"],
                         f"tool_{step_index}",
                         "blocked",
                         decision,
                         error,
-                        memory_snapshot=self._get_memory_snapshot(),
+                        memory_snapshot=self._get_memory_snapshot()
                     )
                     return error
                 tool_result = self.tools.execute(decision["tool_name"], hook_result["payload"]["tool_input"])
@@ -135,17 +112,14 @@ class AgentLoop:
                     },
                 )
                 if not hook_result["allow"]:
-                    error = {
-                        "status": "blocked",
-                        "reason": hook_result.get("reason", "delegate blocked"),
-                    }
+                    error = {"status": "blocked", "reason": hook_result.get("reason", "delegate blocked")}
                     self.receipts.emit(
                         task["task_id"],
                         f"delegate_{step_index}",
                         "blocked",
                         decision,
                         error,
-                        memory_snapshot=self._get_memory_snapshot(),
+                        memory_snapshot=self._get_memory_snapshot()
                     )
                     return error
                 delegate_result = self.subagents.delegate(task, decision, self.backend.name, depth)
@@ -159,11 +133,7 @@ class AgentLoop:
                     }
                 )
                 self.memory.append(
-                    {
-                        "event_type": "delegate_result",
-                        "summary": decision["reasoning_summary"],
-                        "created_at": utc_now(),
-                    },
+                    {"event_type": "delegate_result", "summary": decision["reasoning_summary"], "created_at": utc_now()},
                     task_id=task["task_id"],
                 )
                 continue
@@ -173,21 +143,14 @@ class AgentLoop:
                 "summary": decision["reasoning_summary"],
                 "history_length": len(history),
             }
-            self.memory.append(
-                {
-                    "event_type": "final",
-                    "summary": decision["reasoning_summary"],
-                    "created_at": utc_now(),
-                },
-                task_id=task["task_id"],
-            )
+            self.memory.append({"event_type": "final", "summary": decision["reasoning_summary"], "created_at": utc_now()}, task_id=task["task_id"])
             self.receipts.emit(
                 task["task_id"],
                 "final",
                 "ok",
                 {"history_length": len(history)},
                 final,
-                memory_snapshot=self._get_memory_snapshot(),
+                memory_snapshot=self._get_memory_snapshot()
             )
             self._update_markdown_state(task, final)
             return final
@@ -198,7 +161,7 @@ class AgentLoop:
             "failed",
             {"max_steps": max_steps},
             error,
-            memory_snapshot=self._get_memory_snapshot(),
+            memory_snapshot=self._get_memory_snapshot()
         )
         self._update_markdown_state(task, error)
         return error

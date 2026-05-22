@@ -35,31 +35,16 @@ def _active_states(tmp_path: Path):
     }
     write_json(active_registry_path, active_registry_state)
     write_json(active_skills_path, active_skills_state)
-    return (
-        active_registry_state,
-        active_skills_state,
-        active_registry_path,
-        active_skills_path,
-    )
+    return active_registry_state, active_skills_state, active_registry_path, active_skills_path
 
 
 def test_promotion_runtime_stages_and_promotes_on_pass(tmp_path: Path):
-    (
-        active_registry_state,
-        active_skills_state,
-        active_registry_path,
-        active_skills_path,
-    ) = _active_states(tmp_path)
+    active_registry_state, active_skills_state, active_registry_path, active_skills_path = _active_states(tmp_path)
     receipts = ReceiptSpy()
 
     result = promote_candidates(
         run_id="run-10",
-        proposal_bundle={
-            "registry": {"tools": []},
-            "skills": [],
-            "tool_ids": ["tool.x"],
-            "skill_ids": ["skill.x"],
-        },
+        proposal_bundle={"registry": {"tools": []}, "skills": [], "tool_ids": ["tool.x"], "skill_ids": ["skill.x"]},
         validation_result={"status": "pass"},
         active_registry_state=active_registry_state,
         active_skills_state=active_skills_state,
@@ -79,12 +64,7 @@ def test_promotion_runtime_stages_and_promotes_on_pass(tmp_path: Path):
 
 
 def test_promotion_runtime_does_not_patch_on_canary_fail(tmp_path: Path):
-    (
-        active_registry_state,
-        active_skills_state,
-        active_registry_path,
-        active_skills_path,
-    ) = _active_states(tmp_path)
+    active_registry_state, active_skills_state, active_registry_path, active_skills_path = _active_states(tmp_path)
 
     result = promote_candidates(
         run_id="run-11",
@@ -103,25 +83,13 @@ def test_promotion_runtime_does_not_patch_on_canary_fail(tmp_path: Path):
     assert read_json(active_skills_path)["active_skills_version"] == "skills-current"
 
 
-def test_promotion_runtime_quarantines_when_active_pointer_files_missing(
-    tmp_path: Path,
-):
-    (
-        active_registry_state,
-        active_skills_state,
-        active_registry_path,
-        active_skills_path,
-    ) = _active_states(tmp_path)
+def test_promotion_runtime_quarantines_when_active_pointer_files_missing(tmp_path: Path):
+    active_registry_state, active_skills_state, active_registry_path, active_skills_path = _active_states(tmp_path)
     active_registry_path.unlink()
 
     result = promote_candidates(
         run_id="run-12",
-        proposal_bundle={
-            "registry": {},
-            "skills": [],
-            "tool_ids": ["a"],
-            "skill_ids": ["b"],
-        },
+        proposal_bundle={"registry": {}, "skills": [], "tool_ids": ["a"], "skill_ids": ["b"]},
         validation_result={"status": "pass"},
         active_registry_state=active_registry_state,
         active_skills_state=active_skills_state,
