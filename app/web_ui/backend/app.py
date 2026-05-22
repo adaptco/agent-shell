@@ -1,14 +1,12 @@
 """
 Web App Backend: FastAPI server for Knowledge Graph visualization and document upload
 """
+
 from __future__ import annotations
-import json
 from pathlib import Path
 from typing import Dict, Any, List
-import httpx
-import asyncio
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -17,12 +15,14 @@ from app.mcp_knowledge_graph import MCPKnowledgeGraphServer, SemanticAnalyzer
 
 class DocumentUploadRequest(BaseModel):
     """Request model for document upload"""
+
     content: str
     filename: str
 
 
 class OrchestrationRequest(BaseModel):
     """Request for sub-agent task generation"""
+
     graph_id: str
     parent_task: str
     parent_task_id: str
@@ -30,6 +30,7 @@ class OrchestrationRequest(BaseModel):
 
 class GraphResponse(BaseModel):
     """Response model for graph data"""
+
     graph_id: str
     node_count: int
     edge_count: int
@@ -38,15 +39,12 @@ class GraphResponse(BaseModel):
     edges: List[Dict[str, Any]]
 
 
-def create_web_app(
-    workspace: str = ".",
-    mcp_server_url: str = "http://127.0.0.1:5100"
-) -> FastAPI:
+def create_web_app(workspace: str = ".", mcp_server_url: str = "http://127.0.0.1:5100") -> FastAPI:
     """Create FastAPI web app backend"""
     app = FastAPI(
         title="Knowledge Graph Web UI",
         version="1.0.0",
-        description="Web interface for knowledge graph creation and sub-agent orchestration"
+        description="Web interface for knowledge graph creation and sub-agent orchestration",
     )
 
     # CORS configuration
@@ -72,11 +70,7 @@ def create_web_app(
     @app.get("/health")
     async def health():
         """Health check"""
-        return {
-            "status": "healthy",
-            "service": "knowledge-graph-web",
-            "mcp_server_url": mcp_server_url
-        }
+        return {"status": "healthy", "service": "knowledge-graph-web", "mcp_server_url": mcp_server_url}
 
     # ==================== Document Management ====================
     @app.post("/api/documents/upload")
@@ -105,7 +99,7 @@ def create_web_app(
                 "size": len(text_content),
                 "token_count": len(tokens),
                 "domains": domains,
-                "tokens_preview": [t.to_dict() for t in tokens[:10]]
+                "tokens_preview": [t.to_dict() for t in tokens[:10]],
             }
 
         except Exception as e:
@@ -118,11 +112,13 @@ def create_web_app(
         if documents_dir.exists():
             for doc_path in documents_dir.glob("*"):
                 if doc_path.is_file():
-                    docs.append({
-                        "filename": doc_path.name,
-                        "size": doc_path.stat().st_size,
-                        "modified": doc_path.stat().st_mtime
-                    })
+                    docs.append(
+                        {
+                            "filename": doc_path.name,
+                            "size": doc_path.stat().st_size,
+                            "modified": doc_path.stat().st_mtime,
+                        }
+                    )
 
         return {"documents": docs, "count": len(docs)}
 
@@ -137,11 +133,7 @@ def create_web_app(
         with open(doc_path, "r", encoding="utf-8") as f:
             content = f.read()
 
-        return {
-            "filename": filename,
-            "content": content,
-            "size": len(content)
-        }
+        return {"filename": filename, "content": content, "size": len(content)}
 
     # ==================== Knowledge Graph Operations ====================
     @app.post("/api/graph/create")
@@ -166,7 +158,7 @@ def create_web_app(
                 "graph_id": graph_id,
                 "node_count": len(graph["nodes"]),
                 "edge_count": len(graph["edges"]),
-                "cluster_count": len(graph["clusters"])
+                "cluster_count": len(graph["clusters"]),
             }
 
         except Exception as e:
@@ -177,12 +169,14 @@ def create_web_app(
         """List all knowledge graphs"""
         graphs = []
         for graph_id, graph in app.state.local_server.graphs.items():
-            graphs.append({
-                "graph_id": graph_id,
-                "node_count": len(graph["nodes"]),
-                "edge_count": len(graph["edges"]),
-                "cluster_count": len(graph["clusters"])
-            })
+            graphs.append(
+                {
+                    "graph_id": graph_id,
+                    "node_count": len(graph["nodes"]),
+                    "edge_count": len(graph["edges"]),
+                    "cluster_count": len(graph["clusters"]),
+                }
+            )
 
         return {"graphs": graphs, "count": len(graphs)}
 
@@ -200,7 +194,7 @@ def create_web_app(
             "edges": graph["edges"],
             "clusters": list(graph["clusters"].keys()),
             "node_count": len(graph["nodes"]),
-            "edge_count": len(graph["edges"])
+            "edge_count": len(graph["edges"]),
         }
 
     # ==================== Sub-Agent Orchestration ====================
@@ -222,17 +216,14 @@ def create_web_app(
             delegations = []
             for task in ordered_tasks:
                 contract = orchestrator.create_delegation_contract(task, request.parent_task_id)
-                delegations.append({
-                    "task": task.to_dict(),
-                    "delegation_contract": contract
-                })
+                delegations.append({"task": task.to_dict(), "delegation_contract": contract})
 
             return {
                 "status": "success",
                 "parent_task_id": request.parent_task_id,
                 "graph_id": request.graph_id,
                 "task_count": len(delegations),
-                "tasks": delegations
+                "tasks": delegations,
             }
 
         except Exception as e:
@@ -244,12 +235,14 @@ def create_web_app(
         tasks = []
         for graph_id, graph in app.state.local_server.graphs.items():
             for cluster_id, cluster in graph["clusters"].items():
-                tasks.append({
-                    "cluster_id": cluster_id,
-                    "label": cluster["label"],
-                    "confidence": cluster["confidence"],
-                    "token_count": len(cluster["tokens"])
-                })
+                tasks.append(
+                    {
+                        "cluster_id": cluster_id,
+                        "label": cluster["label"],
+                        "confidence": cluster["confidence"],
+                        "token_count": len(cluster["tokens"]),
+                    }
+                )
 
         return {"tasks": tasks, "count": len(tasks)}
 
@@ -269,7 +262,7 @@ def create_web_app(
                 "status": "success",
                 "token_count": len(tokens),
                 "tokens": [t.to_dict() for t in tokens[:15]],
-                "domains": domains
+                "domains": domains,
             }
 
         except Exception as e:

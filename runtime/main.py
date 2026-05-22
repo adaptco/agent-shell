@@ -21,10 +21,7 @@ def main(argv=None) -> int:
             reload=args.reload,
         )
     except OSError as e:
-        if (
-            (args.port != 0 and "address already in use" in str(e).lower())
-            or "10048" in str(e)
-        ):
+        if (args.port != 0 and "address already in use" in str(e).lower()) or "10048" in str(e):
             print(
                 f"Port {args.port} is already in use. Retrying with auto-assigned port...",
                 flush=True,

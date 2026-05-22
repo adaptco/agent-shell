@@ -1,16 +1,17 @@
 """
 Orchestrator for Knowledge Graph-based Sub-Agent Task Assignment
 """
+
 from __future__ import annotations
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Any
 import uuid
-from datetime import datetime
 
 
 @dataclass
 class SubTaskAssignment:
     """Assignment of a sub-task to a specific sub-agent"""
+
     task_id: str
     task_description: str
     assigned_subagent: str
@@ -68,6 +69,7 @@ class SubAgentOrchestrator:
             cluster_id = node["id"]
             # Priority = confidence * log(token_count + 1)
             import math
+
             priority = node.get("confidence", 0.5) * math.log(node.get("token_count", 1) + 1)
             cluster_priority_map[cluster_id] = priority
 
@@ -86,9 +88,7 @@ class SubAgentOrchestrator:
             tokens = [t["text"] for t in cluster_data.get("tokens", [])[:5]]
 
             # Generate task description
-            task_description = self._generate_task_description(
-                parent_task, cluster_label, domain, tokens
-            )
+            task_description = self._generate_task_description(parent_task, cluster_label, domain, tokens)
 
             # Find dependencies (related clusters)
             dependencies = []
@@ -125,13 +125,7 @@ class SubAgentOrchestrator:
                 return domain
         return "backend"  # Default
 
-    def _generate_task_description(
-        self,
-        parent_task: str,
-        cluster_label: str,
-        domain: str,
-        tokens: List[str]
-    ) -> str:
+    def _generate_task_description(self, parent_task: str, cluster_label: str, domain: str, tokens: List[str]) -> str:
         """Generate human-readable task description"""
         token_str = ", ".join(tokens[:3])
 
@@ -159,9 +153,10 @@ class SubAgentOrchestrator:
         while len(ordered) < len(tasks):
             # Find tasks with no unmet dependencies
             ready_tasks = [
-                t for t in tasks
-                if t.task_id not in assigned and
-                all(dep in assigned or dep not in [x.task_id for x in tasks] for dep in t.dependencies)
+                t
+                for t in tasks
+                if t.task_id not in assigned
+                and all(dep in assigned or dep not in [x.task_id for x in tasks] for dep in t.dependencies)
             ]
 
             if not ready_tasks:
@@ -175,11 +170,7 @@ class SubAgentOrchestrator:
 
         return ordered
 
-    def create_delegation_contract(
-        self,
-        task: SubTaskAssignment,
-        parent_task_id: str
-    ) -> Dict[str, Any]:
+    def create_delegation_contract(self, task: SubTaskAssignment, parent_task_id: str) -> Dict[str, Any]:
         """Create a delegation contract for sub-agent handoff"""
         return {
             "handoff_id": f"hoff_{uuid.uuid4().hex[:8]}",
@@ -191,8 +182,5 @@ class SubAgentOrchestrator:
             "estimated_steps": task.estimated_steps,
             "context_tokens": task.context_tokens,
             "dependencies": task.dependencies,
-            "return_contract": {
-                "expects": "delegate_result",
-                "max_steps": task.estimated_steps + 2
-            }
+            "return_contract": {"expects": "delegate_result", "max_steps": task.estimated_steps + 2},
         }
