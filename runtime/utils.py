@@ -8,6 +8,7 @@ from typing import Any
 
 def utc_now() -> str:
     from datetime import datetime, timezone
+
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -37,6 +38,7 @@ def append_jsonl(path: Path, value: Any) -> None:
 
 
 # Environment helper: centralize env var access and consistent error messaging
+
 
 def get_env(name: str, required: bool = True, message: str | None = None) -> str | None:
     """Return the environment variable value or raise RuntimeError when required and missing."""

@@ -71,7 +71,9 @@ def promote_candidates(
 
     validation_status = validation_result.get("status")
     if validation_status not in {"pass", "warn"}:
-        decision = _write_decision(artifact_root, run_id, "quarantine", f"invalid_validation_status:{validation_status}")
+        decision = _write_decision(
+            artifact_root, run_id, "quarantine", f"invalid_validation_status:{validation_status}"
+        )
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
         return {"decision": decision, "canary_result": None, "active_state_patched": False}
 
@@ -93,7 +95,9 @@ def promote_candidates(
         artifact_root=artifact_root,
     )
 
-    if not candidate_registry_bundle.get("candidate_registry_version") or not candidate_skills_bundle.get("candidate_skills_version"):
+    if not candidate_registry_bundle.get("candidate_registry_version") or not candidate_skills_bundle.get(
+        "candidate_skills_version"
+    ):
         decision = _write_decision(artifact_root, run_id, "quarantine", "candidate_version_computation_failed")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
         return {"decision": decision, "canary_result": None, "active_state_patched": False}

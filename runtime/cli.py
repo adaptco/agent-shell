@@ -54,7 +54,9 @@ def main(argv=None) -> int:
     elif args.cmd == "health":
         result = service.health()
     elif args.cmd == "queue-add":
-        result = service.queue_add(args.task, parent_task_id=args.parent_task_id, assigned_subagent=args.assigned_subagent)
+        result = service.queue_add(
+            args.task, parent_task_id=args.parent_task_id, assigned_subagent=args.assigned_subagent
+        )
     elif args.cmd == "tasks":
         result = service.get_task(args.task_id) if args.task_id else service.list_tasks(limit=args.limit)
     elif args.cmd == "run-next":

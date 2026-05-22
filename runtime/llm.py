@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import urllib.request
 
 from runtime.utils import get_env, sha256_hex
@@ -77,8 +76,7 @@ class MockBackend(BaseBackend):
 
 def _build_decision_prompt(context: dict) -> tuple[str, str]:
     system_prompt = (
-        "You are the decision layer for an agent shell runtime. "
-        "Return only a JSON object matching the supplied schema."
+        "You are the decision layer for an agent shell runtime. Return only a JSON object matching the supplied schema."
     )
     user_prompt = json.dumps(
         {
@@ -154,9 +152,8 @@ class MistralChatBackend(BaseBackend):
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
         system_prompt, user_prompt = _build_decision_prompt(context)
-        schema_prompt = (
-            "Return only a JSON object that matches this JSON schema exactly: "
-            + json.dumps(decision_schema, ensure_ascii=False)
+        schema_prompt = "Return only a JSON object that matches this JSON schema exactly: " + json.dumps(
+            decision_schema, ensure_ascii=False
         )
         payload = {
             "model": self.model,
@@ -181,7 +178,7 @@ class MistralChatBackend(BaseBackend):
         request.add_header("Content-Type", "application/json")
         with urllib.request.urlopen(request, timeout=60) as response:
             body = json.loads(response.read().decode("utf-8"))
-        content = (((body.get("choices") or [{}])[0].get("message") or {}).get("content"))
+        content = ((body.get("choices") or [{}])[0].get("message") or {}).get("content")
         if isinstance(content, list):
             text_parts = []
             for item in content:
