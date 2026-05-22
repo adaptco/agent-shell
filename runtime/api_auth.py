@@ -31,25 +31,13 @@ class ServiceBoundaryAuth:
         hdrs = {k.lower(): v for k, v in request.headers.items()}
         user = hdrs.get("x-auth-request-user")
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Missing trusted proxy identity",
-            )
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing trusted proxy identity")
         email = hdrs.get("x-auth-request-email")
         groups = [g.strip() for g in (hdrs.get("x-auth-request-groups") or "").split(",") if g.strip()]
-        return OperatorIdentity(
-            subject=user,
-            email=email,
-            groups=groups,
-            scopes=[],
-            auth_mode="trusted_proxy_oidc",
-        )
+        return OperatorIdentity(subject=user, email=email, groups=groups, scopes=[], auth_mode="trusted_proxy_oidc")
 
     def _from_static_bearer(self, credentials: HTTPAuthorizationCredentials | None) -> OperatorIdentity:
-        token = get_env(
-            self.service_cfg.get("static_bearer_env_var", "AGENT_SERVICE_BEARER_TOKEN"),
-            required=False,
-        )
+        token = get_env(self.service_cfg.get("static_bearer_env_var", "AGENT_SERVICE_BEARER_TOKEN"), required=False)
         if not token:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -98,10 +86,7 @@ class ServiceBoundaryAuth:
         required = oidc_cfg.get("required_scopes", [])
         missing = [scope for scope in required if scope not in token_scopes]
         if missing:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Missing scopes: {', '.join(missing)}",
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Missing scopes: {', '.join(missing)}")
         groups = payload.get("groups") or payload.get("roles") or []
         if isinstance(groups, str):
             groups = [groups]
@@ -129,10 +114,7 @@ class ServiceBoundaryAuth:
             return self._from_static_bearer(credentials)
         if mode == "oidc_jwt":
             return self._from_oidc_jwt(credentials)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unsupported auth mode: {mode}",
-        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Unsupported auth mode: {mode}")
 
 
 def get_auth_dependency(cfg: dict):

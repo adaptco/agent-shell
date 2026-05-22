@@ -1,9 +1,0 @@
-{"event_type": "delegate_result", "summary": "This task is bounded and can be delegated.", "created_at": "2026-04-11T23:52:28.569194+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-11T23:52:28.629243+00:00"}
-{"event_type": "tool_result", "tool_name": "file_read", "summary": "Read agent.md before answering.", "created_at": "2026-04-25T04:41:45.979434+00:00"}
-{"event_type": "compaction_marker", "summary": "Archived 9 entries", "created_at": "2026-04-25T04:41:45.981261+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-25T04:41:45.983720+00:00"}
-{"event_type": "tool_result", "tool_name": "file_read", "summary": "Read agent.md before answering.", "created_at": "2026-04-25T04:41:47.725614+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-25T04:41:47.727531+00:00"}
-{"event_type": "tool_result", "tool_name": "bash", "summary": "Use bash to list the workspace.", "created_at": "2026-04-25T04:41:48.394273+00:00"}
-{"event_type": "final", "summary": "Enough context has been gathered.", "created_at": "2026-04-25T04:41:48.396147+00:00"}

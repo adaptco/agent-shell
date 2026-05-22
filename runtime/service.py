@@ -29,17 +29,7 @@ class AgentService:
     def _loop_factory(self, backend_name: str):
         backend = get_backend(backend_name, self.cfg)
         subagents = SubagentManager(self.cfg, self._loop_factory, self.handoff_schema)
-        return AgentLoop(
-            self.cfg,
-            backend,
-            self.hooks,
-            self.tools,
-            self.memory,
-            self.receipts,
-            self.decision_schema,
-            subagents,
-            self.logger,
-        )
+        return AgentLoop(self.cfg, backend, self.hooks, self.tools, self.memory, self.receipts, self.decision_schema, subagents, self.logger)
 
     def doctor(self) -> dict:
         def _handler(payload):
@@ -52,7 +42,6 @@ class AgentService:
                 "runtime_state": resolve_path(self.cfg, self.cfg["state"]["runtime_state"]).exists(),
             }
             return {"ok": all(checks.values()), "checks": checks}
-
         return self.middleware.run("doctor", {}, _handler)
 
     def health(self) -> dict:
@@ -68,39 +57,29 @@ class AgentService:
                 "runtime_state": runtime_state,
                 "queue": queue_state["counts"],
             }
-
         return self.middleware.run("health", {}, _handler)
 
     def get_runtime_state(self) -> dict:
         return read_json(resolve_path(self.cfg, self.cfg["state"]["runtime_state"]))
 
-    def queue_add(
-        self,
-        task: str,
-        parent_task_id: str | None = None,
-        assigned_subagent: str | None = None,
-    ) -> dict:
+    def queue_add(self, task: str, parent_task_id: str | None = None, assigned_subagent: str | None = None) -> dict:
         def _handler(payload):
             path = self.queue.enqueue(task, parent_task_id=parent_task_id, assigned_subagent=assigned_subagent)
             return {"queued": True, "path": str(path), "task_id": path.stem}
-
         return self.middleware.run("queue_add", {"task": task}, _handler)
 
     def list_tasks(self, limit: int = 100) -> dict:
         def _handler(payload):
             return self.queue.list_tasks(limit=limit)
-
         return self.middleware.run("list_tasks", {"limit": limit}, _handler)
 
     def get_task(self, task_id: str) -> dict | None:
         def _handler(payload):
             return self.queue.get_task(task_id)
-
         return self.middleware.run("get_task", {"task_id": task_id}, _handler)
 
     def run_next(self, backend_name: str, worker_id: str | None = None) -> dict:
         worker_id = worker_id or self.cfg["worker"]["default_worker_id"]
-
         def _handler(payload):
             task, working_path = self.queue.claim_next(worker_id)
             if not task:
@@ -109,30 +88,23 @@ class AgentService:
             result = loop.run_task(task, subagent_name=task.get("assigned_subagent"))
             if result.get("status") == "done":
                 completed = self.queue.complete(task, working_path, result)
-                return {
-                    "queued": True,
-                    "completed_path": str(completed),
-                    "result": result,
-                }
+                return {"queued": True, "completed_path": str(completed), "result": result}
             failed = self.queue.fail(task, working_path, result)
             return {"queued": True, "failed_path": str(failed), "result": result}
-
         return self.middleware.run("run_next", {"backend_name": backend_name, "worker_id": worker_id}, _handler)
 
-    def run_task(self, task: str, backend_name: str, subagent_name: str | None = None) -> dict:
+    def run_task(self, task: str, backend_name: str) -> dict:
         def _handler(payload):
-            queued = self.queue.enqueue(task, assigned_subagent=subagent_name)
+            queued = self.queue.enqueue(task)
             task_obj = read_json(queued)
             queued.unlink()
             loop = self._loop_factory(backend_name)
-            result = loop.run_task(task_obj, subagent_name=subagent_name)
+            result = loop.run_task(task_obj)
             return {"result": result}
-
         return self.middleware.run("run_task", {"task": task, "backend_name": backend_name}, _handler)
 
     def heartbeat(self, worker_id: str | None = None) -> dict:
         worker_id = worker_id or self.cfg["worker"]["default_worker_id"]
-
         def _handler(payload):
             runtime_state_path = resolve_path(self.cfg, self.cfg["state"]["runtime_state"])
             runtime_state = read_json(runtime_state_path)
@@ -142,5 +114,4 @@ class AgentService:
             write_json(runtime_state_path, runtime_state)
             self.receipts.emit("system", "heartbeat", "ok", {"worker_id": worker_id}, runtime_state)
             return runtime_state
-
         return self.middleware.run("heartbeat", {"worker_id": worker_id}, _handler)

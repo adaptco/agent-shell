@@ -29,7 +29,6 @@ def build_parser() -> argparse.ArgumentParser:
     p_run_task = sub.add_parser("run-task")
     p_run_task.add_argument("--task", required=True)
     p_run_task.add_argument("--backend", default="mock")
-    p_run_task.add_argument("--subagent")
 
     p_worker = sub.add_parser("worker")
     p_worker.add_argument("--backend", default="mock")
@@ -65,7 +64,7 @@ def main(argv=None) -> int:
     elif args.cmd == "run-next":
         result = service.run_next(args.backend, worker_id=args.worker_id)
     elif args.cmd == "run-task":
-        result = service.run_task(args.task, args.backend, subagent_name=args.subagent)
+        result = service.run_task(args.task, args.backend)
     elif args.cmd == "worker":
         result = run_worker(service, args.backend, args.count, worker_id=args.worker_id)
     elif args.cmd == "heartbeat":

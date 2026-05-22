@@ -1,10 +1,8 @@
 from pathlib import Path
 
 from runtime.utils import read_json, write_json
-from app.orchestration.registry_updates import (
-    patch_active_registry_state,
-    patch_active_skills_state,
-)
+from app.orchestration.registry_updates import patch_active_registry_state, patch_active_skills_state
+from app.orchestration.registry_updates import patch_active_registry_state, patch_active_skills_state
 
 
 def test_active_state_patch_preserves_prior_and_writes_run_id(tmp_path: Path):
@@ -27,19 +25,13 @@ def test_active_state_patch_preserves_prior_and_writes_run_id(tmp_path: Path):
 
     patched_registry = patch_active_registry_state(
         run_id="run-3",
-        candidate_registry_bundle={
-            "candidate_registry_version": "reg-v2",
-            "candidate_registry_path": "artifacts/candidate_tool_registry.json",
-        },
+        candidate_registry_bundle={"candidate_registry_version": "reg-v2", "candidate_registry_path": "artifacts/candidate_tool_registry.json"},
         active_registry_state=read_json(registry_path),
         active_registry_path=registry_path,
     )
     patched_skills = patch_active_skills_state(
         run_id="run-3",
-        candidate_skills_bundle={
-            "candidate_skills_version": "skills-v2",
-            "candidate_skill_paths": ["artifacts/candidate_skills.json"],
-        },
+        candidate_skills_bundle={"candidate_skills_version": "skills-v2", "candidate_skill_paths": ["artifacts/candidate_skills.json"]},
         active_skills_state=read_json(skills_path),
         active_skills_path=skills_path,
     )

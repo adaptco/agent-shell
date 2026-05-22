@@ -22,7 +22,6 @@ class SubagentManager:
             "return_contract": {"expects": "delegate_result", "max_steps": 4},
         }
         from runtime.validation import validate
-
         validate(handoff, self.handoff_schema)
         write_json(self.handoff_dir / f"{handoff['handoff_id']}.json", handoff)
         loop = self.loop_factory(backend_name)

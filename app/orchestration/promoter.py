@@ -67,11 +67,7 @@ def promote_candidates(
     if not Path(active_registry_state_path).exists() or not Path(active_skills_state_path).exists():
         decision = _write_decision(artifact_root, run_id, "quarantine", "missing_active_pointer_files")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
-        return {
-            "decision": decision,
-            "canary_result": None,
-            "active_state_patched": False,
-        }
+        return {"decision": decision, "canary_result": None, "active_state_patched": False}
 
     validation_status = validation_result.get("status")
     if validation_status not in {"pass", "warn"}:
@@ -82,20 +78,12 @@ def promote_candidates(
             f"invalid_validation_status:{validation_status}",
         )
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
-        return {
-            "decision": decision,
-            "canary_result": None,
-            "active_state_patched": False,
-        }
+        return {"decision": decision, "canary_result": None, "active_state_patched": False}
 
     if not _state_inputs_valid(active_registry_state, active_skills_state):
         decision = _write_decision(artifact_root, run_id, "quarantine", "missing_active_state_fields")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
-        return {
-            "decision": decision,
-            "canary_result": None,
-            "active_state_patched": False,
-        }
+        return {"decision": decision, "canary_result": None, "active_state_patched": False}
 
     candidate_registry_bundle = stage_candidate_registry_bundle(
         run_id=run_id,
@@ -110,16 +98,10 @@ def promote_candidates(
         artifact_root=artifact_root,
     )
 
-    if not candidate_registry_bundle.get("candidate_registry_version") or not candidate_skills_bundle.get(
-        "candidate_skills_version"
-    ):
+    if not candidate_registry_bundle.get("candidate_registry_version") or not candidate_skills_bundle.get("candidate_skills_version"):
         decision = _write_decision(artifact_root, run_id, "quarantine", "candidate_version_computation_failed")
         _emit(receipts, run_id, "promotion_decision_written", "blocked", decision)
-        return {
-            "decision": decision,
-            "canary_result": None,
-            "active_state_patched": False,
-        }
+        return {"decision": decision, "canary_result": None, "active_state_patched": False}
 
     _emit(
         receipts,

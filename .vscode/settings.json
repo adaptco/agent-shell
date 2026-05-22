@@ -3,8 +3,5 @@
         "agent-shell"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "github-actions.workflows.pinned.workflows": [
-        ".github/workflows/deploy-staging.yml"
-    ]
+    "python.testing.pytestEnabled": true
 }
