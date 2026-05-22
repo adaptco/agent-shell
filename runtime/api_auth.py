@@ -40,12 +40,20 @@ class ServiceBoundaryAuth:
         token = get_env(self.service_cfg.get("static_bearer_env_var", "AGENT_SERVICE_BEARER_TOKEN"), required=False)
         if not token:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Static bearer token is not configured"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Static bearer token is not configured",
             )
         if credentials is None or credentials.credentials != token:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid operator token")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid operator token",
+            )
         return OperatorIdentity(
-            subject="operator", email=None, groups=["operators"], scopes=["agent:operate"], auth_mode="static_bearer"
+            subject="operator",
+            email=None,
+            groups=["operators"],
+            scopes=["agent:operate"],
+            auth_mode="static_bearer",
         )
 
     @lru_cache(maxsize=2)
@@ -61,7 +69,8 @@ class ServiceBoundaryAuth:
         jwks_url = oidc_cfg.get("jwks_url")
         if not issuer or not audience or not jwks_url:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="OIDC service boundary is not configured"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="OIDC service boundary is not configured",
             )
         signing_key = self._jwks_client(jwks_url).get_signing_key_from_jwt(credentials.credentials).key
         payload = jwt.decode(
@@ -90,7 +99,9 @@ class ServiceBoundaryAuth:
         )
 
     async def authenticate(
-        self, request: Request, credentials: HTTPAuthorizationCredentials | None = Depends(HTTPBearer(auto_error=False))
+        self,
+        request: Request,
+        credentials: HTTPAuthorizationCredentials | None = Depends(HTTPBearer(auto_error=False)),
     ) -> OperatorIdentity:
         if not self.service_cfg.get("enabled", False):
             return self._disabled_identity()
@@ -110,7 +121,8 @@ def get_auth_dependency(cfg: dict):
     boundary = ServiceBoundaryAuth(cfg)
 
     async def _dependency(
-        request: Request, credentials: HTTPAuthorizationCredentials | None = Depends(boundary.bearer)
+        request: Request,
+        credentials: HTTPAuthorizationCredentials | None = Depends(boundary.bearer),
     ) -> OperatorIdentity:
         return await boundary.authenticate(request, credentials)
 

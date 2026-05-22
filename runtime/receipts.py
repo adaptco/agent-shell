@@ -16,7 +16,7 @@ class ReceiptWriter:
         target_dir = self.root / date_part
         target_dir.mkdir(parents=True, exist_ok=True)
         receipt = {
-            "receipt_id": f"{task_id}-{step}-{created_at.replace(':', '').replace('+', '_')}",
+            "receipt_id": f"{task_id}-{step}-{created_at.replace(':','').replace('+','_')}",
             "task_id": task_id,
             "step": step,
             "status": status,
@@ -26,7 +26,7 @@ class ReceiptWriter:
             "inputs": inputs or {},
             "outputs": outputs or {},
             "error": error,
-            "memory_snapshot": memory_snapshot,
+            "memory_snapshot": self._scrub(memory_snapshot or []),
         }
         path = target_dir / f"{receipt['receipt_id']}.json"
         write_json(path, receipt)

@@ -61,7 +61,9 @@ def _resolve_repo(explicit_repo: str | None, workspace: Path) -> str:
     repo = _parse_repo_from_origin_url(origin)
     if repo:
         return repo
-    raise ExternalCIError("Could not resolve repository slug. Pass --repo owner/name or set GITHUB_REPOSITORY.")
+    raise ExternalCIError(
+        "Could not resolve repository slug. Pass --repo owner/name or set GITHUB_REPOSITORY."
+    )
 
 
 def _resolve_sha(explicit_sha: str | None, workspace: Path) -> str:
@@ -92,7 +94,9 @@ def _github_api_request(
             payload = response.read()
     except HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
-        raise ExternalCIError(f"GitHub API request failed ({method} {url}): HTTP {exc.code} {detail}") from exc
+        raise ExternalCIError(
+            f"GitHub API request failed ({method} {url}): HTTP {exc.code} {detail}"
+        ) from exc
     if not payload:
         return {}
     return json.loads(payload.decode("utf-8"))
@@ -105,7 +109,9 @@ def _load_private_key() -> str:
     key_path = get_env("GITHUB_APP_PRIVATE_KEY_PATH", required=False)
     if key_path:
         return Path(key_path).read_text(encoding="utf-8")
-    raise ExternalCIError("Missing GitHub App private key. Set GITHUB_APP_PRIVATE_KEY or GITHUB_APP_PRIVATE_KEY_PATH.")
+    raise ExternalCIError(
+        "Missing GitHub App private key. Set GITHUB_APP_PRIVATE_KEY or GITHUB_APP_PRIVATE_KEY_PATH."
+    )
 
 
 def _build_app_jwt(app_id: str, private_key_pem: str) -> str:
@@ -132,7 +138,9 @@ def _resolve_installation_id(api_url: str, app_jwt: str, repo_slug: str) -> int:
     )
     installation_id = installation.get("id")
     if not installation_id:
-        raise ExternalCIError("Could not resolve GitHub App installation id for repository.")
+        raise ExternalCIError(
+            "Could not resolve GitHub App installation id for repository."
+        )
     return int(installation_id)
 
 
@@ -154,7 +162,9 @@ def _get_github_token(api_url: str, repo_slug: str) -> tuple[str, str]:
     fallback = get_env("GITHUB_TOKEN", required=False)
     if fallback:
         return fallback, "github_token"
-    raise ExternalCIError("No auth available. Set GITHUB_APP_ID (+ key) or GITHUB_TOKEN.")
+    raise ExternalCIError(
+        "No auth available. Set GITHUB_APP_ID (+ key) or GITHUB_TOKEN."
+    )
 
 
 def _publish_status(
