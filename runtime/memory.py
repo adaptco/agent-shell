@@ -46,9 +46,12 @@ class JournalMemory:
         if self.hooks:
             hook_result = self.hooks.run("before_memory_compact", task_id, payload)
             if not hook_result["allow"]:
-                return {"compacted": False, "reason": hook_result.get("reason", "blocked")}
-        archive_path = self.archive_dir / f"{utc_now().replace(':','').replace('+','_')}.jsonl"
-        archive_path.write_text(self.journal.read_text(encoding='utf-8'), encoding='utf-8')
+                return {
+                    "compacted": False,
+                    "reason": hook_result.get("reason", "blocked"),
+                }
+        archive_path = self.archive_dir / f"{utc_now().replace(':', '').replace('+', '_')}.jsonl"
+        archive_path.write_text(self.journal.read_text(encoding="utf-8"), encoding="utf-8")
         keep_last = self.cfg["memory"]["compaction"]["keep_last"]
         retained = entries[-keep_last:]
         lines = [f"- {e.get('event_type', 'event')}: {e.get('summary', e.get('tool_name', 'n/a'))}" for e in entries[-10:]]
@@ -63,7 +66,14 @@ class JournalMemory:
         self.journal.write_text("", encoding="utf-8")
         for entry in retained:
             append_jsonl(self.journal, entry)
-        append_jsonl(self.journal, {"event_type": "compaction_marker", "summary": f"Archived {len(entries)} entries", "created_at": utc_now()})
+        append_jsonl(
+            self.journal,
+            {
+                "event_type": "compaction_marker",
+                "summary": f"Archived {len(entries)} entries",
+                "created_at": utc_now(),
+            },
+        )
         state = read_json(self.runtime_state_path)
         state["memory"]["entries"] = len(self.entries())
         state["memory"]["last_compaction"] = utc_now()

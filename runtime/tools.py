@@ -68,6 +68,7 @@ class BuiltinToolPlugin(ToolPlugin):
             timeout=timeout,
         )
         return {"stdout": completed.stdout, "stderr": completed.stderr, "exit_code": int(completed.returncode)}
+        return {"stdout": completed.stdout, "stderr": completed.stderr, "exit_code": int(completed.returncode)}
 
     def _web_search(self, tool_input: dict) -> dict:
         provider = self.config["tools"]["web_search"]["provider"]
@@ -86,7 +87,13 @@ class BuiltinToolPlugin(ToolPlugin):
                 results.append({"title": data.get("Heading", query), "url": data.get("AbstractURL", ""), "snippet": data["AbstractText"]})
             for item in data.get("RelatedTopics", []):
                 if isinstance(item, dict) and item.get("Text"):
-                    results.append({"title": item["Text"][:80], "url": item.get("FirstURL", ""), "snippet": item["Text"]})
+                    results.append(
+                        {
+                            "title": item["Text"][:80],
+                            "url": item.get("FirstURL", ""),
+                            "snippet": item["Text"],
+                        }
+                    )
                     if len(results) >= limit:
                         break
             return {"query": query, "results": results[:limit]}
@@ -125,10 +132,12 @@ class ToolRegistry:
             
             # Lazy load plugins
             if plugin_type == "mcp":
-                from runtime.mcp_adapter import MCPToolPlugin
+                from runtime.mcp_adapter import MCPToolPlugin  # type: ignore
+
                 plugin = MCPToolPlugin(self.cfg)
             elif plugin_type == "desktop":
-                from runtime.computer_use_tool import ComputerUseTool
+                from runtime.computer_use_tool import ComputerUseTool  # type: ignore
+
                 plugin = ComputerUseTool(self.cfg)
             else:
                 continue

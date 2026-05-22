@@ -41,7 +41,12 @@ class Job(Base):
     assigned_worker_id = Column(String, ForeignKey('workers.id'), nullable=True)
     result = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
 
 class ApprovalRequest(Base):
     __tablename__ = 'approval_requests'

@@ -6,6 +6,7 @@ from runtime.utils import utc_now
 
 class AgentLoop:
     def __init__(self, cfg, backend, hooks, tools, memory, receipts, decision_schema, subagents, logger):
+    def __init__(self, cfg, backend, hooks, tools, memory, receipts, decision_schema, subagents, logger):
         self.cfg = cfg
         self.backend = backend
         self.hooks = hooks
@@ -47,7 +48,11 @@ class AgentLoop:
         max_steps = self.cfg["worker"]["max_steps"]
         for step_index in range(max_steps):
             context = self.context_builder.build(task, history, subagent_name=subagent_name)
-            self.hooks.run("before_model_call", task["task_id"], {"step_index": step_index, "history_length": len(history)})
+            self.hooks.run(
+                "before_model_call",
+                task["task_id"],
+                {"step_index": step_index, "history_length": len(history)},
+            )
             decision = self.backend.decide(context, self.decision_schema, depth=depth)
             validate(decision, self.decision_schema)
             self.hooks.run("after_model_call", task["task_id"], {"decision": decision})
@@ -143,7 +148,14 @@ class AgentLoop:
                 "summary": decision["reasoning_summary"],
                 "history_length": len(history),
             }
-            self.memory.append({"event_type": "final", "summary": decision["reasoning_summary"], "created_at": utc_now()}, task_id=task["task_id"])
+            self.memory.append(
+                {
+                    "event_type": "final",
+                    "summary": decision["reasoning_summary"],
+                    "created_at": utc_now(),
+                },
+                task_id=task["task_id"],
+            )
             self.receipts.emit(
                 task["task_id"],
                 "final",

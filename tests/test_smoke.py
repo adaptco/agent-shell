@@ -8,7 +8,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def run(*args):
-    return subprocess.run([sys.executable, "-m", "runtime.cli", *args], cwd=ROOT, capture_output=True, text=True, check=True)
+    return subprocess.run(
+        [sys.executable, "-m", "runtime.cli", *args],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
 
 
 def test_doctor():

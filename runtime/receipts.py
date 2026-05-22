@@ -8,7 +8,9 @@ class ReceiptWriter:
         self.cfg = cfg
         self.root = resolve_path(cfg, cfg["receipts"]["dir"])
 
-    def emit(self, task_id: str, step: str, status: str, inputs=None, outputs=None, error=None, memory_snapshot=None) -> Path:
+    def emit(
+        self, task_id: str, step: str, status: str, inputs=None, outputs=None, error=None, memory_snapshot=None
+    ) -> Path:
         created_at = utc_now()
         date_part = created_at.split("T", 1)[0].replace("-", "")
         target_dir = self.root / date_part
@@ -24,7 +26,7 @@ class ReceiptWriter:
             "inputs": inputs or {},
             "outputs": outputs or {},
             "error": error,
-            "memory_snapshot": memory_snapshot
+            "memory_snapshot": self._scrub(memory_snapshot or []),
         }
         path = target_dir / f"{receipt['receipt_id']}.json"
         write_json(path, receipt)

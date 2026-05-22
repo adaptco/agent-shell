@@ -28,6 +28,7 @@ class BuiltinHookHandler(HookHandler):
             allow = token in self.config["tools"]["bash"]["allow_prefixes"]
             if not allow:
                 return {"allow": False, "payload": payload, "reason": f"command prefix not allowed: {token}"}
+                return {"allow": False, "payload": payload, "reason": f"command prefix not allowed: {token}"}
         return {"allow": True, "payload": payload}
     
     def _before_delegate(self, task_id: str, payload: dict) -> dict:
@@ -48,8 +49,15 @@ class BuiltinHookHandler(HookHandler):
                 import json
                 req = urllib.request.Request(
                     webhook_url,
-                    data=json.dumps({"name": hook_name, "task_id": task_id, "payload": payload, "result": result}).encode("utf-8"),
-                    headers={"Content-Type": "application/json"}
+                    data=json.dumps(
+                        {
+                            "name": hook_name,
+                            "task_id": task_id,
+                            "payload": payload,
+                            "result": result,
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
                 )
                 urllib.request.urlopen(req, timeout=1.0)
             except Exception:
