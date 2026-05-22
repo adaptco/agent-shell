@@ -1,9 +1,9 @@
 """
 Semantic Analyzer for Document Clustering and Knowledge Graph Creation
 """
+
 from __future__ import annotations
 import hashlib
-import json
 import re
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Any
@@ -13,6 +13,7 @@ import math
 @dataclass
 class Token:
     """Semantic token extracted from text"""
+
     text: str
     term_frequency: float
     context: str
@@ -25,6 +26,7 @@ class Token:
 @dataclass
 class Cluster:
     """Domain expertise cluster"""
+
     cluster_id: str
     label: str
     tokens: List[Token]
@@ -52,7 +54,7 @@ class SimpleEmbedding:
         Generate a deterministic embedding for text using hash-based approach.
         Not ML-based, but reproducible and suitable for semantic grouping.
         """
-        words = re.findall(r'\w+', text.lower())
+        words = re.findall(r"\w+", text.lower())
         if not words:
             return [0.0] * dim
 
@@ -67,7 +69,7 @@ class SimpleEmbedding:
                 embedding[idx] += 1.0 / (len(words) + 1)
 
         # Normalize
-        magnitude = math.sqrt(sum(x ** 2 for x in embedding))
+        magnitude = math.sqrt(sum(x**2 for x in embedding))
         if magnitude > 0:
             embedding = [x / magnitude for x in embedding]
 
@@ -80,8 +82,8 @@ class SimpleEmbedding:
             return 0.0
 
         dot_product = sum(a * b for a, b in zip(vec1, vec2))
-        mag1 = math.sqrt(sum(x ** 2 for x in vec1))
-        mag2 = math.sqrt(sum(x ** 2 for x in vec2))
+        mag1 = math.sqrt(sum(x**2 for x in vec1))
+        mag2 = math.sqrt(sum(x**2 for x in vec2))
 
         if mag1 == 0 or mag2 == 0:
             return 0.0
@@ -114,7 +116,7 @@ class SemanticAnalyzer:
         tokens = []
 
         # Sentence tokenization
-        sentences = re.split(r'[.!?]\s+', text)
+        sentences = re.split(r"[.!?]\s+", text)
 
         for sent_idx, sentence in enumerate(sentences):
             # Extract phrases (multi-word terms)
@@ -125,12 +127,7 @@ class SemanticAnalyzer:
                 phrase_lower = phrase.lower()
                 tf = text.lower().count(phrase_lower) / max(len(text.split()), 1)
 
-                token = Token(
-                    text=phrase,
-                    term_frequency=tf,
-                    context=context or sentence[:100],
-                    position=sent_idx
-                )
+                token = Token(text=phrase, term_frequency=tf, context=context or sentence[:100], position=sent_idx)
                 tokens.append(token)
 
         return tokens
@@ -141,8 +138,8 @@ class SemanticAnalyzer:
 
         # Multi-word patterns
         patterns = [
-            r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b',  # CamelCase or Title phrases
-            r'\b(?:API|REST|OAuth|JWT|SQL|NoSQL|CRUD|CI/CD|ETL|NLP|CV)\b',  # Acronyms
+            r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b",  # CamelCase or Title phrases
+            r"\b(?:API|REST|OAuth|JWT|SQL|NoSQL|CRUD|CI/CD|ETL|NLP|CV)\b",  # Acronyms
         ]
 
         for pattern in patterns:
@@ -152,8 +149,8 @@ class SemanticAnalyzer:
         # Single important words
         important_words = set()
         for word in text.split():
-            word_clean = word.lower().strip('.,;:')
-            if len(word_clean) > 4 and word_clean not in ['this', 'that', 'with', 'from', 'into']:
+            word_clean = word.lower().strip(".,;:")
+            if len(word_clean) > 4 and word_clean not in ["this", "that", "with", "from", "into"]:
                 important_words.add(word_clean)
 
         phrases.extend(list(important_words)[:10])
@@ -204,7 +201,7 @@ class SemanticAnalyzer:
                         tokens=domain_tokens,
                         centroid_embedding=centroid,
                         confidence=score,
-                        related_clusters=[]
+                        related_clusters=[],
                     )
                     clusters.append(cluster)
 
@@ -238,7 +235,7 @@ class SemanticAnalyzer:
         centroid = [sum(e[i] for e in embeddings) / len(embeddings) for i in range(self.embedding_dim)]
 
         # Normalize
-        magnitude = math.sqrt(sum(x ** 2 for x in centroid))
+        magnitude = math.sqrt(sum(x**2 for x in centroid))
         if magnitude > 0:
             centroid = [x / magnitude for x in centroid]
 
@@ -250,8 +247,7 @@ class SemanticAnalyzer:
             for j, cluster2 in enumerate(clusters):
                 if i != j:
                     similarity = self.embedder.cosine_similarity(
-                        cluster1.centroid_embedding,
-                        cluster2.centroid_embedding
+                        cluster1.centroid_embedding, cluster2.centroid_embedding
                     )
                     if similarity > 0.6:
                         if cluster2.cluster_id not in cluster1.related_clusters:
@@ -276,21 +272,19 @@ class SemanticAnalyzer:
         }
 
         for cluster in merged_clusters:
-            graph["nodes"].append({
-                "id": cluster.cluster_id,
-                "label": cluster.label,
-                "confidence": cluster.confidence,
-                "token_count": len(cluster.tokens),
-            })
+            graph["nodes"].append(
+                {
+                    "id": cluster.cluster_id,
+                    "label": cluster.label,
+                    "confidence": cluster.confidence,
+                    "token_count": len(cluster.tokens),
+                }
+            )
             graph["clusters"][cluster.cluster_id] = cluster.to_dict()
 
             # Add edges for relationships
             for related_id in cluster.related_clusters:
-                graph["edges"].append({
-                    "source": cluster.cluster_id,
-                    "target": related_id,
-                    "type": "related"
-                })
+                graph["edges"].append({"source": cluster.cluster_id, "target": related_id, "type": "related"})
 
         return graph
 
@@ -310,14 +304,11 @@ class SemanticAnalyzer:
             similar_ids = [cluster1.cluster_id]
 
             # Find similar clusters
-            for j, cluster2 in enumerate(clusters[i + 1:], start=i + 1):
+            for j, cluster2 in enumerate(clusters[i + 1 :], start=i + 1):
                 if j in used:
                     continue
 
-                similarity = self.embedder.cosine_similarity(
-                    cluster1.centroid_embedding,
-                    cluster2.centroid_embedding
-                )
+                similarity = self.embedder.cosine_similarity(cluster1.centroid_embedding, cluster2.centroid_embedding)
 
                 if similarity > 0.7:  # High similarity threshold
                     merged_tokens.extend(cluster2.tokens)
@@ -331,7 +322,7 @@ class SemanticAnalyzer:
                 tokens=merged_tokens,
                 centroid_embedding=self._compute_centroid(merged_tokens),
                 confidence=cluster1.confidence,
-                related_clusters=similar_ids[1:]
+                related_clusters=similar_ids[1:],
             )
             merged.append(merged_cluster)
 
