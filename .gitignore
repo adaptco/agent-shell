@@ -4,4 +4,21 @@ __pycache__/
 
 .pytest_cache/
 .venv/
+.coverage
+coverage.xml
 
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Runtime output / local state
+receipts/
+logs/
+memory/
+queue/
+state/runtime.json
+state/agent-state.md
+
+# Local nested clone (do not commit)
+agent-shell/

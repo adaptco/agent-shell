@@ -25,8 +25,10 @@ def test_trim_description_when_over_limit() -> None:
     assert trimmed.endswith("…")
 
 
-def test_run_external_command_executes_without_shell(tmp_path) -> None:
-    exit_code = _run_external_command("python -c \"print('ok')\"", tmp_path)
+def test_run_external_command_executes_without_shell(tmp_path: Path) -> None:
+    import sys
+
+    exit_code = _run_external_command(f"{sys.executable} -c \"print('ok')\"", tmp_path)
     assert exit_code == 0
 
 
