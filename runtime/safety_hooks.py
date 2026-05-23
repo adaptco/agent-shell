@@ -24,13 +24,13 @@ class SafetyHookHandler(HookHandler):
             command = tool_input.get("command", "")
             # Block extremely dangerous patterns
             dangerous_patterns = [
-                r"rm\\s+.*(-rf|-fr|--recursive)\\s+/",
+                r"rm\s+.*(-rf|-fr|--recursive)\s+/",
                 r"mkfs",
-                r"dd\\s+if=",
-                r">\\s*/dev/sd",
-                r":\\(\\)\\{ :\\|:& \\};:",
-                r"curl.*\\|.*(bash|sh)",
-                r"wget.*\\|.*(bash|sh)",
+                r"dd\s+if=",
+                r">\s*/dev/sd",
+                r":\(\)\{ :\|:& \};:",
+                r"curl.*\|.*(bash|sh)",
+                r"wget.*\|.*(bash|sh)",
             ]
             for pattern in dangerous_patterns:
                 if re.search(pattern, command):
