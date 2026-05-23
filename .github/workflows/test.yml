@@ -1,12 +1,15 @@
 name: Run Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -30,7 +33,7 @@ jobs:
         run: python -m pytest --cov=runtime --cov-report=xml --cov-report=term -q
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
@@ -43,7 +46,7 @@ jobs:
       dockerfile-present: ${{ steps.dockerfile-check.outputs.present }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Check Dockerfile presence
         id: dockerfile-check
@@ -61,11 +64,11 @@ jobs:
 
       - name: Set up Docker Buildx
         if: ${{ steps.dockerfile-check.outputs.present == 'true' }}
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Set up Docker Build Cloud (optional)
         if: ${{ steps.dockerfile-check.outputs.present == 'true' && vars.ENABLE_DOCKER_BUILD_CLOUD == 'true' }}
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           driver-options: |
             image=moby/buildkit:latest
@@ -73,7 +76,7 @@ jobs:
 
       - name: Build Docker image
         if: ${{ steps.dockerfile-check.outputs.present == 'true' }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
@@ -83,9 +86,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+
       - name: Skip Docker checks (Dockerfile missing)
         if: ${{ steps.dockerfile-check.outputs.present != 'true' }}
-        run: echo "No Dockerfile found in this branch. Skipping Docker build and scout checks."
+        run: echo "No Dockerfile found in this branch. Skipping Docker build checks."
 
   docker-test:
     runs-on: ubuntu-latest
@@ -93,13 +97,13 @@ jobs:
     if: ${{ needs.docker-build.outputs.dockerfile-present == 'true' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Build image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile

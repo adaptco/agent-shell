@@ -18,7 +18,7 @@ jobs:
       should-release: ${{ steps.check.outputs.should-release }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0 # Required so git can see all tags for the version check
 
@@ -49,7 +49,7 @@ jobs:
     if: needs.check-version.outputs.should-release == 'true'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Set up Python
         uses: actions/setup-python@v5
