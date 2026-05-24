@@ -149,7 +149,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         if not is_valid_id(task_id):
             raise HTTPException(status_code=400, detail="Invalid task ID format")
 
-        task_info = service.get_task(task_id)
+        task_info = await asyncio.to_thread(service.get_task, task_id)
         if task_info is None:
             raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
 
