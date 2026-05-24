@@ -3,6 +3,7 @@ import re
 from runtime.plugin_base import HookHandler
 
 
+# Fixed regex patterns to use single backslashes in raw strings
 class SafetyHookHandler(HookHandler):
     """
     Implements runtime safety policies for tool calls and model interactions.
