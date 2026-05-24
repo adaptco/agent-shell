@@ -18,11 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-<<<<<<< HEAD
       - uses: actions/checkout@v4.2.2
-=======
-      - uses: actions/checkout@v4
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
 
       - name: Validate image exists
         env:
@@ -30,11 +26,7 @@ jobs:
         run: |
           TOKEN=$(echo ${{ secrets.GITHUB_TOKEN }} | base64)
           IMAGE_URL="ghcr.io/${{ github.repository }}:${IMAGE_TAG}"
-<<<<<<< HEAD
 
-=======
-          
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
           if docker manifest inspect "$IMAGE_URL"; then
             echo "✅ Image exists: $IMAGE_URL"
           else
@@ -50,11 +42,7 @@ jobs:
       url: https://api.example.com
 
     steps:
-<<<<<<< HEAD
       - uses: actions/checkout@v4.2.2
-=======
-      - uses: actions/checkout@v4
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
 
       - name: Deploy to production
         env:
@@ -65,11 +53,7 @@ jobs:
         run: |
           IMAGE="ghcr.io/${{ github.repository }}:${IMAGE_TAG}"
           echo "🚀 Deploying to production: $IMAGE"
-<<<<<<< HEAD
 
-=======
-          
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
           # Example: SSH deployment with health checks
           # mkdir -p ~/.ssh
           # echo "$DEPLOY_KEY" > ~/.ssh/id_rsa

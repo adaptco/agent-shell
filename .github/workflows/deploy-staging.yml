@@ -21,11 +21,7 @@ jobs:
       url: https://staging-api.example.com
 
     steps:
-<<<<<<< HEAD
       - uses: actions/checkout@v4.2.2
-=======
-      - uses: actions/checkout@v4
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
 
       - name: Deploy to staging
         env:

@@ -12,12 +12,8 @@ jobs:
       image-tag: ${{ steps.meta.outputs.image_tag }}
 
     steps:
-<<<<<<< HEAD
       - name: Checkout
         uses: actions/checkout@v4.2.2
-=======
-      - uses: actions/checkout@v4
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
 
       - name: Compute image tag
         id: meta
@@ -34,13 +30,8 @@ jobs:
             image=moby/buildkit:latest
             network=docker-bake
 
-<<<<<<< HEAD
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
-=======
-      - name: Build and push image
-        uses: docker/build-push-action@v5
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
         with:
           context: .
           push: true

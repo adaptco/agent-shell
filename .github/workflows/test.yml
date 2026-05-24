@@ -4,13 +4,6 @@ on:
   push:
     branches: [main, develop]
   pull_request:
-<<<<<<< HEAD
-=======
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
 
 jobs:
   test:
@@ -131,12 +124,8 @@ jobs:
         run: |
           docker run -d --name test-container -p 8000:8000 agent-shell:test
           sleep 5
-<<<<<<< HEAD
           if ! curl -f http://localhost:8000/ping; then
             docker stop test-container
             exit 1
           fi
-=======
-          curl -f http://localhost:8000/health || exit 1
->>>>>>> 0469baf22e6e2704c6398c51c16dfe8eda889a27
           docker stop test-container
