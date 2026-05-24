@@ -154,9 +154,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
 
         async def event_generator():
-            import asyncio
-            import json
-            from runtime.utils import read_json
+            # Imports moved to top level
 
             seen_receipts = set()
             while True:
