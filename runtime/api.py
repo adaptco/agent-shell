@@ -175,7 +175,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                     new_paths = await asyncio.to_thread(get_new_receipts)
                     for path_str in sorted(new_paths):
                         try:
-                            r_data = read_json(path_str)
+                            r_data = await asyncio.to_thread(read_json, path_str)
                             yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
                             seen_receipts.add(path_str)
                         except Exception:
