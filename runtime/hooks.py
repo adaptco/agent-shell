@@ -9,7 +9,7 @@ class HookRegistry:
         self.cfg = cfg
         self.registry = {}
         self.handlers = {}
-        
+
         # Load legacy hook specs for validation
         hook_dir = resolve_path(cfg, cfg["hooks"]["registry_dir"])
         for path in sorted(hook_dir.glob("*.json")):
@@ -23,18 +23,19 @@ class HookRegistry:
         """Load hook handlers from config"""
         # Always load builtin handler for backward compatibility
         self.handlers["builtin"] = BuiltinHookHandler(self.cfg)
-        
+
         handlers_cfg = self.cfg.get("plugins", {}).get("hooks", [])
         for handler_cfg in handlers_cfg:
             if not handler_cfg.get("enabled", True):
                 continue
-            
+
             handler_type = handler_cfg["type"]
             if handler_type == "builtin":
-                continue # Already loaded
-            
+                continue  # Already loaded
+
             if handler_type == "safety":
                 from runtime.safety_hooks import SafetyHookHandler
+
                 handler = SafetyHookHandler(self.cfg)
                 self.handlers[handler_type] = handler
             else:
@@ -45,9 +46,9 @@ class HookRegistry:
         spec = self.registry.get(name)
         if spec:
             validate({"task_id": task_id, "payload": payload}, spec["input_schema"])
-        
+
         final_result = {"allow": True, "payload": payload}
-        
+
         for handler in self.handlers.values():
             result = handler.handle(name, task_id, payload)
             if not result.get("allow", True):
@@ -55,8 +56,8 @@ class HookRegistry:
                 break
             payload = result.get("payload", payload)
             final_result["payload"] = payload
-        
+
         if spec:
             validate(final_result, spec["output_schema"])
-            
+
         return final_result

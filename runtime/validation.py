@@ -24,7 +24,9 @@ def _check_type(expected: str, value: Any) -> bool:
 def validate(data: Any, schema: Dict[str, Any], path: str = "$") -> None:
     expected_type = schema.get("type")
     if expected_type and not _check_type(expected_type, data):
-        raise SchemaValidationError(f"{path}: expected {expected_type}, got {type(data).__name__}")
+        raise SchemaValidationError(
+            f"{path}: expected {expected_type}, got {type(data).__name__}"
+        )
     enum = schema.get("enum")
     if enum is not None and data not in enum:
         raise SchemaValidationError(f"{path}: value {data!r} not in enum {enum!r}")
@@ -37,7 +39,9 @@ def validate(data: Any, schema: Dict[str, Any], path: str = "$") -> None:
         if schema.get("additionalProperties") is False:
             extra = set(data) - set(properties)
             if extra:
-                raise SchemaValidationError(f"{path}: unexpected keys {sorted(extra)!r}")
+                raise SchemaValidationError(
+                    f"{path}: unexpected keys {sorted(extra)!r}"
+                )
         for key, value in data.items():
             if key in properties:
                 validate(value, properties[key], f"{path}.{key}")
