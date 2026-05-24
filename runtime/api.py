@@ -178,8 +178,11 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                             r_data = await asyncio.to_thread(read_json, path_str)
                             yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
                             seen_receipts.add(path_str)
-                        except Exception:
-                            pass
+                        except Exception as e:
+                            if hasattr(service, "logger"):
+                                service.logger.warning(f"Error processing receipt: {path_str}", exc_info=True)
+                            else:
+                                print(f"Error processing receipt {path_str}: {e}")
 
                 if current_task:
                     status = current_task.get("status")
