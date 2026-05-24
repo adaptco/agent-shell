@@ -18,7 +18,12 @@ class FileTaskQueue:
         for path in [self.inbox, self.working, self.done, self.failed]:
             path.mkdir(parents=True, exist_ok=True)
 
-    def enqueue(self, task_text: str, parent_task_id: str | None = None, assigned_subagent: str | None = None) -> Path:
+    def enqueue(
+        self,
+        task_text: str,
+        parent_task_id: str | None = None,
+        assigned_subagent: str | None = None,
+    ) -> Path:
         task_id = uuid4().hex
         task = {
             "task_id": task_id,
@@ -89,7 +94,10 @@ class FileTaskQueue:
                 data["queue_state"] = status
                 data["path"] = str(path)
                 items.append(data)
-        items.sort(key=lambda item: item.get("updated_at") or item.get("created_at") or "", reverse=True)
+        items.sort(
+            key=lambda item: item.get("updated_at") or item.get("created_at") or "",
+            reverse=True,
+        )
         return {"counts": counts, "items": items[:limit]}
 
     def get_task(self, task_id: str) -> dict | None:

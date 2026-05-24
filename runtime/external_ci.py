@@ -212,14 +212,26 @@ def build_parser() -> argparse.ArgumentParser:
         prog="agent-shell-external-ci",
         description="Run external CI and publish commit status to GitHub.",
     )
-    parser.add_argument("--repo", help="GitHub repository slug, for example adaptco/agent-shell")
+    parser.add_argument(
+        "--repo", help="GitHub repository slug, for example adaptco/agent-shell"
+    )
     parser.add_argument("--sha", help="Commit SHA to update")
     parser.add_argument("--context", default="external-ci", help="Status context name")
     parser.add_argument("--command", default="pytest -q", help="CI command to execute")
-    parser.add_argument("--workspace", default=".", help="Workspace root to run the CI command in")
-    parser.add_argument("--target-url", default=os.environ.get("EXTERNAL_CI_TARGET_URL"))
-    parser.add_argument("--api-url", default=os.environ.get("GITHUB_API_URL", "https://api.github.com"))
-    parser.add_argument("--skip-pending", action="store_true", help="Do not publish pending before executing command")
+    parser.add_argument(
+        "--workspace", default=".", help="Workspace root to run the CI command in"
+    )
+    parser.add_argument(
+        "--target-url", default=os.environ.get("EXTERNAL_CI_TARGET_URL")
+    )
+    parser.add_argument(
+        "--api-url", default=os.environ.get("GITHUB_API_URL", "https://api.github.com")
+    )
+    parser.add_argument(
+        "--skip-pending",
+        action="store_true",
+        help="Do not publish pending before executing command",
+    )
     return parser
 
 
