@@ -60,14 +60,15 @@ class ReceiptWriter:
 
     def _scrub(self, data: Any) -> Any:
         if isinstance(data, dict):
-            return {
-                k: (
-                    "[REDACTED]"
-                    if any(p in k.lower() for p in self.SENSITIVE_PATTERNS)
-                    else self._scrub(v)
-                )
-                for k, v in data.items()
-            }
+            scrubbed = {}
+            for k, v in data.items():
+                k_lower = k.lower()
+                if any(p in k_lower for p in self.SENSITIVE_PATTERNS):
+                    scrubbed[k] = "[REDACTED]"
+                else:
+                    scrubbed[k] = self._scrub(v)
+            return scrubbed
         elif isinstance(data, list):
             return [self._scrub(item) for item in data]
+        return data
         return data
