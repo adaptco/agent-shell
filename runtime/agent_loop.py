@@ -46,20 +46,26 @@ class AgentLoop:
         )
         from runtime.utils import read_json, write_json
 
-        runtime_state_path = Path(self.cfg["_workspace"]) / self.cfg["state"]["runtime_state"]
+        runtime_state_path = (
+            Path(self.cfg["_workspace"]) / self.cfg["state"]["runtime_state"]
+        )
         runtime_state = read_json(runtime_state_path)
         runtime_state["status"] = "idle"
         runtime_state["last_task_id"] = task["task_id"]
         runtime_state["last_worker_id"] = task.get("worker_id")
         write_json(runtime_state_path, runtime_state)
 
-    def run_task(self, task: dict, subagent_name: str | None = None, depth: int = 0) -> dict:
+    def run_task(
+        self, task: dict, subagent_name: str | None = None, depth: int = 0
+    ) -> dict:
         if depth > self.cfg["worker"]["max_delegate_depth"]:
             return {"status": "failed", "final_response": "max delegate depth exceeded"}
         history: list[dict] = []
         max_steps = self.cfg["worker"]["max_steps"]
         for step_index in range(max_steps):
-            context = self.context_builder.build(task, history, subagent_name=subagent_name)
+            context = self.context_builder.build(
+                task, history, subagent_name=subagent_name
+            )
             self.hooks.run(
                 "before_model_call",
                 task["task_id"],
@@ -99,7 +105,9 @@ class AgentLoop:
                         memory_snapshot=self._get_memory_snapshot(),
                     )
                     return error
-                tool_result = self.tools.execute(decision["tool_name"], hook_result["payload"]["tool_input"])
+                tool_result = self.tools.execute(
+                    decision["tool_name"], hook_result["payload"]["tool_input"]
+                )
                 tool_result = self.hooks.run(
                     "after_tool_call",
                     task["task_id"],
@@ -148,8 +156,12 @@ class AgentLoop:
                         memory_snapshot=self._get_memory_snapshot(),
                     )
                     return error
-                delegate_result = self.subagents.delegate(task, decision, self.backend.name, depth)
-                delegate_result = self.hooks.run("after_delegate", task["task_id"], delegate_result)["payload"]
+                delegate_result = self.subagents.delegate(
+                    task, decision, self.backend.name, depth
+                )
+                delegate_result = self.hooks.run(
+                    "after_delegate", task["task_id"], delegate_result
+                )["payload"]
                 history.append(
                     {
                         "event_type": "delegate_result",

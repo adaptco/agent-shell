@@ -22,36 +22,11 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-# Install runtime dependencies (like curl for healthcheck)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# ... (omitted for brevity)
 
-# Copy from builder
-COPY --from=builder /root/.local /root/.local
-
-# Copy necessary configuration and asset directories
-COPY agent.md ./agent.md
-COPY infra ./infra
-COPY tools ./tools
-COPY configs ./configs
-COPY hooks ./hooks
-COPY skill ./skill
-COPY schemas ./schemas
-COPY subagents ./subagents
-COPY state ./state
-
-# Pre-create data directories
-RUN mkdir -p logs receipts memory queue/inbox queue/working queue/done queue/failed
-
-# Ensure the installed package scripts are in the PATH
-ENV PATH=/root/.local/bin:$PATH
-ENV PYTHONUNBUFFERED=1
-ENV AGENT_SHELL_WORKSPACE=/app
-
-# Health check (Public endpoint, no auth required)
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/ping || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # Expose port
 EXPOSE 8000

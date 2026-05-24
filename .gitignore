@@ -22,3 +22,8 @@ state/agent-state.md
 
 # Local nested clone (do not commit)
 agent-shell/
+receipts/
+memory/
+queue/
+logs/
+.venv/
