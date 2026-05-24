@@ -34,7 +34,7 @@ pytest --collect-only
 ### 2. Scan Recent Commits
 ```powershell
 # List last 7 days of commits with file changes
-git log --since="7 days ago" --name-status --pretty=format:"%H %s" | Select-Object -First 20
+git log --since="7 days ago" --name-status --pretty=format:"%H %s" | head -20
 ```
 
 ### 3. Identify High-Risk Changes
@@ -61,7 +61,7 @@ cat <file>
 #### c) Find all callers
 ```powershell
 # Search for function/class usage
-Get-ChildItem -Recurse -Filter *.py | Select-String "function_name"
+grep -r "function_name" . --include="*.py" | grep -v ".pyc"
 ```
 
 #### d) Check for tests
@@ -172,7 +172,7 @@ def set_cache_with_expiry(key, value, ttl):
            cache_module.set_cache_with_expiry(key, val, 60)
        
        threads = [
-           threading.Thread(target=write_cache, args=(f"key{i}", f"value{i}"))
+           threading.Thread(target=write_cache, args=("key1", f"value{i}"))
            for i in range(100)
        ]
        
@@ -209,7 +209,7 @@ pytest tests/test_cache.py::test_concurrent_cache_writes -v
 ### Inspection
 ```powershell
 # List changed files in last 7 days
-git log --since="7 days ago" --name-only --pretty=format: | sort -Unique
+git log --since="7 days ago" --name-only --pretty=format: | sort | uniq
 
 # Get full diff for a commit
 git show <hash>
@@ -245,7 +245,7 @@ pytest -vv tests/test_file.py
 grep -r "name" . --include="*.py" | grep -v test | grep -v ".pyc"
 
 # Count files changed
-(git diff --name-only main..HEAD).Count
+git diff --name-only main..HEAD | wc -l
 
 # List file with number of changes
 git diff --stat main..HEAD

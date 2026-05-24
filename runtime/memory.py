@@ -23,7 +23,6 @@ class JournalMemory:
         for line in lines:
             try:
                 import json
-
                 result.append(json.loads(line))
             except Exception:
                 result.append({"raw": line, "parse_error": True})
@@ -55,9 +54,7 @@ class JournalMemory:
         archive_path.write_text(self.journal.read_text(encoding="utf-8"), encoding="utf-8")
         keep_last = self.cfg["memory"]["compaction"]["keep_last"]
         retained = entries[-keep_last:]
-        lines = [
-            f"- {e.get('event_type', 'event')}: {e.get('summary', e.get('tool_name', 'n/a'))}" for e in entries[-10:]
-        ]
+        lines = [f"- {e.get('event_type', 'event')}: {e.get('summary', e.get('tool_name', 'n/a'))}" for e in entries[-10:]]
         self.summary.write_text(
             "# Memory Summary\n\n"
             + f"- Compacted at: {utc_now()}\n"
@@ -81,11 +78,7 @@ class JournalMemory:
         state["memory"]["entries"] = len(self.entries())
         state["memory"]["last_compaction"] = utc_now()
         write_json(self.runtime_state_path, state)
-        result = {
-            "compacted": True,
-            "archive_path": str(archive_path),
-            "retained": len(retained),
-        }
+        result = {"compacted": True, "archive_path": str(archive_path), "retained": len(retained)}
         if self.hooks:
             self.hooks.run("after_memory_compact", task_id, result)
         if self.receipts:

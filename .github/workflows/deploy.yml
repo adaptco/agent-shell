@@ -1,134 +1,77 @@
 name: deploy
 
 on:
-  push:
-    branches: [main, develop]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: true
-        default: 'development'
-        type: choice
-        options:
-          - development
-          - staging
-          - production
-
-permissions:
-  contents: read
-  packages: write
-  deployments: write
+  push:
+    branches: [main]
 
 jobs:
-  determine-environments:
-    name: Determine Environments to Deploy
-    runs-on: ubuntu-latest
-    outputs:
-      environments: ${{ steps.set-envs.outputs.envs }}
-    steps:
-      - id: set-envs
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "envs=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/develop" ]]; then
-            echo "envs=[\"development\"]" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "envs=[\"staging\"]" >> $GITHUB_OUTPUT
-          else
-            echo "envs=[]" >> $GITHUB_OUTPUT
-          fi
-
   build:
-    name: Build and Push
     runs-on: ubuntu-latest
     outputs:
-      image_tag: ${{ steps.meta.outputs.version }}
+      image-tag: ${{ steps.meta.outputs.image_tag }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract Docker metadata
+      - name: Compute image tag
         id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix=
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+        run: echo "image_tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
+
+      - name: Set up Docker Build Cloud (optional)
+        if: ${{ vars.ENABLE_DOCKER_BUILD_CLOUD == 'true' }}
+        uses: docker/setup-buildx-action@v4
+        with:
+          driver-options: |
+            image=moby/buildkit:latest
+            network=docker-bake
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.image_tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy:
-    name: Deploy to Environment
-    needs: [build, determine-environments]
-    if: needs.determine-environments.outputs.environments != '[]'
+  deploy-staging:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: ${{ fromJson(needs.determine-environments.outputs.environments) }}
-
-    environment:
-      name: ${{ matrix.environment }}
-      url: https://${{ matrix.environment }}-api.example.com
+    needs: build
 
     steps:
-      - name: Create GitHub Deployment
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.repos.createDeployment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.sha,
-              environment: '${{ matrix.environment }}',
-              auto_merge: false,
-              required_contexts: []
-            })
+      - uses: actions/checkout@v4.2.2
 
-      - name: Deploying to ${{ matrix.environment }}
+      - name: Generate SBOM
+        uses: docker/scout-action@v1
+        with:
+          command: sbom
+          image: ghcr.io/${{ github.repository }}:${{ needs.build.outputs.image-tag }}
+          only-packages: all
+          output: sbom.spdx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.spdx.json
+
+      - name: Deploy to staging
+        run: echo "Deploying ghcr.io/${{ github.repository }}:${{ needs.build.outputs.image-tag }} to staging"
+
+      - name: Wait for deployment
         run: |
-          echo "Deploying version ${{ needs.build.outputs.image_tag }} to ${{ matrix.environment }}"
-          # Add actual deployment commands here (e.g., helm, ssh, etc.)
-          sleep 5
-          echo "Deployment successful"
-
-      - name: Update Deployment Status
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const deployments = await github.rest.repos.listDeployments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              environment: '${{ matrix.environment }}'
-            });
-            if (deployments.data.length > 0) {
-              await github.rest.repos.createDeploymentStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                deployment_id: deployments.data[0].id,
-                state: '${{ job.status }}' == 'success' ? 'success' : 'failure',
-                log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
-              });
-            }
+          for i in {1..30}; do
+            if curl -f https://staging-api.example.com/health; then
+              echo "✅ Staging deployment healthy"
+              exit 0
+            fi
+            echo "Waiting for deployment... ($i/30)"
+            sleep 5
+          done
+          echo "❌ Deployment health check failed"
+          exit 1
