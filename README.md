@@ -23,8 +23,8 @@ This package keeps the file-backed runtime kernel and adds an inbound FastAPI ap
 
 ## Runtime toolchain contract
 
-- Python `>=3.13`
-- Node.js `v24` (pinned via `.nvmrc` and `.node-version`)
+- Python `>=3.13` (Required) (Required)
+- Node.js `v24` (Required for Web UI) (pinned via `.nvmrc` and `.node-version`)
 
 ## Workspace setup scripts
 
@@ -61,6 +61,15 @@ agent-shell serve-api --host 127.0.0.1 --port 8000
 
 ```powershell
 uvicorn runtime.api:create_app --factory --host 127.0.0.1 --port 8000
+```
+
+## Development Environment Setup
+
+Ensure you have Python 3.13 installed. Run the setup script to create a venv and install dependencies:
+
+```bash
+./scripts/setup_workspace.sh
+source .venv/bin/activate
 ```
 
 ## Useful endpoints

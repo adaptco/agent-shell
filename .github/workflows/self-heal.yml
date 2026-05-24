@@ -1,0 +1,32 @@
+name: self-heal
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  self-heal:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.ref == 'feat/security-hardening-mcp' # Only run on our branch for now
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install .
+          pip install PyJWT
+
+      - name: Run self-heal script
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python scripts/self_heal.py
