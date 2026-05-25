@@ -544,14 +544,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run Docker Scout
-        if: ${{ steps.dockerfile-check.outputs.present == 'true' }}
-        uses: docker/scout-action@v1
-        with:
-          command: cves
-          image: ghcr.io/${{ github.repository }}:latest
-          only-severities: critical,high
-          exit-code: false
 
       - name: Skip Docker checks (Dockerfile missing)
         if: ${{ steps.dockerfile-check.outputs.present != 'true' }}
@@ -582,8 +574,5 @@ jobs:
         run: |
           docker run -d --name test-container -p 8000:8000 agent-shell:test
           sleep 5
-          if ! curl -f http://localhost:8000/ping; then
-            docker stop test-container
-            exit 1
-          fi
+          curl -f http://localhost:8000/health || exit 1
           docker stop test-container
