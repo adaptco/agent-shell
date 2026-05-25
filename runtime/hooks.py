@@ -1,62 +1,28 @@
-from runtime.config import resolve_path
-from runtime.utils import read_json
-from runtime.validation import validate
-from runtime.hook_plugins import BuiltinHookHandler
-
+import logging
+from runtime.safety_hooks import SafetyHookHandler
 
 class HookRegistry:
-    def __init__(self, cfg):
+    def __init__(self, cfg: dict):
         self.cfg = cfg
-        self.registry = {}
         self.handlers = {}
+        self.logger = logging.getLogger("runtime.hooks")
 
-        # Load legacy hook specs for validation
-        hook_dir = resolve_path(cfg, cfg["hooks"]["registry_dir"])
-        for path in sorted(hook_dir.glob("*.json")):
-            data = read_json(path)
-            self.registry[data["name"]] = data
-
-        # Load handlers
-        self._load_handlers()
-
-    def _load_handlers(self):
-        """Load hook handlers from config"""
-        # Always load builtin handler for backward compatibility
-        self.handlers["builtin"] = BuiltinHookHandler(self.cfg)
-
-        handlers_cfg = self.cfg.get("plugins", {}).get("hooks", [])
-        for handler_cfg in handlers_cfg:
-            if not handler_cfg.get("enabled", True):
+    def register_handlers(self):
+        # Fallback to empty dict if handlers key is missing
+        handlers_list = self.cfg.get("runtime", {}).get("handlers", [])
+        
+        for handler_cfg in handlers_list:
+            handler_type = handler_cfg.get("type")
+            if not handler_type:
                 continue
-
-            handler_type = handler_cfg["type"]
+                
             if handler_type == "builtin":
-                continue # Already loaded
-
+                continue  # Already loaded
+                
             if handler_type == "safety":
-                from runtime.safety_hooks import SafetyHookHandler
-                handler = SafetyHookHandler(self.cfg)
-                self.handlers[handler_type] = handler
-            else:
-                continue
-
-    def run(self, name: str, task_id: str, payload: dict) -> dict:
-        """Run all registered hook handlers for a given hook name"""
-        spec = self.registry.get(name)
-        if spec:
-            validate({"task_id": task_id, "payload": payload}, spec["input_schema"])
-
-        final_result = {"allow": True, "payload": payload}
-
-        for handler in self.handlers.values():
-            result = handler.handle(name, task_id, payload)
-            if not result.get("allow", True):
-                final_result = result
-                break
-            payload = result.get("payload", payload)
-            final_result["payload"] = payload
-
-        if spec:
-            validate(final_result, spec["output_schema"])
-
-        return final_result
+                try:
+                    handler = SafetyHookHandler(self.cfg)
+                    self.handlers[handler_type] = handler
+                    self.logger.info("Successfully registered safety hooks handler")
+                except Exception as e:
+                    self.logger.error(f"Failed to initialize safety handler: {e}")
