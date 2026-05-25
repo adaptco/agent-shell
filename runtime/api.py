@@ -1,12 +1,10 @@
 
-from __future__ import annotations
-from contextlib import asynccontextmanager
-# Ensure you import read_json from wherever it is defined in your project.
-# For example, if it's a helper function in a utils module:
-from utils import read_json
+from __future__ import annotations  # MUST BE LINE 1
 
 import asyncio
 import json
+from contextlib import asynccontextmanager
+from utils import read_json
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, RedirectResponse
