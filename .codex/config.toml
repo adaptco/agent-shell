@@ -2,7 +2,7 @@
 
 [security]
 trusted_projects = [
-  "agent-shell",
+  "C:\\Users\\eqhsp\\Projects\\agent-shell",
  ]
 approval_policy = "all"
 

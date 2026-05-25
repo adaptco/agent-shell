@@ -1,9 +1,7 @@
 from __future__ import annotations
-
 import json
 import urllib.request
-
-from runtime.utils import get_env, sha256_hex
+from runtime.utils import sha256_hex, get_env
 
 
 class BaseBackend:
@@ -54,12 +52,16 @@ class MockBackend(BaseBackend):
                     "tool_name": "web_search",
                     "tool_input": {"query": context["task"]["task"], "limit": 3},
                 }
-            if "list" in task_text or "workspace" in task_text or "directory" in task_text:
+            if (
+                "list" in task_text
+                or "workspace" in task_text
+                or "directory" in task_text
+            ):
                 return {
                     "decision_type": "tool_call",
                     "reasoning_summary": "Use bash to list the workspace.",
                     "tool_name": "bash",
-                    "tool_input": {"command": "python -c \"import os; print('\\n'.join(os.listdir('.')))\""},
+                    "tool_input": {"command": "ls -1"},
                 }
             return {
                 "decision_type": "tool_call",
@@ -76,7 +78,8 @@ class MockBackend(BaseBackend):
 
 def _build_decision_prompt(context: dict) -> tuple[str, str]:
     system_prompt = (
-        "You are the decision layer for an agent shell runtime. Return only a JSON object matching the supplied schema."
+        "You are the decision layer for an agent shell runtime. "
+        "Return only a JSON object matching the supplied schema."
     )
     user_prompt = json.dumps(
         {
@@ -101,8 +104,10 @@ class OpenAIResponsesBackend(BaseBackend):
         self.endpoint = cfg["llm"]["openai"]["endpoint"]
         self.model = cfg["llm"]["openai"]["model"]
         self.api_key = get_env(
-            cfg.get("auth", {}).get("providers", {}).get("openai", {}).get("env_var", "OPENAI_API_KEY"),
-            required=True,
+            cfg.get("auth", {})
+            .get("providers", {})
+            .get("openai", {})
+            .get("env_var", "OPENAI_API_KEY")
         )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
@@ -133,9 +138,13 @@ class OpenAIResponsesBackend(BaseBackend):
         for item in body.get("output", []):
             if item.get("type") == "message":
                 for content in item.get("content", []):
-                    if content.get("type") in {"output_text", "text"} and content.get("text"):
+                    if content.get("type") in {"output_text", "text"} and content.get(
+                        "text"
+                    ):
                         return json.loads(content["text"])
-        raise RuntimeError("Could not parse structured response from OpenAI Responses API")
+        raise RuntimeError(
+            "Could not parse structured response from OpenAI Responses API"
+        )
 
 
 class MistralChatBackend(BaseBackend):
@@ -143,17 +152,17 @@ class MistralChatBackend(BaseBackend):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.endpoint = cfg["llm"]["mistral"]["endpoint"]
+        self.endpoint = cfg["llm"]["endpoint"]
         self.model = cfg["llm"]["mistral"]["model"]
         self.api_key = get_env(
-            cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var", "MISTRAL_API_KEY"),
-            required=True,
+            cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var")
         )
 
     def decide(self, context: dict, decision_schema: dict, depth: int = 0) -> dict:
         system_prompt, user_prompt = _build_decision_prompt(context)
-        schema_prompt = "Return only a JSON object that matches this JSON schema exactly: " + json.dumps(
-            decision_schema, ensure_ascii=False
+        schema_prompt = (
+            "Return only a JSON object that matches this JSON schema exactly: "
+            + json.dumps(decision_schema, ensure_ascii=False)
         )
         payload = {
             "model": self.model,
@@ -186,7 +195,9 @@ class MistralChatBackend(BaseBackend):
                     text_parts.append(item.get("text", ""))
             content = "".join(text_parts)
         if not content:
-            raise RuntimeError("Could not parse structured response from Mistral Chat Completions API")
+            raise RuntimeError(
+                "Could not parse structured response from Mistral Chat Completions API"
+            )
         return json.loads(content)
 
 

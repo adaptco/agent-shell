@@ -3,6 +3,7 @@ import re
 from runtime.plugin_base import HookHandler
 
 
+# Fixed regex patterns to use single backslashes in raw strings
 class SafetyHookHandler(HookHandler):
     """
     Implements runtime safety policies for tool calls and model interactions.
@@ -20,7 +21,9 @@ class SafetyHookHandler(HookHandler):
         tool_name = payload.get("tool_name")
         tool_input = payload.get("tool_input", {})
 
-        if tool_name == "bash" and self.config.get("safety", {}).get("block_dangerous_bash", True):
+        if tool_name == "bash" and self.config.get("safety", {}).get(
+            "block_dangerous_bash", True
+        ):
             command = tool_input.get("command", "")
             # Block extremely dangerous patterns
             dangerous_patterns = [
@@ -43,5 +46,4 @@ class SafetyHookHandler(HookHandler):
         return {"allow": True, "payload": payload}
 
     def _check_model_input(self, payload: dict) -> dict:
-        # Placeholder for future prompt injection detection
         return {"allow": True, "payload": payload}

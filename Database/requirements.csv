@@ -1,0 +1,4 @@
+id,title,description,aspice_ref
+SYS_REQ_101,Speed Limit Controller,The control system shall limit the speed to the configured max limit.,SYS.2.BP1
+SYS_REQ_102,Overspeed Warning Alert,The control system shall trigger a dashboard alert if speed exceeds the limit.,SYS.2.BP2
+SYS_REQ_103,Brake Force Calculation,The control system shall calculate the required brake force based on vehicle mass and velocity.,SYS.2.BP3

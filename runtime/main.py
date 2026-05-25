@@ -7,8 +7,12 @@ from runtime.config import load_config
 def main(argv=None) -> int:
     cfg = load_config()
     parser = argparse.ArgumentParser(prog="agent-shell-api")
-    parser.add_argument("--host", default=cfg.get("service", {}).get("host", "127.0.0.1"))
-    parser.add_argument("--port", type=int, default=cfg.get("service", {}).get("port", 0))
+    parser.add_argument(
+        "--host", default=cfg.get("service", {}).get("host", "127.0.0.1")
+    )
+    parser.add_argument(
+        "--port", type=int, default=cfg.get("service", {}).get("port", 0)
+    )
     parser.add_argument("--reload", action="store_true")
     args = parser.parse_args(argv)
 
@@ -21,7 +25,9 @@ def main(argv=None) -> int:
             reload=args.reload,
         )
     except OSError as e:
-        if (args.port != 0 and "address already in use" in str(e).lower()) or "10048" in str(e):
+        if (
+            args.port != 0 and "address already in use" in str(e).lower()
+        ) or "10048" in str(e):
             print(
                 f"Port {args.port} is already in use. Retrying with auto-assigned port...",
                 flush=True,

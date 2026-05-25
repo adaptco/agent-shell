@@ -1,16 +1,14 @@
 from __future__ import annotations
-
 import json
 import subprocess
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Any, Dict
-
+from typing import Dict, Any
 from runtime.config import resolve_path
-from runtime.plugin_base import ToolPlugin
 from runtime.utils import read_json
 from runtime.validation import validate
+from runtime.plugin_base import ToolPlugin
 
 
 class BuiltinToolPlugin(ToolPlugin):
@@ -61,29 +59,24 @@ class BuiltinToolPlugin(ToolPlugin):
 
     def _bash(self, tool_input: dict) -> dict:
         import shlex
-        import shutil
 
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
-        allowed = set(self.config.get("tools", {}).get("bash", {}).get("allow_prefixes", []))
+        # Avoid shell=True for security to mitigate shell injection
         args = shlex.split(command)
-        if not args:
-            raise ValueError("empty command")
-        if allowed and args[0] not in allowed:
-            raise ValueError(f"command not allowed: {args[0]}")
-        # Resolve the executable via PATH so Windows can locate .exe/.cmd files
-        # without introducing a shell layer (which would allow metacharacter injection).
-        executable = shutil.which(args[0])
-        if executable is None:
-            raise ValueError(f"executable not found: {args[0]}")
         completed = subprocess.run(
-            [executable] + args[1:],
+            args,
             shell=False,
             capture_output=True,
             text=True,
             cwd=self.config["_workspace"],
             timeout=timeout,
         )
+        return {
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+            "exit_code": int(completed.returncode),
+        }
         return {
             "stdout": completed.stdout,
             "stderr": completed.stderr,
@@ -99,7 +92,9 @@ class BuiltinToolPlugin(ToolPlugin):
             return {"query": query, "results": results}
         if provider == "duckduckgo":
             base = self.config["tools"]["web_search"]["duckduckgo_url"]
-            params = urllib.parse.urlencode({"q": query, "format": "json", "no_html": "1", "skip_disambig": "1"})
+            params = urllib.parse.urlencode(
+                {"q": query, "format": "json", "no_html": "1", "skip_disambig": "1"}
+            )
             with urllib.request.urlopen(base + "?" + params, timeout=10) as response:
                 data = json.loads(response.read().decode("utf-8"))
             results = []

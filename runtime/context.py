@@ -12,7 +12,9 @@ class ContextBuilder:
         skill_dir = resolve_path(self.cfg, self.cfg["skill_dir"])
         items = []
         for path in sorted(skill_dir.glob("*.md")):
-            items.append({"name": path.name, "content": path.read_text(encoding="utf-8")})
+            items.append(
+                {"name": path.name, "content": path.read_text(encoding="utf-8")}
+            )
         return items
 
     def _load_subagent_prompt(self, subagent_name: str | None) -> str | None:
@@ -23,12 +25,22 @@ class ContextBuilder:
             return path.read_text(encoding="utf-8")
         return None
 
-    def build(self, task: dict, history: list[dict], subagent_name: str | None = None) -> dict:
-        agent_text = resolve_path(self.cfg, self.cfg["agent_file"]).read_text(encoding="utf-8")
-        state_md = resolve_path(self.cfg, self.cfg["state"]["markdown_state"]).read_text(encoding="utf-8")
-        runtime_state = read_json(resolve_path(self.cfg, self.cfg["state"]["runtime_state"]))
+    def build(
+        self, task: dict, history: list[dict], subagent_name: str | None = None
+    ) -> dict:
+        agent_text = resolve_path(self.cfg, self.cfg["agent_file"]).read_text(
+            encoding="utf-8"
+        )
+        state_md = resolve_path(
+            self.cfg, self.cfg["state"]["markdown_state"]
+        ).read_text(encoding="utf-8")
+        runtime_state = read_json(
+            resolve_path(self.cfg, self.cfg["state"]["runtime_state"])
+        )
         summary_path = resolve_path(self.cfg, self.cfg["memory"]["summary_path"])
-        memory_summary = summary_path.read_text(encoding="utf-8") if summary_path.exists() else ""
+        memory_summary = (
+            summary_path.read_text(encoding="utf-8") if summary_path.exists() else ""
+        )
         return {
             "task": task,
             "agent_md": agent_text,

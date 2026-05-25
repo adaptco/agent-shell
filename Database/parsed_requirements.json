@@ -1,0 +1,24 @@
+{
+  "parsing_status": "Success",
+  "type": "csv",
+  "requirements": [
+    {
+      "id": "SYS_REQ_101",
+      "title": "Speed Limit Controller",
+      "description": "The control system shall limit the speed to the configured max limit.",
+      "aspice_ref": "SYS.2.BP1"
+    },
+    {
+      "id": "SYS_REQ_102",
+      "title": "Overspeed Warning Alert",
+      "description": "The control system shall trigger a dashboard alert if speed exceeds the limit.",
+      "aspice_ref": "SYS.2.BP2"
+    },
+    {
+      "id": "SYS_REQ_103",
+      "title": "Brake Force Calculation",
+      "description": "The control system shall calculate the required brake force based on vehicle mass and velocity.",
+      "aspice_ref": "SYS.2.BP3"
+    }
+  ]
+}

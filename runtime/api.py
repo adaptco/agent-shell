@@ -19,8 +19,12 @@ class TaskCreateRequest(BaseModel):
         min_length=1,
         description="The text description of the task to be enqueued.",
     )
-    parent_task_id: str | None = Field(None, description="Optional ID of a parent task if this is a subtask.")
-    assigned_subagent: str | None = Field(None, description="Optional name of a specific subagent to handle this task.")
+    parent_task_id: str | None = Field(
+        None, description="Optional ID of a parent task if this is a subtask."
+    )
+    assigned_subagent: str | None = Field(
+        None, description="Optional name of a specific subagent to handle this task."
+    )
 
 
 class RunRequest(BaseModel):
@@ -36,7 +40,9 @@ class RunRequest(BaseModel):
 
 
 class HeartbeatRequest(BaseModel):
-    worker_id: str | None = Field(None, description="Optional identifier for the worker emitting the heartbeat.")
+    worker_id: str | None = Field(
+        None, description="Optional identifier for the worker emitting the heartbeat."
+    )
 
 
 def _error_content(request: Request, detail: object, error: str) -> dict[str, object]:
@@ -143,18 +149,19 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         if not is_valid_id(task_id):
             raise HTTPException(status_code=400, detail="Invalid task ID format")
 
-        task_info = service.get_task(task_id)
+        task_info = await asyncio.to_thread(service.get_task, task_id)
         if task_info is None:
             raise HTTPException(status_code=404, detail=f"Task not found: {task_id}")
 
         async def event_generator():
-            import asyncio
-            import json
-            from runtime.utils import read_json
+            # Imports moved to top level
 
             seen_receipts = set()
             while True:
+                status = None
                 current_task = await asyncio.to_thread(service.get_task, task_id)
+                if not current_task:
+                    break
 
                 if service.receipts and service.receipts.root.exists():
                     # Use to_thread to avoid blocking event loop with rglob
@@ -168,11 +175,14 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                     new_paths = await asyncio.to_thread(get_new_receipts)
                     for path_str in sorted(new_paths):
                         try:
-                            r_data = read_json(path_str)
+                            r_data = await asyncio.to_thread(read_json, path_str)
                             yield f"event: receipt\ndata: {json.dumps(r_data)}\n\n"
                             seen_receipts.add(path_str)
-                        except Exception:
-                            pass
+                        except Exception as e:
+                            if hasattr(service, "logger"):
+                                service.logger.warning(f"Error processing receipt: {path_str}", exc_info=True)
+                            else:
+                                print(f"Error processing receipt {path_str}: {e}")
 
                 if current_task:
                     status = current_task.get("status")
@@ -224,7 +234,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
         )
 
     @app.exception_handler(RequestValidationError)
-    async def handled_validation_exception(request: Request, exc: RequestValidationError):
+    async def handled_validation_exception(
+        request: Request, exc: RequestValidationError
+    ):
         return JSONResponse(
             status_code=422,
             content=_error_content(request, exc.errors(), "RequestValidationError"),
@@ -234,7 +246,9 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     async def unhandled_exception_handler(request: Request, exc: Exception):
         return JSONResponse(
             status_code=500,
-            content=_error_content(request, "Internal server error", type(exc).__name__),
+            content=_error_content(
+                request, "Internal server error", type(exc).__name__
+            ),
         )
 
     return app
