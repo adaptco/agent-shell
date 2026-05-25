@@ -63,7 +63,15 @@ class BuiltinToolPlugin(ToolPlugin):
         command = tool_input["command"]
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
         # Avoid shell=True for security to mitigate shell injection
-        args = shlex.split(command)
+        import os
+
+        raw_args = shlex.split(command)
+        if os.name == "nt":
+            # On Windows, wrap the command context inside cmd.exe to prevent WinError 2
+            args = ["cmd.exe", "/c", command]
+        else:
+            args = raw_args
+
         completed = subprocess.run(
             args,
             shell=False,

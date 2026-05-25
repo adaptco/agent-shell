@@ -152,7 +152,7 @@ class MistralChatBackend(BaseBackend):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.endpoint = cfg["llm"]["endpoint"]
+        self.endpoint = cfg.get("llm", {}).get("endpoint", "https://api.mistral.ai")
         self.model = cfg["llm"]["mistral"]["model"]
         self.api_key = get_env(
             cfg.get("auth", {}).get("providers", {}).get("mistral", {}).get("env_var")
