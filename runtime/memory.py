@@ -36,7 +36,7 @@ class JournalMemory:
     def append(self, event: dict, task_id: str = "system") -> None:
         append_jsonl(self.journal, event)
         state = read_json(self.runtime_state_path)
-        state["memory"]["entries"] = len(self.entries())
+        state.setdefault("memory", {})["entries"] = len(self.entries())
         write_json(self.runtime_state_path, state)
         if self.should_compact():
             self.compact(task_id)
@@ -90,7 +90,7 @@ class JournalMemory:
             },
         )
         state = read_json(self.runtime_state_path)
-        state["memory"]["entries"] = len(self.entries())
+        state.setdefault("memory", {})["entries"] = len(self.entries())
         state["memory"]["last_compaction"] = utc_now()
         write_json(self.runtime_state_path, state)
         result = {

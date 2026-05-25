@@ -101,6 +101,8 @@ class FileTaskQueue:
         return {"counts": counts, "items": items[:limit]}
 
     def get_task(self, task_id: str) -> dict | None:
+        if not task_id or "*" in str(task_id) or any(c in str(task_id) for c in "?[]"):
+            return None
         suffix = f"{task_id}.json"
         for status, directory in self._dirs().items():
             for path in directory.glob(f"*{suffix}"):
