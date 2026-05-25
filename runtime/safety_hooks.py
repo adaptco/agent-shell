@@ -29,8 +29,8 @@ class SafetyHookHandler(HookHandler):
             dangerous_patterns = [
                 r"rm\s+.*(-rf|-fr|--recursive)\s+/",
                 r":\s*\(\s*\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;\s*:",
-                r"dd\s+if=",
-                r">\s*/dev/sd",
+                r"curl.*\|\s*(sudo\s+)?\b(bash|sh)\b",
+                r"wget.*\|\s*(sudo\s+)?\b(bash|sh)\b",
                 r":\(\)\{ :\|:& \};:",
                 r"curl.*\|.*(bash|sh)",
                 r"wget.*\|.*(bash|sh)",
