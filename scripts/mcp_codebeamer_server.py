@@ -1,8 +1,7 @@
 import os
 import json
-import sys
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any
 from mcp.server.fastmcp import FastMCP
 
 # Setup logger

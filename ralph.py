@@ -14,8 +14,7 @@ import os
 import sys
 import subprocess
 import re
-from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 
 class RalphLoopOrchestrator:
@@ -129,7 +128,7 @@ class RalphLoopOrchestrator:
             with open(self.progress_file, "w") as f:
                 f.write(content)
 
-            self._log(f"✅ Task marked complete")
+            self._log("✅ Task marked complete")
             return True
 
         except Exception as e:
@@ -138,7 +137,7 @@ class RalphLoopOrchestrator:
 
     def commit_iteration(self, task: str) -> bool:
         """Commit changes to Git, freezing state."""
-        self._log(f"💾 Committing iteration...")
+        self._log("💾 Committing iteration...")
 
         try:
             # Stage all changes
@@ -185,7 +184,7 @@ class RalphLoopOrchestrator:
 
     def verify_promise(self) -> bool:
         """Run basic system health checks."""
-        self._log(f"🎯 Verifying system state...")
+        self._log("🎯 Verifying system state...")
 
         # Try running tests if they exist
         test_commands = [

@@ -33,7 +33,12 @@ class HookRegistry:
             if handler_type == "builtin":
                 continue # Already loaded
 
-            continue
+            if handler_type == "safety":
+                from runtime.safety_hooks import SafetyHookHandler
+                handler = SafetyHookHandler(self.cfg)
+                self.handlers[handler_type] = handler
+            else:
+                continue
 
     def run(self, name: str, task_id: str, payload: dict) -> dict:
         """Run all registered hook handlers for a given hook name"""

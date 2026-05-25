@@ -3,6 +3,7 @@ name: deploy-production
 on:
   push:
     tags: ['v*']
+  pull_request:
   workflow_dispatch:
     inputs:
       image_tag:
