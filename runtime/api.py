@@ -183,7 +183,10 @@ def create_app(cfg: dict | None = None) -> FastAPI:
                             seen_receipts.add(path_str)
                         except Exception as e:
                             if hasattr(service, "logger"):
-                                service.logger.warning(f"Error processing receipt: {path_str}", exc_info=True)
+                                service.logger.warning(
+                                    f"Error processing receipt: {path_str}",
+                                    exc_info=True,
+                                )
                             else:
                                 print(f"Error processing receipt {path_str}: {e}")
 

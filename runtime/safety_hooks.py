@@ -25,15 +25,18 @@ class SafetyHookHandler(HookHandler):
             "block_dangerous_bash", True
         ):
             command = tool_input.get("command", "")
-            dangerous_patterns = self.config.get("safety", {}).get("dangerous_bash_patterns", [
-                r"rm\s+.*(-rf|-fr|--recursive)\s+/",
-                r"mkfs",
-                r"dd\s+if=",
-                r">\s*/dev/sd",
-                r":\(\)\{ :\|:& \};:",
-                r"curl.*\|.*(bash|sh)",
-                r"wget.*\|.*(bash|sh)",
-            ])
+            dangerous_patterns = self.config.get("safety", {}).get(
+                "dangerous_bash_patterns",
+                [
+                    r"rm\s+.*(-rf|-fr|--recursive)\s+/",
+                    r"mkfs",
+                    r"dd\s+if=",
+                    r">\s*/dev/sd",
+                    r":\(\)\{ :\|:& \};:",
+                    r"curl.*\|.*(bash|sh)",
+                    r"wget.*\|.*(bash|sh)",
+                ],
+            )
             for pattern in dangerous_patterns:
                 if re.search(pattern, command):
                     return {

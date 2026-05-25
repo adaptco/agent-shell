@@ -64,8 +64,7 @@ class BuiltinToolPlugin(ToolPlugin):
         timeout = int(self.config["tools"]["bash"]["timeout_seconds"])
         # Avoid shell=True for security to mitigate shell injection
         import os
-        import shlex
-        
+
         raw_args = shlex.split(command)
         if os.name == "nt":
             # On Windows, wrap the command context inside cmd.exe to prevent WinError 2

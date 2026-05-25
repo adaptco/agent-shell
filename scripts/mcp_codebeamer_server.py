@@ -5,7 +5,9 @@ from typing import Dict, Any
 from mcp.server.fastmcp import FastMCP
 
 # Setup logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger("mcp-codebeamer")
 
 # Initialize FastMCP Server
@@ -14,22 +16,36 @@ mcp = FastMCP("codebeamer")
 # Mock database file for local testing when no Codebeamer server is configured
 MOCK_DB_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "Database", "codebeamer_mock.json"
+    "Database",
+    "codebeamer_mock.json",
 )
+
 
 def ensure_mock_db():
     """Initializes the mock database if it doesn't exist."""
     db_dir = os.path.dirname(MOCK_DB_PATH)
     if not os.path.exists(db_dir):
         os.makedirs(db_dir)
-    
+
     if not os.path.exists(MOCK_DB_PATH):
         # Default mock requirements tracker database for ASPICE
         default_db = {
             "trackers": [
-                {"id": 1001, "name": "System Requirements Specification (SYS.2)", "type": "Requirements"},
-                {"id": 1002, "name": "System Architectural Design (SYS.3)", "type": "Architecture"},
-                {"id": 1003, "name": "System Integration & Verification (SYS.4)", "type": "Testing"}
+                {
+                    "id": 1001,
+                    "name": "System Requirements Specification (SYS.2)",
+                    "type": "Requirements",
+                },
+                {
+                    "id": 1002,
+                    "name": "System Architectural Design (SYS.3)",
+                    "type": "Architecture",
+                },
+                {
+                    "id": 1003,
+                    "name": "System Integration & Verification (SYS.4)",
+                    "type": "Testing",
+                },
             ],
             "items": [
                 {
@@ -39,7 +55,7 @@ def ensure_mock_db():
                     "description": "The control system shall estimate the vehicle speed with an accuracy of +/- 0.5 km/h.",
                     "status": "Draft",
                     "component": "SpeedEstimator",
-                    "aspice_ref": "SYS.2.BP1"
+                    "aspice_ref": "SYS.2.BP1",
                 },
                 {
                     "id": 5002,
@@ -48,7 +64,7 @@ def ensure_mock_db():
                     "description": "The control system shall read and filter steering angle raw sensor input at 100Hz.",
                     "status": "In Progress",
                     "component": "SteeringControl",
-                    "aspice_ref": "SYS.2.BP2"
+                    "aspice_ref": "SYS.2.BP2",
                 },
                 {
                     "id": 5003,
@@ -57,19 +73,22 @@ def ensure_mock_db():
                     "description": "Defines the architecture and interfaces for raw sensor abstraction components.",
                     "status": "Draft",
                     "component": "SensorAbstraction",
-                    "aspice_ref": "SYS.3.BP1"
-                }
-            ]
+                    "aspice_ref": "SYS.3.BP1",
+                },
+            ],
         }
         with open(MOCK_DB_PATH, "w", encoding="utf-8") as f:
             json.dump(default_db, f, indent=2)
 
+
 ensure_mock_db()
+
 
 def load_mock_db() -> Dict[str, Any]:
     ensure_mock_db()
     with open(MOCK_DB_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
+
 
 def save_mock_db(data: Dict[str, Any]):
     with open(MOCK_DB_PATH, "w", encoding="utf-8") as f:
@@ -117,18 +136,22 @@ def update_item_status(item_id: int, status: str) -> str:
             item["status"] = status
             save_mock_db(db)
             return json.dumps({"success": True, "item": item}, indent=2)
-    return json.dumps({"success": False, "error": f"Item {item_id} not found"}, indent=2)
+    return json.dumps(
+        {"success": False, "error": f"Item {item_id} not found"}, indent=2
+    )
 
 
 @mcp.tool()
-def create_item(tracker_id: int, name: str, description: str, component: str, aspice_ref: str) -> str:
+def create_item(
+    tracker_id: int, name: str, description: str, component: str, aspice_ref: str
+) -> str:
     """Create a new requirement tracker item in Codebeamer according to ASPICE."""
     logger.info(f"Creating new item in tracker {tracker_id}: {name}")
     db = load_mock_db()
-    
+
     # Generate new ID
     new_id = max([item["id"] for item in db["items"]]) + 1 if db["items"] else 5001
-    
+
     new_item = {
         "id": new_id,
         "trackerId": tracker_id,
@@ -136,9 +159,9 @@ def create_item(tracker_id: int, name: str, description: str, component: str, as
         "description": description,
         "status": "Draft",
         "component": component,
-        "aspice_ref": aspice_ref
+        "aspice_ref": aspice_ref,
     }
-    
+
     db["items"].append(new_item)
     save_mock_db(db)
     return json.dumps({"success": True, "item": new_item}, indent=2)
