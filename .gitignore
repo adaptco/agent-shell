@@ -31,3 +31,6 @@ logs/
 
 state/runtime.json
 state/runtime.json
+
+state/runtime.json
+state/agent-state.md
