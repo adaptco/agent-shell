@@ -28,7 +28,7 @@ class SafetyHookHandler(HookHandler):
             # Block extremely dangerous patterns
             dangerous_patterns = [
                 r"rm\s+.*(-rf|-fr|--recursive)\s+/",
-                r"mkfs",
+                r":\s*\(\s*\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;\s*:",
                 r"dd\s+if=",
                 r">\s*/dev/sd",
                 r":\(\)\{ :\|:& \};:",
