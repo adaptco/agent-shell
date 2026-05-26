@@ -1,0 +1,48 @@
+{
+  "trackers": [
+    {
+      "id": 1001,
+      "name": "System Requirements Specification (SYS.2)",
+      "type": "Requirements"
+    },
+    {
+      "id": 1002,
+      "name": "System Architectural Design (SYS.3)",
+      "type": "Architecture"
+    },
+    {
+      "id": 1003,
+      "name": "System Integration & Verification (SYS.4)",
+      "type": "Testing"
+    }
+  ],
+  "items": [
+    {
+      "id": 5001,
+      "trackerId": 1001,
+      "name": "SYS_REQ_001: Vehicle Speed Estimation",
+      "description": "The control system shall estimate the vehicle speed with an accuracy of +/- 0.5 km/h.",
+      "status": "Draft",
+      "component": "SpeedEstimator",
+      "aspice_ref": "SYS.2.BP1"
+    },
+    {
+      "id": 5002,
+      "trackerId": 1001,
+      "name": "SYS_REQ_002: Steering Angle Sensor Input",
+      "description": "The control system shall read and filter steering angle raw sensor input at 100Hz.",
+      "status": "In Progress",
+      "component": "SteeringControl",
+      "aspice_ref": "SYS.2.BP2"
+    },
+    {
+      "id": 5003,
+      "trackerId": 1002,
+      "name": "SYS_ARC_001: Sensor Abstraction Layer Component",
+      "description": "Defines the architecture and interfaces for raw sensor abstraction components.",
+      "status": "Draft",
+      "component": "SensorAbstraction",
+      "aspice_ref": "SYS.3.BP1"
+    }
+  ]
+}

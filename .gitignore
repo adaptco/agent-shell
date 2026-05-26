@@ -19,6 +19,18 @@ memory/
 queue/
 state/runtime.json
 state/agent-state.md
+state/
 
 # Local nested clone (do not commit)
 agent-shell/
+receipts/
+memory/
+queue/
+logs/
+.venv/
+
+state/runtime.json
+state/runtime.json
+
+state/runtime.json
+state/agent-state.md

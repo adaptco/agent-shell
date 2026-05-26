@@ -7,7 +7,18 @@ from runtime.config import resolve_path
 from runtime.utils import utc_now, sha256_hex, write_json
 
 
+# Optimized to avoid re-creating sensitive patterns in recursive calls
 class ReceiptWriter:
+    SENSITIVE_PATTERNS = {
+        "api_key",
+        "token",
+        "secret",
+        "password",
+        "auth",
+        "bearer",
+        "authorization",
+    }
+
     def __init__(self, cfg):
         self.cfg = cfg
         self.root = resolve_path(cfg, cfg["receipts"]["dir"])
@@ -26,7 +37,7 @@ class ReceiptWriter:
         date_part = created_at.split("T", 1)[0].replace("-", "")
         target_dir = self.root / date_part
         target_dir.mkdir(parents=True, exist_ok=True)
-        # Scrub credentials from inputs and outputs
+
         inputs = self._scrub(inputs or {})
         outputs = self._scrub(outputs or {})
 
@@ -48,10 +59,16 @@ class ReceiptWriter:
         return path
 
     def _scrub(self, data: Any) -> Any:
-        """Recursively scrub sensitive keys from data"""
-        sensitive_keys = {"api_key", "token", "secret", "password", "auth", "bearer", "authorization"}
         if isinstance(data, dict):
-            return {k: (self._scrub(v) if k.lower() not in sensitive_keys else "[REDACTED]") for k, v in data.items()}
+            scrubbed = {}
+            for k, v in data.items():
+                k_lower = k.lower()
+                if any(p in k_lower for p in self.SENSITIVE_PATTERNS):
+                    scrubbed[k] = "[REDACTED]"
+                else:
+                    scrubbed[k] = self._scrub(v)
+            return scrubbed
         elif isinstance(data, list):
             return [self._scrub(item) for item in data]
+        return data
         return data

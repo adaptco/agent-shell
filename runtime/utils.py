@@ -41,7 +41,9 @@ def append_jsonl(path: Path, value: Any) -> None:
 # Environment helper: centralize env var access and consistent error messaging
 
 
-def get_env(name: str, required: bool = True, message: str | None = None) -> str | None:
+def get_env(
+    name: str, required: bool = False, message: str | None = None
+) -> str | None:
     """Return the environment variable value or raise RuntimeError when required and missing."""
     val = os.environ.get(name)
     if required and (val is None or val == ""):

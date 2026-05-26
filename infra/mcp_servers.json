@@ -1,5 +1,36 @@
 [
   {
+    "id": "knowledge-graph-mcp",
+    "name": "Knowledge Graph MCP Server",
+    "type": "http",
+    "url": "http://127.0.0.1:5100",
+    "description": "Semantic analysis and knowledge graph creation for multi-agent orchestration",
+    "auth": {
+      "type": "none"
+    },
+    "trust": "explicit",
+    "connection": {
+      "timeout_seconds": 30,
+      "pool_size": 4
+    },
+    "resources": [
+      {
+        "resource_id": "graphs://local",
+        "capabilities": ["read","write","list"],
+        "metadata": {
+          "description": "Knowledge graphs created from requirements documents"
+        }
+      },
+      {
+        "resource_id": "documents://local",
+        "capabilities": ["read","write","list"],
+        "metadata": {
+          "description": "Uploaded requirements and documentation"
+        }
+      }
+    ]
+  },
+  {
     "id": "mcp-local-mock",
     "name": "Local mock MCP server",
     "type": "mock",

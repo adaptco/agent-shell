@@ -25,7 +25,9 @@ class ServiceBoundaryAuth:
         self.bearer = HTTPBearer(auto_error=False)
 
     def _disabled_identity(self) -> OperatorIdentity:
-        return OperatorIdentity(subject="anonymous", email=None, groups=[], scopes=[], auth_mode="disabled")
+        return OperatorIdentity(
+            subject="anonymous", email=None, groups=[], scopes=[], auth_mode="disabled"
+        )
 
     def _from_proxy_headers(self, request: Request) -> OperatorIdentity:
         hdrs = {k.lower(): v for k, v in request.headers.items()}
@@ -36,7 +38,11 @@ class ServiceBoundaryAuth:
                 detail="Missing trusted proxy identity",
             )
         email = hdrs.get("x-auth-request-email")
-        groups = [g.strip() for g in (hdrs.get("x-auth-request-groups") or "").split(",") if g.strip()]
+        groups = [
+            g.strip()
+            for g in (hdrs.get("x-auth-request-groups") or "").split(",")
+            if g.strip()
+        ]
         return OperatorIdentity(
             subject=user,
             email=email,
@@ -45,7 +51,9 @@ class ServiceBoundaryAuth:
             auth_mode="trusted_proxy_oidc",
         )
 
-    def _from_static_bearer(self, credentials: HTTPAuthorizationCredentials | None) -> OperatorIdentity:
+    def _from_static_bearer(
+        self, credentials: HTTPAuthorizationCredentials | None
+    ) -> OperatorIdentity:
         token = get_env(
             self.service_cfg.get("static_bearer_env_var", "AGENT_SERVICE_BEARER_TOKEN"),
             required=False,
@@ -72,9 +80,13 @@ class ServiceBoundaryAuth:
     def _jwks_client(self, jwks_url: str) -> PyJWKClient:
         return PyJWKClient(jwks_url)
 
-    def _from_oidc_jwt(self, credentials: HTTPAuthorizationCredentials | None) -> OperatorIdentity:
+    def _from_oidc_jwt(
+        self, credentials: HTTPAuthorizationCredentials | None
+    ) -> OperatorIdentity:
         if credentials is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token"
+            )
         oidc_cfg = self.service_cfg.get("oidc", {})
         issuer = oidc_cfg.get("issuer")
         audience = oidc_cfg.get("audience")
@@ -84,7 +96,11 @@ class ServiceBoundaryAuth:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="OIDC service boundary is not configured",
             )
-        signing_key = self._jwks_client(jwks_url).get_signing_key_from_jwt(credentials.credentials).key
+        signing_key = (
+            self._jwks_client(jwks_url)
+            .get_signing_key_from_jwt(credentials.credentials)
+            .key
+        )
         payload = jwt.decode(
             credentials.credentials,
             signing_key,
@@ -116,7 +132,9 @@ class ServiceBoundaryAuth:
     async def authenticate(
         self,
         request: Request,
-        credentials: HTTPAuthorizationCredentials | None = Depends(HTTPBearer(auto_error=False)),
+        credentials: HTTPAuthorizationCredentials | None = Depends(
+            HTTPBearer(auto_error=False)
+        ),
     ) -> OperatorIdentity:
         if not self.service_cfg.get("enabled", False):
             return self._disabled_identity()

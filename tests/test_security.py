@@ -28,7 +28,9 @@ def test_api_glob_injection_prevention():
     resp = client.get("/tasks/*")
     assert resp.status_code == 400
 
-    resp = client.get("/tasks/*?stream=true")  # actually /stream is separate but similar
+    resp = client.get(
+        "/tasks/*?stream=true"
+    )  # actually /stream is separate but similar
     # Testing the stream endpoint specifically
     resp = client.get("/tasks/*/stream")
     assert resp.status_code == 400

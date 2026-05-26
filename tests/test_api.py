@@ -17,7 +17,6 @@ def _client():
 def test_health_endpoint():
     client = _client()
     response = client.get("/health")
-    print(f"DEBUG RESPONSE: {response.text}")
     assert response.status_code == 200
     assert response.headers["x-request-id"]
     assert response.headers["x-response-time-ms"]
@@ -49,7 +48,9 @@ def test_tasks_endpoint_and_lookup():
 
 def test_run_endpoint():
     client = _client()
-    response = client.post("/run", json={"task": "Read the agent file", "backend": "mock"})
+    response = client.post(
+        "/run", json={"task": "Read the agent file", "backend": "mock"}
+    )
     assert response.status_code == 200
     assert response.json()["result"]["status"] == "done"
 
@@ -108,9 +109,10 @@ def test_auth_mode_oidc_jwt_fails_closed_when_unconfigured():
 
 def test_http_exception_includes_correlation_id():
     client = _client()
-    # Use a valid hex ID that doesn't exist to trigger 404
-    fake_id = "0" * 32
-    response = client.get(f"/tasks/{fake_id}", headers={"x-correlation-id": "req-404"})
+    response = client.get(
+        "/tasks/00000000000000000000000000000000",
+        headers={"x-correlation-id": "req-404"},
+    )
     assert response.status_code == 404
     assert "Task not found" in response.json()["detail"]
     assert response.json()["correlation_id"] == "req-404"
