@@ -29,7 +29,6 @@ class BuiltinHookHandler(HookHandler):
             allow = token in self.config["tools"]["bash"]["allow_prefixes"]
             if not allow:
                 return {"allow": False, "payload": payload, "reason": f"command prefix not allowed: {token}"}
-                return {"allow": False, "payload": payload, "reason": f"command prefix not allowed: {token}"}
         return {"allow": True, "payload": payload}
 
     def _before_delegate(self, task_id: str, payload: dict) -> dict:
