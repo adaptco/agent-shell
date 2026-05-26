@@ -26,9 +26,12 @@ def _merge_tree(src: Path, dst: Path, skipped: list[str]) -> None:
                 continue
             try:
                 target.unlink()
-            except OSError as error:
-                skipped.append(f"{item} (cannot replace destination {target}: {type(error).__name__}: {error})")
-                continue
+            except OSError:
+                try:
+                    target.rmdir()
+                except OSError as error:
+                    skipped.append(f"{item} (cannot replace destination {target}: {type(error).__name__}: {error})")
+                    continue
         try:
             shutil.move(str(item), str(target))
         except (OSError, shutil.Error) as error:
