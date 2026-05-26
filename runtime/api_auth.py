@@ -96,11 +96,7 @@ class ServiceBoundaryAuth:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="OIDC service boundary is not configured",
             )
-        signing_key = (
-            self._jwks_client(jwks_url)
-            .get_signing_key_from_jwt(credentials.credentials)
-            .key
-        )
+        signing_key = self._jwks_client(jwks_url).get_signing_key_from_jwt(credentials.credentials).key
         payload = jwt.decode(
             credentials.credentials,
             signing_key,
@@ -132,9 +128,7 @@ class ServiceBoundaryAuth:
     async def authenticate(
         self,
         request: Request,
-        credentials: HTTPAuthorizationCredentials | None = Depends(
-            HTTPBearer(auto_error=False)
-        ),
+        credentials: HTTPAuthorizationCredentials | None = Depends(HTTPBearer(auto_error=False)),
     ) -> OperatorIdentity:
         if not self.service_cfg.get("enabled", False):
             return self._disabled_identity()

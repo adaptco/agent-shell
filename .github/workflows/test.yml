@@ -4,13 +4,14 @@ on:
   push:
     branches: [main, develop]
   pull_request:
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.13"]
     steps:
       - uses: actions/checkout@v4.2.2
 
@@ -26,6 +27,11 @@ jobs:
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m pip install pytest pytest-cov ruff
+
+      - name: Lint with ruff
+        run: |
+          python -m ruff check .
+          python -m ruff format --check .
 
       - name: Lint with ruff
         run: |

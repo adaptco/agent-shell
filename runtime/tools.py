@@ -80,16 +80,7 @@ class BuiltinToolPlugin(ToolPlugin):
             cwd=self.config["_workspace"],
             timeout=timeout,
         )
-        return {
-            "stdout": completed.stdout,
-            "stderr": completed.stderr,
-            "exit_code": int(completed.returncode),
-        }
-        return {
-            "stdout": completed.stdout,
-            "stderr": completed.stderr,
-            "exit_code": int(completed.returncode),
-        }
+        return {"stdout": completed.stdout, "stderr": completed.stderr, "exit_code": int(completed.returncode)}
 
     def _web_search(self, tool_input: dict) -> dict:
         provider = self.config["tools"]["web_search"]["provider"]

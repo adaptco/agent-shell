@@ -12,7 +12,6 @@ def run(*args):
         [sys.executable, "-m", "runtime.cli", *args],
         cwd=ROOT,
         capture_output=True,
-        shell=True,
         text=True,
         check=True,
     )

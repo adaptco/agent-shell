@@ -5,18 +5,7 @@ from runtime.utils import utc_now
 
 
 class AgentLoop:
-    def __init__(
-        self,
-        cfg,
-        backend,
-        hooks,
-        tools,
-        memory,
-        receipts,
-        decision_schema,
-        subagents,
-        logger,
-    ):
+    def __init__(self, cfg, backend, hooks, tools, memory, receipts, decision_schema, subagents, logger):
         self.cfg = cfg
         self.backend = backend
         self.hooks = hooks
@@ -63,9 +52,7 @@ class AgentLoop:
         history: list[dict] = []
         max_steps = self.cfg["worker"]["max_steps"]
         for step_index in range(max_steps):
-            context = self.context_builder.build(
-                task, history, subagent_name=subagent_name
-            )
+            context = self.context_builder.build(task, history, subagent_name=subagent_name)
             self.hooks.run(
                 "before_model_call",
                 task["task_id"],
