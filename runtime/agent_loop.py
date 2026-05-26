@@ -6,7 +6,6 @@ from runtime.utils import utc_now
 
 class AgentLoop:
     def __init__(self, cfg, backend, hooks, tools, memory, receipts, decision_schema, subagents, logger):
-    def __init__(self, cfg, backend, hooks, tools, memory, receipts, decision_schema, subagents, logger):
         self.cfg = cfg
         self.backend = backend
         self.hooks = hooks
