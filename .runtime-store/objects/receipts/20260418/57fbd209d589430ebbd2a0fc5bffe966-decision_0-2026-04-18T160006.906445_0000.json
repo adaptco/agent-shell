@@ -1,0 +1,62 @@
+{
+  "receipt_id": "57fbd209d589430ebbd2a0fc5bffe966-decision_0-2026-04-18T160006.906445_0000",
+  "task_id": "57fbd209d589430ebbd2a0fc5bffe966",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-18T16:00:06.906445+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "76e29039a9bdd2e8ba2e36c76b984bcd71833cd8865c1d274d79b12bfd3e9360",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "tool_call",
+    "reasoning_summary": "Use web search first.",
+    "tool_name": "web_search",
+    "tool_input": {
+      "query": "Search the web for runtime architecture",
+      "limit": 3
+    }
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-18T16:00:01.428286+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-18T16:00:01.447126+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "file_read",
+      "summary": "Read agent.md before answering.",
+      "created_at": "2026-04-18T16:00:04.198890+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-18T16:00:04.219826+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-18T16:00:04.283301+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "bash",
+      "summary": "Use bash to list the workspace.",
+      "created_at": "2026-04-18T16:00:05.502619+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-18T16:00:05.529871+00:00"
+    }
+  ]
+}

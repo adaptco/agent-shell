@@ -1,22 +1,56 @@
-[build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "agent-shell-service-runtime"
-version = "0.5.0"
-description = "Filesystem-backed agent runtime with an inbound FastAPI service above the LLM layer"
-requires-python = ">=3.11"
+version = "0.6.0"
+description = "Runtime service framework for agent operations"
+requires-python = ">=3.13"
 dependencies = [
-  "fastapi>=0.115,<1",
-  "uvicorn>=0.30,<1",
-  "httpx>=0.27,<1",
-  "PyJWT>=2.10,<3"
+    "fastapi>=0.110.0",
+    "pydantic>=2.6.0",
+    "uvicorn>=0.28.0",
+    "pyjwt>=2.8.0",
 ]
 
-[project.scripts]
-agent-shell = "runtime.cli:main"
-agent-shell-api = "runtime.server:main"
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.3.0",
+    "httpx>=0.27.0",
+    "pytest-env>=1.6.0",
+]
 
-[tool.setuptools]
-packages = ["runtime"]
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["runtime*", "scripts*", "app*"]
+
+[tool.pytest.ini_options]
+env = [
+    "OPENAI_API_KEY=mock-dev-key-testing-only",
+    "MISTRAL_API_KEY=mock-dev-key-testing-only",
+]
+
+[tool.ruff]
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.pyright]
+exclude = [
+    ".git",
+    ".venv",
+    "**/__pycache__",
+]
+
+[tool.bandit]
+exclude_dirs = [
+    ".venv",
+    "tests",
+]
+
+

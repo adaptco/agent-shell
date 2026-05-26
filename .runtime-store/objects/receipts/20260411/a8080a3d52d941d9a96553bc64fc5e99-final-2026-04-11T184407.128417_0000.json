@@ -1,0 +1,19 @@
+{
+  "receipt_id": "a8080a3d52d941d9a96553bc64fc5e99-final-2026-04-11T184407.128417_0000",
+  "task_id": "a8080a3d52d941d9a96553bc64fc5e99",
+  "step": "final",
+  "status": "ok",
+  "created_at": "2026-04-11T18:44:07.128417+00:00",
+  "inputs_sha256": "2bcb813dd21279fc40236bec7257972a9d53d6c9b6a16f6f932be278494da470",
+  "outputs_sha256": "ec9b0ef4bbc97360a61bedd85e93a4b60d4b03f0830f21169d37d721f64dca19",
+  "inputs": {
+    "history_length": 1
+  },
+  "outputs": {
+    "status": "done",
+    "final_response": "Completed task 'Read the agent file 4' with 1 history events.",
+    "summary": "Enough context has been gathered.",
+    "history_length": 1
+  },
+  "error": null
+}

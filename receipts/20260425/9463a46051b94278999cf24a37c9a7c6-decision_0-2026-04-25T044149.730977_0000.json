@@ -1,0 +1,53 @@
+{
+  "receipt_id": "9463a46051b94278999cf24a37c9a7c6-decision_0-2026-04-25T044149.730977_0000",
+  "task_id": "9463a46051b94278999cf24a37c9a7c6",
+  "step": "decision_0",
+  "status": "ok",
+  "created_at": "2026-04-25T04:41:49.730977+00:00",
+  "inputs_sha256": "505386c2f32d7e974bc0a483720447420beae1287581f0e14df4ac276edaa75b",
+  "outputs_sha256": "e6d4bd2889bf559d1644d3b7681979e3ef7a318647b9ab9e45554761a075664d",
+  "inputs": {
+    "history_length": 0
+  },
+  "outputs": {
+    "decision_type": "delegate",
+    "reasoning_summary": "This task is bounded and can be delegated.",
+    "subagent_name": "file_worker",
+    "subtask": "Read agent.md and summarize the operating rules."
+  },
+  "error": null,
+  "memory_snapshot": [
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-25T04:41:47.727531+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "bash",
+      "summary": "Use bash to list the workspace.",
+      "created_at": "2026-04-25T04:41:48.394273+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-25T04:41:48.396147+00:00"
+    },
+    {
+      "event_type": "compaction_marker",
+      "summary": "Archived 9 entries",
+      "created_at": "2026-04-25T04:41:48.397730+00:00"
+    },
+    {
+      "event_type": "tool_result",
+      "tool_name": "web_search",
+      "summary": "Use web search first.",
+      "created_at": "2026-04-25T04:41:49.072895+00:00"
+    },
+    {
+      "event_type": "final",
+      "summary": "Enough context has been gathered.",
+      "created_at": "2026-04-25T04:41:49.074854+00:00"
+    }
+  ]
+}

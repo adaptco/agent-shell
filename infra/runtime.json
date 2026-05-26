@@ -1,32 +1,26 @@
 {
   "name": "agent-shell-service-runtime",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "workspace_root": ".",
-  "runtime_storage": {
-    "type": "filesystem_object_store",
-    "root_dir": ".runtime-store/objects",
-    "note": "Runtime artifacts are stored outside tracked source paths."
-  },
   "agent_file": "agent.md",
   "skill_dir": "skill",
   "subagent_dir": "subagents",
   "state": {
-    "markdown_state": ".runtime-store/objects/state/agent-state.md",
-    "runtime_state": ".runtime-store/objects/state/runtime.json"
+    "markdown_state": "state/agent-state.md",
+    "runtime_state": "state/runtime.json"
   },
   "queue": {
     "mode": "file_inbox",
-    "inbox_dir": ".runtime-store/objects/queue/inbox",
-    "working_dir": ".runtime-store/objects/queue/working",
-    "done_dir": ".runtime-store/objects/queue/done",
-    "failed_dir": ".runtime-store/objects/queue/failed",
-    "handoff_dir": ".runtime-store/objects/queue/handoffs",
+    "inbox_dir": "queue/inbox",
+    "working_dir": "queue/working",
+    "done_dir": "queue/done",
+    "failed_dir": "queue/failed",
     "poll_seconds": 1
   },
   "memory": {
-    "journal_path": ".runtime-store/objects/memory/journal.jsonl",
-    "summary_path": ".runtime-store/objects/memory/summary.md",
-    "archive_dir": ".runtime-store/objects/memory/archive",
+    "journal_path": "memory/journal.jsonl",
+    "summary_path": "memory/summary.md",
+    "archive_dir": "memory/archive",
     "compaction": {
       "enabled": true,
       "max_entries": 8,
@@ -34,11 +28,11 @@
     }
   },
   "receipts": {
-    "dir": ".runtime-store/objects/receipts",
+    "dir": "receipts",
     "emit_per_step": true
   },
   "logging": {
-    "path": ".runtime-store/objects/logs/agent.log",
+    "path": "logs/agent.log",
     "max_bytes": 262144,
     "backup_count": 5
   },
@@ -76,6 +70,37 @@
   },
   "hooks": {
     "registry_dir": "hooks"
+  },
+  "plugins": {
+    "tools": [
+      {
+        "type": "builtin",
+        "module": "runtime.tools",
+        "enabled": true
+      },
+      {
+        "type": "mcp",
+        "module": "runtime.mcp_adapter",
+        "enabled": false
+      },
+      {
+        "type": "desktop",
+        "module": "runtime.computer_use_tool",
+        "enabled": false
+      }
+    ],
+    "hooks": [
+      {
+        "type": "builtin",
+        "module": "runtime.hook_plugins",
+        "enabled": true
+      },
+      {
+        "type": "safety",
+        "module": "runtime.safety_hooks",
+        "enabled": false
+      }
+    ]
   },
   "middleware": {
     "enabled": [

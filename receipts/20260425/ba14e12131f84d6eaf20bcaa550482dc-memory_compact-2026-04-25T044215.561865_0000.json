@@ -1,0 +1,19 @@
+{
+  "receipt_id": "ba14e12131f84d6eaf20bcaa550482dc-memory_compact-2026-04-25T044215.561865_0000",
+  "task_id": "ba14e12131f84d6eaf20bcaa550482dc",
+  "step": "memory_compact",
+  "status": "ok",
+  "created_at": "2026-04-25T04:42:15.561865+00:00",
+  "inputs_sha256": "75147a8569e4837a27fc8fd8678e692dfa35f5d2c9b3ab5b57c2deb371a5456c",
+  "outputs_sha256": "6960d901ec597403069c699d5032d349261cdbbb757b023589c3a189969a395d",
+  "inputs": {
+    "entry_count": 9
+  },
+  "outputs": {
+    "compacted": true,
+    "archive_path": "/app/memory/archive/2026-04-25T044215.560609_0000.jsonl",
+    "retained": 3
+  },
+  "error": null,
+  "memory_snapshot": null
+}
