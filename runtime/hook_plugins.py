@@ -3,22 +3,23 @@ from __future__ import annotations
 from runtime.plugin_base import HookHandler
 from runtime.config import resolve_path
 
+
 class BuiltinHookHandler(HookHandler):
     """Existing hook logic: bash prefix blocking, subagent validation, and webhooks"""
-    
+
     def handle(self, hook_name: str, task_id: str, payload: dict) -> dict:
         result = {"allow": True, "payload": payload}
-        
+
         if hook_name == "before_tool_call":
             result = self._before_tool_call(task_id, payload)
         elif hook_name == "before_delegate":
             result = self._before_delegate(task_id, payload)
-        
+
         # Webhook logic (global for all builtin hooks)
         self._trigger_webhook(hook_name, task_id, payload, result)
-        
+
         return result
-    
+
     def _before_tool_call(self, task_id: str, payload: dict) -> dict:
         """Block bash commands that don't match whitelist"""
         tool_name = payload.get("tool_name")
@@ -30,16 +31,25 @@ class BuiltinHookHandler(HookHandler):
                 return {"allow": False, "payload": payload, "reason": f"command prefix not allowed: {token}"}
                 return {"allow": False, "payload": payload, "reason": f"command prefix not allowed: {token}"}
         return {"allow": True, "payload": payload}
-    
+
     def _before_delegate(self, task_id: str, payload: dict) -> dict:
         """Validate subagent existence"""
         subagent_name = payload.get("subagent_name")
-        subagent_path = resolve_path(self.config, self.config["subagent_dir"]) / f"{subagent_name}.md"
+        subagent_path = (
+            resolve_path(self.config, self.config["subagent_dir"])
+            / f"{subagent_name}.md"
+        )
         if not subagent_path.exists():
-            return {"allow": False, "payload": payload, "reason": f"unknown subagent: {subagent_name}"}
+            return {
+                "allow": False,
+                "payload": payload,
+                "reason": f"unknown subagent: {subagent_name}",
+            }
         return {"allow": True, "payload": payload}
 
-    def _trigger_webhook(self, hook_name: str, task_id: str, payload: dict, result: dict):
+    def _trigger_webhook(
+        self, hook_name: str, task_id: str, payload: dict, result: dict
+    ):
         webhooks = self.config.get("webhooks", {})
         webhook_url = webhooks.get("url")
         webhook_events = webhooks.get("events", [])
@@ -47,6 +57,7 @@ class BuiltinHookHandler(HookHandler):
             try:
                 import urllib.request
                 import json
+
                 req = urllib.request.Request(
                     webhook_url,
                     data=json.dumps(

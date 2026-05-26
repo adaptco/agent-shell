@@ -3,6 +3,7 @@ name: deploy-production
 on:
   push:
     tags: ['v*']
+  pull_request:
   workflow_dispatch:
     inputs:
       image_tag:
@@ -18,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Validate image exists
         env:
@@ -26,7 +27,7 @@ jobs:
         run: |
           TOKEN=$(echo ${{ secrets.GITHUB_TOKEN }} | base64)
           IMAGE_URL="ghcr.io/${{ github.repository }}:${IMAGE_TAG}"
-          
+
           if docker manifest inspect "$IMAGE_URL"; then
             echo "✅ Image exists: $IMAGE_URL"
           else
@@ -42,7 +43,7 @@ jobs:
       url: https://api.example.com
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Deploy to production
         env:
@@ -53,7 +54,7 @@ jobs:
         run: |
           IMAGE="ghcr.io/${{ github.repository }}:${IMAGE_TAG}"
           echo "🚀 Deploying to production: $IMAGE"
-          
+
           # Example: SSH deployment with health checks
           # mkdir -p ~/.ssh
           # echo "$DEPLOY_KEY" > ~/.ssh/id_rsa

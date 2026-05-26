@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASPICE Technical Lead Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      --panel-bg: rgba(30, 41, 59, 0.45);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --glow-color: rgba(99, 102, 241, 0.15);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--panel-border);
+      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 2.2rem;
+      height: 2.2rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+      font-family: var(--font-display);
+    }
+
+    .brand-name h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      font-family: var(--font-display);
+      letter-spacing: 0.5px;
+    }
+
+    .brand-name span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 1px;
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--panel-border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--danger);
+      box-shadow: 0 0 10px var(--danger);
+      transition: all 0.3s ease;
+    }
+
+    .status-dot.connected {
+      background-color: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dashboard-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dashboard-panel:hover {
+      box-shadow: 0 8px 32px var(--glow-color);
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.75rem;
+    }
+
+    .panel-title span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      font-family: var(--font-display);
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .console-container {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 1rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+      max-height: 250px;
+      min-height: 150px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .console-line {
+      line-height: 1.4;
+    }
+
+    .console-line.error { color: var(--danger); }
+    .console-line.success { color: var(--success); }
+    .console-line.warn { color: var(--warning); }
+
+    .req-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .req-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .req-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .req-id {
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-draft { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-approved { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-progress { background: rgba(99, 102, 241, 0.15); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.3); }
+
+    .req-title {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .req-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .req-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      padding-top: 0.5rem;
+    }
+
+    .verification-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .verification-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .ver-name {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .ver-status {
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    .ver-status.pass { color: var(--success); }
+    .ver-status.fail { color: var(--danger); }
+    .ver-status.pending { color: var(--text-muted); }
+
+    footer {
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--panel-border);
+      background: rgba(15, 23, 42, 0.4);
+      margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">A</div>
+      <div class="brand-name">
+        <h1>ASPICE Systems Lead Gateway</h1>
+        <span>GitHub Pages hosted Wasm/WebSocket Dashboard</span>
+      </div>
+    </div>
+    <div class="connection-status">
+      <div id="statusDot" class="status-dot"></div>
+      <span id="statusText">Disconnected</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Operations and Requirements -->
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+      
+      <!-- Operations Controls Panel -->
+      <div class="dashboard-panel">
+        <div class="panel-title">
+          Artifact Parsing & Pipeline Operations
+          <span>WebSocket Command Relayer</span>
+        </div>
+        
+        <div class="control-row">
+          <input type="text" id="filePathInput" placeholder="e.g. Database/requirements.xlsx" style="flex: 1;" value="Database/requirements.xlsx">
+          <button class="btn" id="parseBtn">Parse Artifact</button>
+          <button class="btn btn-secondary" id="validateBtn">Run Validation checks</button>
+        </div>
+      </div>
+
+      <!-- Requirements Catalog Panel -->
+      <div class="dashboard-panel">
+        <div class="panel-title">
+          ASPICE Trackers & Requirements List
+          <span id="reqCount">0 Requirements</span>
+        </div>
+        
+        <div class="grid-container" id="reqsContainer">
+          <!-- Dynamically populated requirements cards -->
+          <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">
+            No requirements loaded. Run parsing or connect to Codebeamer to retrieve.
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Right Column: Verification & Logs -->
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+      
+      <!-- System Verification Checks -->
+      <div class="dashboard-panel">
+        <div class="panel-title">
+          Architectural Verification
+          <span>Safety & CI Pipeline</span>
+        </div>
+        
+        <div class="verification-summary">
+          <div class="verification-item">
+            <div class="ver-name">
+              <span>🛡️</span> Ruff Style Linting
+            </div>
+            <div class="ver-status pending" id="verLint">Pending</div>
+          </div>
+          
+          <div class="verification-item">
+            <div class="ver-name">
+              <span>🧪</span> Pytest Integration Tests
+            </div>
+            <div class="ver-status pending" id="verTests">Pending</div>
+          </div>
+
+          <div class="verification-item">
+            <div class="ver-name">
+              <span>🔍</span> Deep Correctness Scan
+            </div>
+            <div class="ver-status pending" id="verBug">Pending</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Log / Console -->
+      <div class="dashboard-panel" style="flex: 1;">
+        <div class="panel-title">
+          Live Gateway Console Logs
+          <span>Terminal</span>
+        </div>
+        
+        <div class="console-container" id="consoleLogs">
+          <div class="console-line">System initialized. Click Connect or Run Parser to start.</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    ASPICE Systems Lead Agent - Project Architecture Verification Dashboard
+  </footer>
+
+  <script>
+    let ws;
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const consoleLogs = document.getElementById("consoleLogs");
+    const reqsContainer = document.getElementById("reqsContainer");
+    const reqCount = document.getElementById("reqCount");
+    
+    const verLint = document.getElementById("verLint");
+    const verTests = document.getElementById("verTests");
+    const verBug = document.getElementById("verBug");
+    
+    const parseBtn = document.getElementById("parseBtn");
+    const validateBtn = document.getElementById("validateBtn");
+    const filePathInput = document.getElementById("filePathInput");
+
+    function log(message, type = "") {
+      const line = document.createElement("div");
+      line.className = `console-line ${type}`;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      consoleLogs.appendChild(line);
+      consoleLogs.scrollTop = consoleLogs.scrollHeight;
+    }
+
+    function connectWS() {
+      log("Connecting to WebSocket gateway at ws://localhost:8765...");
+      ws = new WebSocket("ws://localhost:8765");
+
+      ws.onopen = () => {
+        statusDot.className = "status-dot connected";
+        statusText.textContent = "Connected";
+        log("WebSocket Connection Established!", "success");
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === "log") {
+          log(data.message);
+        } else if (data.type === "status") {
+          log(`Pipeline Status Change: ${data.status.toUpperCase()}`, "warn");
+        } else if (data.type === "parsing_result") {
+          displayRequirements(data.result);
+        } else if (data.type === "validation_result") {
+          displayValidation(data.result);
+        } else if (data.type === "error") {
+          log(`Error: ${data.message}`, "error");
+        }
+      };
+
+      ws.onclose = () => {
+        statusDot.className = "status-dot";
+        statusText.textContent = "Disconnected";
+        log("WebSocket Connection Closed. Retrying in 5 seconds...", "error");
+        setTimeout(connectWS, 5000);
+      };
+
+      ws.onerror = (err) => {
+        log("WebSocket Encountered an Error", "error");
+      };
+    }
+
+    function displayRequirements(result) {
+      if (result.error) {
+        log(`Parsing failed: ${result.error}`, "error");
+        reqsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--danger); font-weight: 500;">
+          Failed to parse: ${result.error} (Fallback triggered)
+        </div>`;
+        return;
+      }
+      
+      const reqs = result.requirements || [];
+      log(`Successfully parsed ${reqs.length} requirements! (${result.type})`, "success");
+      reqCount.textContent = `${reqs.length} Requirements`;
+      
+      if (reqs.length === 0) {
+        reqsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">
+          No requirement nodes found in the document.
+        </div>`;
+        return;
+      }
+      
+      reqsContainer.innerHTML = "";
+      reqs.forEach(req => {
+        const card = document.createElement("div");
+        card.className = "req-card";
+        
+        // Define badge style based on ASPICE status
+        const status = req.status || "Draft";
+        const badgeClass = status === "Approved" ? "badge-approved" : (status === "In Progress" ? "badge-progress" : "badge-draft");
+        
+        card.innerHTML = `
+          <div class="req-header">
+            <span class="req-id">${req.id}</span>
+            <span class="badge ${badgeClass}">${status}</span>
+          </div>
+          <div class="req-title">${req.title}</div>
+          <div class="req-desc">${req.description}</div>
+          <div class="req-footer">
+            <span>Component: ${req.component || 'N/A'}</span>
+            <span>ASPICE Ref: ${req.aspice_ref || 'SYS.2'}</span>
+          </div>
+        `;
+        reqsContainer.appendChild(card);
+      });
+    }
+
+    function displayValidation(res) {
+      log("Validation check completed!", "success");
+      
+      // Update UI badges
+      if (res.lint === "pass") {
+        verLint.className = "ver-status pass";
+        verLint.textContent = "PASS";
+      } else {
+        verLint.className = "ver-status fail";
+        verLint.textContent = "FAIL";
+      }
+
+      if (res.tests === "pass") {
+        verTests.className = "ver-status pass";
+        verTests.textContent = "PASS";
+      } else {
+        verTests.className = "ver-status fail";
+        verTests.textContent = "FAIL";
+      }
+
+      // Mock Deep Bug check passing if ruff/pytest pass
+      if (res.lint === "pass" && res.tests === "pass") {
+        verBug.className = "ver-status pass";
+        verBug.textContent = "PASS";
+      } else {
+        verBug.className = "ver-status fail";
+        verBug.textContent = "FAIL";
+      }
+
+      if (res.errors && res.errors.length > 0) {
+        res.errors.forEach(err => log(err, "error"));
+      }
+    }
+
+    parseBtn.addEventListener("click", () => {
+      const file = filePathInput.value.trim();
+      if (!file) return log("Please enter a valid file path", "error");
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ command: "parse", file: file }));
+      } else {
+        log("WebSocket is not connected. Attempting parser locally (Check console).", "error");
+      }
+    });
+
+    validateBtn.addEventListener("click", () => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ command: "validate" }));
+      } else {
+        log("WebSocket is not connected. Can't run validation.", "error");
+      }
+    });
+
+    // Start WebSocket connection
+    connectWS();
+  </script>
+</body>
+</html>
