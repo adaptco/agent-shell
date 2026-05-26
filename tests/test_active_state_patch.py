@@ -2,7 +2,6 @@ from pathlib import Path
 
 from runtime.utils import read_json, write_json
 from app.orchestration.registry_updates import patch_active_registry_state, patch_active_skills_state
-from app.orchestration.registry_updates import patch_active_registry_state, patch_active_skills_state
 
 
 def test_active_state_patch_preserves_prior_and_writes_run_id(tmp_path: Path):
