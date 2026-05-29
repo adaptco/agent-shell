@@ -38,19 +38,33 @@ def append_jsonl(path: Path, value: Any) -> None:
         handle.write(json.dumps(value, ensure_ascii=False) + "\n")
 
 
+<<<<<<< ours
+<<<<<<< ours
 # Environment helper: centralize env var access and consistent error messaging
 
 
 def get_env(
     name: str, required: bool = False, message: str | None = None
 ) -> str | None:
+=======
+def get_env(name: str, required: bool = True, message: str | None = None) -> str | None:
+>>>>>>> theirs
+=======
+def get_env(name: str, required: bool = True, message: str | None = None) -> str | None:
+>>>>>>> theirs
     """Return the environment variable value or raise RuntimeError when required and missing."""
     val = os.environ.get(name)
     if required and (val is None or val == ""):
         raise RuntimeError(message or f"Missing required environment variable: {name}")
     return val
+<<<<<<< ours
+<<<<<<< ours
 
 
 def is_valid_id(id_str: str) -> bool:
     """Check if the string is a valid hexadecimal task ID (32 chars)."""
     return bool(isinstance(id_str, str) and re.fullmatch(r"[0-9a-f]{32}", id_str))
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
