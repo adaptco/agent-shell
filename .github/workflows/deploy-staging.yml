@@ -21,8 +21,8 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Updated condition to ensure it runs during pull requests and workflow dispatches properly
-    if: |
+    # Cleaned up string logic for stable parsing across GitHub Actions
+    if: >-
       github.event_name == 'pull_request' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
@@ -52,7 +52,8 @@ jobs:
           max_attempts=30
           attempt=1
           while [ $attempt -le $max_attempts ]; do
-            if curl -sf https://staging-api.example.com/healthz; then
+            # FIX: Changed endpoint path from /healthz to /health to match the app
+            if curl -sf https://staging-api.example.com/health; then
               echo "✅ Staging deployment healthy after $attempt attempts"
               exit 0
             fi
