@@ -38,7 +38,11 @@ def _list_subagents(cfg: dict[str, Any]) -> list[dict[str, str]]:
     for path in sorted(subagent_dir.glob("*.md")):
         text = path.read_text(encoding="utf-8")
         first_heading = next(
-            (line.lstrip("#").strip() for line in text.splitlines() if line.startswith("#")),
+            (
+                line.lstrip("#").strip()
+                for line in text.splitlines()
+                if line.startswith("#")
+            ),
             _subagent_name(path),
         )
         subagents.append(
@@ -169,7 +173,9 @@ def build_workspace_mcp_server(
         assigned_subagent: str | None = None,
     ) -> dict[str, Any]:
         if parent_task_id is not None and not is_valid_id(parent_task_id):
-            raise ValueError("parent_task_id must be a 32-character lowercase hex string")
+            raise ValueError(
+                "parent_task_id must be a 32-character lowercase hex string"
+            )
         _ensure_known_subagent(cfg, assigned_subagent)
         queued = service.queue_add(
             task,

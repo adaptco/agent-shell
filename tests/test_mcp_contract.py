@@ -35,7 +35,9 @@ def test_mcp_discover_skills_registers_and_executes_when_enabled() -> None:
     assert result["skills"][0]["name"] == "ci-ready-review"
 
 
-def test_mcp_server_registry_is_explicitly_trusted_and_local_only_without_auth() -> None:
+def test_mcp_server_registry_is_explicitly_trusted_and_local_only_without_auth() -> (
+    None
+):
     servers = read_json(ROOT / "infra" / "mcp_servers.json")
     ids = [server["id"] for server in servers]
 
@@ -133,7 +135,5 @@ def test_fastapi_mounts_streamable_http_mcp_endpoint() -> None:
     assert body["result"]["serverInfo"]["name"] == "agent-shell-service-runtime"
     assert "tools" in body["result"]["capabilities"]
     assert tools_response.status_code == 200
-    tool_names = {
-        tool["name"] for tool in tools_response.json()["result"]["tools"]
-    }
+    tool_names = {tool["name"] for tool in tools_response.json()["result"]["tools"]}
     assert "agent_workspace_health" in tool_names

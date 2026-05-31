@@ -24,7 +24,14 @@ class ReceiptWriter:
         self.root = resolve_path(cfg, cfg["receipts"]["dir"])
 
     def emit(
-        self, task_id: str, step: str, status: str, inputs=None, outputs=None, error=None, memory_snapshot=None
+        self,
+        task_id: str,
+        step: str,
+        status: str,
+        inputs=None,
+        outputs=None,
+        error=None,
+        memory_snapshot=None,
     ) -> Path:
         created_at = utc_now()
         date_part = created_at.split("T", 1)[0].replace("-", "")

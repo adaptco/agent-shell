@@ -58,8 +58,12 @@ class JournalMemory:
                     "compacted": False,
                     "reason": hook_result.get("reason", "blocked"),
                 }
-        archive_path = self.archive_dir / f"{utc_now().replace(':', '').replace('+', '_')}.jsonl"
-        archive_path.write_text(self.journal.read_text(encoding="utf-8"), encoding="utf-8")
+        archive_path = (
+            self.archive_dir / f"{utc_now().replace(':', '').replace('+', '_')}.jsonl"
+        )
+        archive_path.write_text(
+            self.journal.read_text(encoding="utf-8"), encoding="utf-8"
+        )
         keep_last = self.cfg["memory"]["compaction"]["keep_last"]
         retained = entries[-keep_last:]
         lines = [
