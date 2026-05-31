@@ -75,6 +75,7 @@ source .venv/bin/activate
 ## Useful endpoints
 
 - `GET http://127.0.0.1:8000/health`
+- `POST http://127.0.0.1:8000/mcp/`
 - `POST http://127.0.0.1:8000/tasks`
 - `GET http://127.0.0.1:8000/tasks`
 - `GET http://127.0.0.1:8000/tasks/{task_id}`
@@ -83,6 +84,28 @@ source .venv/bin/activate
 - `POST http://127.0.0.1:8000/heartbeat`
 
 All responses include boundary middleware headers: `X-Agent-Service`, `X-Correlation-Id`, and `X-Process-Time-Ms`.
+
+## MCP workspace server
+
+The API process also mounts a Streamable HTTP MCP server at `/mcp/` for agent workspace clients. It exposes high-level workspace tools for health checks, task listing, task lookup, subagent discovery, task enqueueing, and immediate task execution. The MCP surface intentionally returns task IDs and queue state instead of absolute server file paths.
+
+Local MCP smoke request:
+
+```powershell
+$body = @{
+  jsonrpc = "2.0"
+  id = 1
+  method = "tools/list"
+  params = @{}
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8000/mcp/" `
+  -Method Post `
+  -Headers @{ Accept = "application/json, text/event-stream" } `
+  -Body $body `
+  -ContentType "application/json"
+```
 
 ## External CI without GitHub Actions minutes
 

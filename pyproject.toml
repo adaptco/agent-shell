@@ -5,10 +5,15 @@ description = "Runtime service framework for agent operations"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.110.0",
+    "mcp>=1.27.0",
     "pydantic>=2.6.0",
     "uvicorn>=0.28.0",
     "pyjwt>=2.8.0",
 ]
+
+[project.scripts]
+agent-shell = "runtime.cli:main"
+agent-shell-api = "runtime.server:main"
 
 [dependency-groups]
 dev = [

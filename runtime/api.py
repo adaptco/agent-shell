@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from runtime.api_auth import OperatorIdentity, get_auth_dependency
 from runtime.config import load_config
 from runtime.middleware import install_http_middleware
+from runtime.mcp_server import build_workspace_mcp_server
 from runtime.service import AgentService
 from runtime.utils import is_valid_id
 
@@ -60,12 +61,15 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     cfg = cfg or load_config()
     service_auth = get_auth_dependency(cfg)
     service = AgentService(cfg)
+    workspace_mcp = build_workspace_mcp_server(cfg, service)
+    workspace_mcp_app = workspace_mcp.streamable_http_app()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         app.state.cfg = cfg
         app.state.service = service
-        yield
+        async with workspace_mcp.session_manager.run():
+            yield
 
     app = FastAPI(
         title=cfg.get("service", {}).get("title", "Agent Shell Service Runtime API"),
@@ -76,6 +80,7 @@ def create_app(cfg: dict | None = None) -> FastAPI:
     app.state.service = service
 
     install_http_middleware(app, cfg)
+    app.mount(cfg.get("mcp", {}).get("path", "/mcp"), workspace_mcp_app)
 
     def svc(request: Request) -> AgentService:
         return request.app.state.service

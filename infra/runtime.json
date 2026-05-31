@@ -109,6 +109,13 @@
       "timing"
     ]
   },
+  "mcp": {
+    "enabled": true,
+    "path": "/mcp",
+    "transport": "streamable_http",
+    "stateless_http": true,
+    "json_response": true
+  },
   "llm": {
     "default_backend": "mock",
     "openai": {
